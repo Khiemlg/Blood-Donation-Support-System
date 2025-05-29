@@ -1,0 +1,77 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E1A28BFB-D479-4FC2-9A27-4B462B399F77}|BloodDSystem\\BloodDSystem.csproj|c:\\users\\giakh\\onedrive\\desktop\\ky5\\swp\\code\\blooddsystem\\blooddsystem\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E1A28BFB-D479-4FC2-9A27-4B462B399F77}|BloodDSystem\\BloodDSystem.csproj|solutionrelative:blooddsystem\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E1A28BFB-D479-4FC2-9A27-4B462B399F77}|BloodDSystem\\BloodDSystem.csproj|c:\\users\\giakh\\onedrive\\desktop\\ky5\\swp\\code\\blooddsystem\\blooddsystem\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{E1A28BFB-D479-4FC2-9A27-4B462B399F77}|BloodDSystem\\BloodDSystem.csproj|solutionrelative:blooddsystem\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E1A28BFB-D479-4FC2-9A27-4B462B399F77}|BloodDSystem\\BloodDSystem.csproj|c:\\users\\giakh\\onedrive\\desktop\\ky5\\swp\\code\\blooddsystem\\blooddsystem\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E1A28BFB-D479-4FC2-9A27-4B462B399F77}|BloodDSystem\\BloodDSystem.csproj|solutionrelative:blooddsystem\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\Controller\\UserController.cs",
+              "RelativeDocumentMoniker": "BloodDSystem\\Controller\\UserController.cs",
+              "ToolTip": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\Controller\\UserController.cs",
+              "RelativeToolTip": "BloodDSystem\\Controller\\UserController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-29T14:55:35.33Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\appsettings.json",
+              "RelativeDocumentMoniker": "BloodDSystem\\appsettings.json",
+              "ToolTip": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\appsettings.json",
+              "RelativeToolTip": "BloodDSystem\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-29T14:40:48.117Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\Program.cs",
+              "RelativeDocumentMoniker": "BloodDSystem\\Program.cs",
+              "ToolTip": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\Program.cs",
+              "RelativeToolTip": "BloodDSystem\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAABSAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-29T13:59:45.766Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
