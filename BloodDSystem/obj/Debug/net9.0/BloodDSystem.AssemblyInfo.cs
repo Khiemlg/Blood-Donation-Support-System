@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BloodDSystem")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3b24b1e7a8b1828b8ab88b78c75b32523233ed93")]
 [assembly: System.Reflection.AssemblyProductAttribute("BloodDSystem")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BloodDSystem")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

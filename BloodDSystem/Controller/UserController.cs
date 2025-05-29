@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BloodDSystem.MyModels;
 using NETCore.MailKit.Core;
+using BCrypt.Net;
 namespace BloodSystem.Controllers
 {
     [Route("api/[controller]")]
@@ -36,13 +37,13 @@ namespace BloodSystem.Controllers
             {
                 BadRequest("Email already exist");
             }
-
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
             User user = new User();
             user.FullName = FullName;
             user.RoleId = RoleID;
             user.Email = Email;
             user.PhoneNumber = PhoneNumber;
-            user.PasswordHash = PasswordHash;
+            user.PasswordHash = hashedPassword;
             user.IsActive = true;
             connect.Users.Add(user);
             await connect.SaveChangesAsync();
@@ -83,7 +84,6 @@ namespace BloodSystem.Controllers
             }
 
             var user = await connect.Users.FirstOrDefaultAsync(x => x.Email == loginrequest.Email);
-
             if (user == null)
             {
                 return Unauthorized(new { message = "Email invalid  or  wrong login password." });
@@ -98,5 +98,6 @@ namespace BloodSystem.Controllers
             }
             return Ok(new { message = "Đăng nhập thành công!", user_id = user.UserId, email = user.Email });
         }
+
     }
 }

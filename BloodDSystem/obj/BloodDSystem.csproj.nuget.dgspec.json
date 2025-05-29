@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\BloodDSystem.csproj": {}
+    "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\Blood-Donation-Support-System\\BloodDSystem\\BloodDSystem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\BloodDSystem.csproj": {
+    "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\Blood-Donation-Support-System\\BloodDSystem\\BloodDSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\BloodDSystem.csproj",
+        "projectUniqueName": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\Blood-Donation-Support-System\\BloodDSystem\\BloodDSystem.csproj",
         "projectName": "BloodDSystem",
-        "projectPath": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\BloodDSystem.csproj",
+        "projectPath": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\Blood-Donation-Support-System\\BloodDSystem\\BloodDSystem.csproj",
         "packagesPath": "C:\\Users\\giakh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\BloodDSystem\\BloodDSystem\\obj\\",
+        "outputPath": "C:\\Users\\giakh\\OneDrive\\Desktop\\KY5\\SWP\\CODE\\Blood-Donation-Support-System\\BloodDSystem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

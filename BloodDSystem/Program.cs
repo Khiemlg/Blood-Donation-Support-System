@@ -1,21 +1,18 @@
 ﻿using BloodDSystem.MyModels;
-//using BloodSystem.MyModels;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NETCore.MailKit.Core;
+using System.Net.NetworkInformation;
 using System.Text;
-
-
-
+using NETCore.MailKit.Infrastructure.Internal;
+using NETCore.MailKit.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi(); // Assuming AddOpenApi is a valid extension for Swagger
-
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-
 
 // Configure DbContext
 string cnn = builder.Configuration.GetConnectionString("cnn") ?? throw new InvalidOperationException("Connection string 'cnn' not found.");
@@ -42,7 +39,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Configure Authorization Service
 builder.Services.AddAuthorization();
+//builder.Services.AddTransient<IEmailService, EmailService>();
 
+builder.Services.AddMailKit(optionBuilder =>
+{
+    optionBuilder.UseMailKit(new MailKitOptions()
+    {
+        Server = builder.Configuration["Email:SmtpHost"],
+        Port = int.Parse(builder.Configuration["Email:SmtpPort"] ?? "587"),
+        SenderName = builder.Configuration["Email:SenderName"] ?? "Your App",
+        SenderEmail = builder.Configuration["Email:SenderEmail"] ?? "no-reply@example.com",
+        Account = builder.Configuration["Email:SmtpUser"],
+        Password = builder.Configuration["Email:SmtpPass"],
+        Security = true // Adjust based on your SMTP server
+    });
+});
 var app = builder.Build();
 
 // Configure CORS policy - Should be early in the pipeline
