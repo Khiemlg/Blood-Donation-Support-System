@@ -7,6 +7,7 @@ using Blood_Donation_System.MyModels;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace BloodSystem.Controllers
 {
@@ -31,6 +32,35 @@ namespace BloodSystem.Controllers
                 {
                     return Ok(new { data = await connect.Users.ToListAsync() });
                 }
+                
+                [HttpPost]
+                [Route("/User/Delete")]
+                public async Task<ActionResult> Delete(int id )
+                {
+                 var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
+                 if(user == null)
+                 {
+                     return BadRequest("user not found");
+                 }
+                 user.IsActive = false;
+                 await connect.SaveChangesAsync();
+                  return Ok("uses is inactive");
+                }
+
+
+                [HttpPost]
+                [Route("/User/Delete_2")]
+                public async Task<ActionResult> Delete2(int id )
+                {
+                var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
+                if(user == null)
+                {
+                     return BadRequest("user not found");
+                }
+                 
+                     return Ok(" delete successfull "+ user);
+                }
+         
 
                 [HttpPost]
                 [Route("User/Insert")]
@@ -41,6 +71,20 @@ namespace BloodSystem.Controllers
                     {
                         BadRequest("Email already exist");
                     }
+                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || String.IsNullOrWhiteSpace(PhoneNumber))
+                    {
+                        return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
+                    }
+                    if (Regex.IsMatch(Username, @"\d")) 
+                    {
+                        return BadRequest("user name cannot use digit");
+                    }
+                    
+                    if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
+                    {
+                         return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
+                    }
+
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
                     user.Username = Username;
@@ -54,6 +98,44 @@ namespace BloodSystem.Controllers
                     return Ok(new { data = user });
                 }
 
+
+                [HttpPost]
+                [Route("User/Register")]
+                public async Task<ActionResult> Register(String Username, String Email, String PhoneNumber, String PasswordHash)
+                {
+                    var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
+                    if (existingUser != null)
+                    {
+                        BadRequest("Email already exist");
+                    }
+                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || String.IsNullOrWhiteSpace(PhoneNumber))
+                    {
+                        return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
+                    }
+                    if (Regex.IsMatch(Username, @"\d")) 
+                    {
+                        return BadRequest("user name cannot use digit");
+                    }
+                    
+                    if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
+                    {
+                         return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
+                    }
+
+                    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
+                    User user = new User();
+                    user.Username = Username;
+                    user.RoleId = 3;
+                    user.Email = Email;
+                    user.PhoneNumber = PhoneNumber;
+                    user.PasswordHash = hashedPassword;
+                    user.IsActive = true;
+                    connect.Users.Add(user);
+                    await connect.SaveChangesAsync();
+                    return Ok(new { data = user });
+                }
+
+
                 [HttpPost]
                 [Route("User/Update")]
                 public async Task<ActionResult> Update(int id, String Username, int RoleID, String Email, String PhoneNumber, String PasswordHash)
@@ -63,6 +145,20 @@ namespace BloodSystem.Controllers
                     {
                         BadRequest("user not found");
                     }
+                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || String.IsNullOrWhiteSpace(PhoneNumber))
+                    {
+                        return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
+                    }
+                    if (Regex.IsMatch(Username, @"\d")) 
+                    {
+                        return BadRequest("user name cannot use digit");
+                    }
+                    
+                    if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
+                    {
+                         return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
+                    }
+
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
@@ -77,6 +173,7 @@ namespace BloodSystem.Controllers
                     await connect.SaveChangesAsync();
                     return Ok(new { data = user });
                 }
+
 
                 [HttpPost]
                 [Route("User/Login")]
@@ -119,7 +216,7 @@ namespace BloodSystem.Controllers
                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                  );
 
-             // check push
+             
                  return Ok(new { message = "Đăng nhập thành công!", user_id = user.UserId, email = user.Email ,
                      token = new JwtSecurityTokenHandler().WriteToken(token),
                      expiration = token.ValidTo
@@ -127,7 +224,7 @@ namespace BloodSystem.Controllers
                 }
 
 
-        
+   
        
 
     }
