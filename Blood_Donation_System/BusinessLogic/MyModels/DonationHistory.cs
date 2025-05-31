@@ -11,12 +11,16 @@ public partial class DonationHistory
 {
     [Key]
     [Column("donation_id")]
-    public int DonationId { get; set; }
+    [StringLength(50)] 
+    [Unicode(false)] 
+    public string DonationId { get; set; } = null!;
 
     [Column("donor_user_id")]
-    public int DonorUserId { get; set; }
+    [StringLength(50)] 
+    [Unicode(false)]
+    public string DonorUserId { get; set; } = null!; 
 
-    [Column("donation_date")]
+    [Column("donation_date", TypeName = "datetime2")] 
     public DateTime DonationDate { get; set; }
 
     [Column("blood_type_id")]
@@ -30,28 +34,37 @@ public partial class DonationHistory
 
     [Column("eligibility_status")]
     [StringLength(20)]
-    [Unicode(false)]
+    [Unicode(false)] 
     public string? EligibilityStatus { get; set; }
 
     [Column("reason_ineligible")]
     public string? ReasonIneligible { get; set; }
 
     [Column("testing_results")]
-    public string? TestingResults { get; set; }
+    public string? TestingResults { get; set; } 
 
     [Column("staff_user_id")]
-    public int? StaffUserId { get; set; }
+    [StringLength(50)] 
+    [Unicode(false)]
+    public string? StaffUserId { get; set; }
 
     [Column("status")]
     [StringLength(20)]
-    [Unicode(false)]
+    [Unicode(false)] 
     public string? Status { get; set; }
+
+    [Column("emergency_id")]
+    [StringLength(50)] 
+    [Unicode(false)]
+    public string? EmergencyId { get; set; } 
+
+    
 
     [ForeignKey("BloodTypeId")]
     [InverseProperty("DonationHistories")]
     public virtual BloodType BloodType { get; set; } = null!;
 
-    [InverseProperty("Donation")]
+    [InverseProperty("Donation")] 
     public virtual ICollection<BloodUnit> BloodUnits { get; set; } = new List<BloodUnit>();
 
     [ForeignKey("ComponentId")]
@@ -59,10 +72,14 @@ public partial class DonationHistory
     public virtual BloodComponent Component { get; set; } = null!;
 
     [ForeignKey("DonorUserId")]
-    [InverseProperty("DonationHistoryDonorUsers")]
+    [InverseProperty("DonationHistoryDonorUsers")] 
     public virtual User DonorUser { get; set; } = null!;
 
     [ForeignKey("StaffUserId")]
-    [InverseProperty("DonationHistoryStaffUsers")]
+    [InverseProperty("DonationHistoryStaffUsers")] 
     public virtual User? StaffUser { get; set; }
+
+    [ForeignKey("EmergencyId")] 
+    [InverseProperty("DonationHistories")] 
+    public virtual EmergencyRequest? Emergency { get; set; } 
 }

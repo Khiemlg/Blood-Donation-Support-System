@@ -28,17 +28,17 @@ namespace Blood_Donation_System.Presentation.Controllers
         }
         
                 [HttpGet]
-                [Route("/User/List")]
+                [Route("User/List")]
                 public async Task<ActionResult> Read()
                 {
                     return Ok(new { data = await connect.Users.ToListAsync() });
                 }
                 
                 [HttpPost]
-                [Route("/User/Delete")]
+                [Route("User/Delete")]
                 public async Task<ActionResult> Delete(int id )
                 {
-                 var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
+                 var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId.Equals(id));
                  if(user == null)
                  {
                      return BadRequest("user not found");
@@ -51,10 +51,10 @@ namespace Blood_Donation_System.Presentation.Controllers
 
 
                 [HttpPost]
-                [Route("/User/Delete_2")]
+                [Route("User/Delete_2")]
                 public async Task<ActionResult> Delete2(int id )
                 {
-                var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
+                var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId.Equals(id));
                 connect.Remove(user);
                 await connect.SaveChangesAsync();
                 if(user == null)
@@ -142,9 +142,9 @@ namespace Blood_Donation_System.Presentation.Controllers
 
                 [HttpPost]
                 [Route("User/Update")]
-                public async Task<ActionResult> Update(int id, string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
+                public async Task<ActionResult> Update(String id, string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
                 {
-                    var userToUpdate = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
+                    var userToUpdate = await connect.Users.FirstOrDefaultAsync(x => x.UserId.Equals( id));
                     if (userToUpdate == null)
                     {
                         BadRequest("user not found");

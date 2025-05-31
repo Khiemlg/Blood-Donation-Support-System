@@ -13,7 +13,7 @@ public partial class User
 {
     [Key]
     [Column("user_id")]
-    public int UserId { get; set; }
+    public String UserId { get; set; }
 
     [Column("username")]
     [StringLength(50)]
