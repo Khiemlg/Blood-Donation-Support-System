@@ -10,10 +10,10 @@ public partial class BloodUnit
 {
     [Key]
     [Column("unit_id")]
-    public int UnitId { get; set; }
+    public String UnitId { get; set; }
 
     [Column("donation_id")]
-    public int? DonationId { get; set; }
+    public String? DonationId { get; set; }
 
     [Column("blood_type_id")]
     public int BloodTypeId { get; set; }

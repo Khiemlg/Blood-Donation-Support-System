@@ -10,10 +10,14 @@ public partial class EmergencyRequest
 {
     [Key]
     [Column("emergency_id")]
-    public int EmergencyId { get; set; }
+    [StringLength(50)] // Thêm thuộc tính này
+    [Unicode(false)]   // Thêm thuộc tính này
+    public string EmergencyId { get; set; } = null!;
 
     [Column("requester_user_id")]
-    public int RequesterUserId { get; set; }
+    [StringLength(50)] // Thêm thuộc tính này
+    [Unicode(false)]   // Thêm thuộc tính này
+    public string RequesterUserId { get; set; } = null!;
 
     [Column("blood_type_id")]
     public int BloodTypeId { get; set; }
@@ -55,4 +59,7 @@ public partial class EmergencyRequest
     [ForeignKey("RequesterUserId")]
     [InverseProperty("EmergencyRequests")]
     public virtual User RequesterUser { get; set; } = null!;
+
+    [InverseProperty("Emergency")] // Đã thêm [InverseProperty]
+    public virtual ICollection<DonationHistory> DonationHistories { get; set; } = new List<DonationHistory>();
 }

@@ -10,13 +10,13 @@ public partial class EmergencyNotification
 {
     [Key]
     [Column("notification_id")]
-    public int NotificationId { get; set; }
+    public String NotificationId { get; set; }
 
     [Column("emergency_id")]
-    public int EmergencyId { get; set; }
+    public String EmergencyId { get; set; }
 
     [Column("recipient_user_id")]
-    public int RecipientUserId { get; set; }
+    public String RecipientUserId { get; set; }
 
     [Column("sent_date")]
     public DateTime? SentDate { get; set; }

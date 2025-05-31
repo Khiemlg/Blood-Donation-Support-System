@@ -43,17 +43,25 @@ public partial class DButils : DbContext
     {
         modelBuilder.Entity<BloodComponent>(entity =>
         {
-            entity.HasKey(e => e.ComponentId).HasName("PK__BloodCom__AEB1DA59A44C9312");
+            entity.HasKey(e => e.ComponentId); // Removed .HasName()
         });
 
         modelBuilder.Entity<BloodType>(entity =>
         {
-            entity.HasKey(e => e.BloodTypeId).HasName("PK__BloodTyp__56FFB8C8AEEE087F");
+            entity.HasKey(e => e.BloodTypeId); // Removed .HasName()
         });
 
         modelBuilder.Entity<BloodUnit>(entity =>
         {
-            entity.HasKey(e => e.UnitId).HasName("PK__BloodUni__D3AF5BD718FC5A6B");
+            entity.HasKey(e => e.UnitId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.UnitId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.DonationId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
             entity.Property(e => e.Status).HasDefaultValue("Available");
 
@@ -65,12 +73,30 @@ public partial class DButils : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__BloodUnit__compo__5BE2A6F2");
 
-            entity.HasOne(d => d.Donation).WithMany(p => p.BloodUnits).HasConstraintName("FK__BloodUnit__donat__59FA5E80");
+            entity.HasOne(d => d.Donation).WithMany(p => p.BloodUnits)
+                .HasForeignKey(d => d.DonationId) // Changed from int? to string?
+                .HasConstraintName("FK__BloodUnit__donat__59FA5E80");
         });
 
         modelBuilder.Entity<DonationHistory>(entity =>
         {
-            entity.HasKey(e => e.DonationId).HasName("PK__Donation__296B91DCFDF8D202");
+            entity.HasKey(e => e.DonationId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.DonationId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.DonorUserId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+            entity.Property(e => e.StaffUserId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+            entity.Property(e => e.EmergencyId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
 
             entity.Property(e => e.Status).HasDefaultValue("Completed");
 
@@ -83,15 +109,30 @@ public partial class DButils : DbContext
                 .HasConstraintName("FK__DonationH__compo__5535A963");
 
             entity.HasOne(d => d.DonorUser).WithMany(p => p.DonationHistoryDonorUsers)
+                .HasForeignKey(d => d.DonorUserId) // Changed from int to string
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__DonationH__donor__534D60F1");
 
-            entity.HasOne(d => d.StaffUser).WithMany(p => p.DonationHistoryStaffUsers).HasConstraintName("FK__DonationH__staff__5629CD9C");
+            entity.HasOne(d => d.StaffUser).WithMany(p => p.DonationHistoryStaffUsers)
+                .HasForeignKey(d => d.StaffUserId) // Changed from int? to string?
+                .HasConstraintName("FK__DonationH__staff__5629CD9C");
+
+            entity.HasOne(d => d.Emergency).WithMany(p => p.DonationHistories)
+                .HasForeignKey(d => d.EmergencyId)
+                .HasConstraintName("FK__DonationH__emergency__...some_name..."); // You'll need the actual name
         });
 
         modelBuilder.Entity<DonationRequest>(entity =>
         {
-            entity.HasKey(e => e.RequestId).HasName("PK__Donation__18D3B90F7590CC25");
+            entity.HasKey(e => e.RequestId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.RequestId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+            entity.Property(e => e.DonorUserId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
             entity.Property(e => e.RequestDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Status).HasDefaultValue("Pending");
@@ -105,30 +146,53 @@ public partial class DButils : DbContext
                 .HasConstraintName("FK__DonationR__compo__4F7CD00D");
 
             entity.HasOne(d => d.DonorUser).WithMany(p => p.DonationRequests)
+                .HasForeignKey(d => d.DonorUserId) // Changed from int to string
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__DonationR__donor__4D94879B");
         });
 
         modelBuilder.Entity<EmergencyNotification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Emergenc__E059842FB6D2AB1F");
+            entity.HasKey(e => e.NotificationId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.NotificationId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.EmergencyId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+            entity.Property(e => e.RecipientUserId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
 
             entity.Property(e => e.IsRead).HasDefaultValue(false);
             entity.Property(e => e.ResponseStatus).HasDefaultValue("No Response");
             entity.Property(e => e.SentDate).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.Emergency).WithMany(p => p.EmergencyNotifications)
+                .HasForeignKey(d => d.EmergencyId) // Changed from int to string
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Emergency__emerg__68487DD7");
 
             entity.HasOne(d => d.RecipientUser).WithMany(p => p.EmergencyNotifications)
+                .HasForeignKey(d => d.RecipientUserId) // Changed from int to string
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Emergency__recip__693CA210");
         });
 
         modelBuilder.Entity<EmergencyRequest>(entity =>
         {
-            entity.HasKey(e => e.EmergencyId).HasName("PK__Emergenc__F0E90B91A7A18C89");
+            entity.HasKey(e => e.EmergencyId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.EmergencyId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.RequesterUserId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
 
             entity.Property(e => e.CreationDate).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.Priority).HasDefaultValue("Medium");
@@ -142,46 +206,74 @@ public partial class DButils : DbContext
                 .HasConstraintName("FK__Emergency__compo__628FA481");
 
             entity.HasOne(d => d.RequesterUser).WithMany(p => p.EmergencyRequests)
+                .HasForeignKey(d => d.RequesterUserId) // Changed from int to string
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Emergency__reque__60A75C0F");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__E059842F4E0E4754");
+            entity.HasKey(e => e.NotificationId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.NotificationId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.RecipientUserId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
 
             entity.Property(e => e.IsRead).HasDefaultValue(false);
             entity.Property(e => e.SentDate).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.RecipientUser).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.RecipientUserId) // Changed from int to string
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Notificat__recip__6E01572D");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__760965CCE2BB0BCA");
+            entity.HasKey(e => e.RoleId); // Removed .HasName()
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__B9BE370F104E87E2");
+            entity.HasKey(e => e.UserId); // Changed from int to string, Removed .HasName()
+
+            entity.Property(e => e.UserId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.RoleId).IsRequired(); // RoleId is required, so make it non-nullable
 
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.RegistrationDate).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__role_id__440B1D61");
         });
 
         modelBuilder.Entity<UserProfile>(entity =>
         {
-            entity.HasKey(e => e.ProfileId).HasName("PK__UserProf__AEBB701F006AAFFD");
+            entity.HasKey(e => e.ProfileId); // Changed from int to string, Removed .HasName()
 
-            entity.HasOne(d => d.BloodType).WithMany(p => p.UserProfiles).HasConstraintName("FK__UserProfi__blood__48CFD27E");
+            entity.Property(e => e.ProfileId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.Property(e => e.UserId)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
+            entity.HasOne(d => d.BloodType).WithMany(p => p.UserProfiles)
+                .HasForeignKey(d => d.BloodTypeId)
+                .HasConstraintName("FK__UserProfi__blood__48CFD27E");
 
             entity.HasOne(d => d.User).WithOne(p => p.UserProfile)
+                .HasForeignKey<UserProfile>(d => d.UserId) // Explicitly specify FK property
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__UserProfi__user___47DBAE45");
         });

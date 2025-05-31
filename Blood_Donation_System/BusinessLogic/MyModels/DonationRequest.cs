@@ -10,10 +10,10 @@ public partial class DonationRequest
 {
     [Key]
     [Column("request_id")]
-    public int RequestId { get; set; }
+    public String  RequestId { get; set; }
 
     [Column("donor_user_id")]
-    public int DonorUserId { get; set; }
+    public String DonorUserId { get; set; }
 
     [Column("blood_type_id")]
     public int BloodTypeId { get; set; }

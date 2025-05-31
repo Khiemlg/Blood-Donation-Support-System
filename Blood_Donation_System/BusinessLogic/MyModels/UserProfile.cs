@@ -11,7 +11,7 @@ public partial class UserProfile
 {
     [Key]
     [Column("profile_id")]
-    public int ProfileId { get; set; }
+    public String ProfileId { get; set; }
 
     [Column("user_id")]
     public int UserId { get; set; }

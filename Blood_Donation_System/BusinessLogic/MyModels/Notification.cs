@@ -10,7 +10,7 @@ public partial class Notification
 {
     [Key]
     [Column("notification_id")]
-    public int NotificationId { get; set; }
+    public String NotificationId { get; set; }
 
     [Column("recipient_user_id")]
     public int RecipientUserId { get; set; }
