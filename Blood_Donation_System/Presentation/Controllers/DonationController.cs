@@ -33,10 +33,7 @@ namespace Blood_Donation_System.Presentation.Controllers
         [HttpPost]
         [Route("DonationRequest/RegisterDonation")]
 
-        public async Task<ActionResult> Register()
-        {
-
-        }
+      // mới sủa lại
 
 
     }
