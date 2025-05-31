@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Blood_Donation_System.BusinessLogic.MyModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blood_Donation_System.MyModels;
+namespace Blood_Donation_System.DataAccess;
 
 public partial class DButils : DbContext
 {

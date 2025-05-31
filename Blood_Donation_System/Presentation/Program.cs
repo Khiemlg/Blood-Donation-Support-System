@@ -1,5 +1,5 @@
 using System.Text;
-using Blood_Donation_System.MyModels;
+using Blood_Donation_System.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

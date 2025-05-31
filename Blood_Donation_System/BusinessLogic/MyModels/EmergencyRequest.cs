@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blood_Donation_System.MyModels;
+namespace Blood_Donation_System.BusinessLogic.MyModels;
 
 public partial class EmergencyRequest
 {

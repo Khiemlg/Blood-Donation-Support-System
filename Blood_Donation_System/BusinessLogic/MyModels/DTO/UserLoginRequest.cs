@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BloodSystem.MyModels.Request
+namespace Blood_Donation_System.BusinessLogic.MyModels.LoginRequest
 {
     public class UserLoginRequest
     {

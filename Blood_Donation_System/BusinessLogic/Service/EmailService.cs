@@ -6,7 +6,7 @@ using MimeKit;
 using NETCore.MailKit.Infrastructure.Internal;
 using System.Text;
 
-namespace BloodSystem.Services // Adjust this namespace to match your project's structure
+namespace Blood_Donation_System.BusinessLogic.Service // Adjust this namespace to match your project's structure
 {
     public class EmailService : IEmailService
     {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blood_Donation_System.MyModels;
+namespace Blood_Donation_System.BusinessLogic.MyModels;
 
 [Index("TypeName", Name = "UQ__BloodTyp__543C4FD97A8014D9", IsUnique = true)]
 public partial class BloodType

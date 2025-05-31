@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Blood_Donation_System.MyModels;
+namespace Blood_Donation_System.BusinessLogic.MyModels;
 
 [Index("PhoneNumber", Name = "UQ__Users__A1936A6BC9898E59", IsUnique = true)]
 [Index("Email", Name = "UQ__Users__AB6E6164159AA181", IsUnique = true)]

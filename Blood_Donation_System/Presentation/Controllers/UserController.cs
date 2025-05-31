@@ -1,15 +1,16 @@
-﻿using BloodSystem.MyModels.Request;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
 using BCrypt.Net;
-using Blood_Donation_System.MyModels;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
+using Blood_Donation_System.BusinessLogic.MyModels;
+using Blood_Donation_System.BusinessLogic.MyModels.LoginRequest;
+using Blood_Donation_System.DataAccess;
 
-namespace BloodSystem.Controllers
+namespace Blood_Donation_System.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -42,7 +43,8 @@ namespace BloodSystem.Controllers
                  {
                      return BadRequest("user not found");
                  }
-                 user.IsActive = false;
+                 
+                 connect.Update(user.IsActive = false);
                  await connect.SaveChangesAsync();
                   return Ok("uses is inactive");
                 }
@@ -53,6 +55,8 @@ namespace BloodSystem.Controllers
                 public async Task<ActionResult> Delete2(int id )
                 {
                 var user = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
+                connect.Remove(user);
+                await connect.SaveChangesAsync();
                 if(user == null)
                 {
                      return BadRequest("user not found");
@@ -64,14 +68,14 @@ namespace BloodSystem.Controllers
 
                 [HttpPost]
                 [Route("User/Insert")]
-                public async Task<ActionResult> insert(String Username, int RoleID, String Email, String PhoneNumber, String PasswordHash)
+                public async Task<ActionResult> insert(string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
                 {
                     var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
                     if (existingUser != null)
                     {
                         BadRequest("Email already exist");
                     }
-                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || String.IsNullOrWhiteSpace(PhoneNumber))
+                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || string.IsNullOrWhiteSpace(PhoneNumber))
                     {
                         return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
                     }
@@ -101,14 +105,14 @@ namespace BloodSystem.Controllers
 
                 [HttpPost]
                 [Route("User/Register")]
-                public async Task<ActionResult> Register(String Username, String Email, String PhoneNumber, String PasswordHash)
+                public async Task<ActionResult> Register(string Username, string Email, string PhoneNumber, string PasswordHash)
                 {
                     var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
                     if (existingUser != null)
                     {
                         BadRequest("Email already exist");
                     }
-                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || String.IsNullOrWhiteSpace(PhoneNumber))
+                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || string.IsNullOrWhiteSpace(PhoneNumber))
                     {
                         return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
                     }
@@ -138,14 +142,14 @@ namespace BloodSystem.Controllers
 
                 [HttpPost]
                 [Route("User/Update")]
-                public async Task<ActionResult> Update(int id, String Username, int RoleID, String Email, String PhoneNumber, String PasswordHash)
+                public async Task<ActionResult> Update(int id, string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
                 {
                     var userToUpdate = await connect.Users.FirstOrDefaultAsync(x => x.UserId == id);
                     if (userToUpdate == null)
                     {
                         BadRequest("user not found");
                     }
-                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || String.IsNullOrWhiteSpace(PhoneNumber))
+                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || string.IsNullOrWhiteSpace(PhoneNumber))
                     {
                         return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
                     }
