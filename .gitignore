@@ -1,0 +1,32 @@
+# Visual Studio Solution and Project files
+## Build related
+[Bb]in/
+[Oo]bj/
+*.pdb
+*.suo
+
+## Visual Studio's cache and user files
+.vs/
+*.user
+*.vssscc
+*.vspscc
+
+# NuGet packages
+/packages/
+*.nupkg
+*.snupkg
+
+# Temp files
+*.tmp
+*.log
+
+# Other common generated files
+*.orig
+*.bak
+*.scc
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/

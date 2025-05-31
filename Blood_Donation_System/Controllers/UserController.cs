@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
 using BCrypt.Net;
 using Blood_Donation_System.MyModels;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace BloodSystem.Controllers
 {
@@ -94,12 +97,36 @@ namespace BloodSystem.Controllers
                     {
                         return Unauthorized(new { message = "Email invalid  or  wrong login password.." });
                     }
-                    //if (!user.IsEmailVerified)
-                   // {
-                      //  return Unauthorized(new { message = "Email not verified." });
-                    //}
-                    return Ok(new { message = "Đăng nhập thành công!", user_id = user.UserId, email = user.Email });
+                    var Role = connect.Roles.FirstOrDefault(x => x.RoleId == user.RoleId);
+                    if(Role == null)
+                    {
+                    return Unauthorized(new { message = "User role not found" });
+                    }
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Email), // Hoặc user.Username
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(ClaimTypes.Role, Role.RoleName) 
+                    };
+
+                var authSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]));
+
+                var token = new JwtSecurityToken(
+                   issuer: Configuration["Jwt:Issuer"],
+                   audience: Configuration["Jwt:Audience"],
+                   expires: DateTime.Now.AddHours(3), 
+                   claims: authClaims,
+                   signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                 );
+
+
+                 return Ok(new { message = "Đăng nhập thành công!", user_id = user.UserId, email = user.Email ,
+                     token = new JwtSecurityTokenHandler().WriteToken(token),
+                     expiration = token.ValidTo
+                 });
                 }
+
+
         
        
 
