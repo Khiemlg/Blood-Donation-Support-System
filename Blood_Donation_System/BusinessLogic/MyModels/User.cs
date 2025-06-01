@@ -46,6 +46,12 @@ public partial class User
 
     [Column("is_active")]
     public bool? IsActive { get; set; }
+    [NotMapped]
+    public string RoleName
+    {
+        get { return Role?.RoleName; } // Lấy RoleName từ đối tượng Role đã được tải
+        set { /* Có thể không cần setter nếu chỉ muốn là read-only */ }
+    }
 
     [InverseProperty("DonorUser")]
     public virtual ICollection<DonationHistory> DonationHistoryDonorUsers { get; set; } = new List<DonationHistory>();

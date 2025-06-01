@@ -2,5 +2,7 @@
 {
     public class AuthTokenResult
     {
+        public string Token { get; set; }
+        public DateTime Expiration { get; set; }
     }
 }
