@@ -9,6 +9,10 @@ using System.Text.RegularExpressions;
 using Blood_Donation_System.BusinessLogic.MyModels;
 using Blood_Donation_System.BusinessLogic.MyModels.LoginRequest;
 using Blood_Donation_System.DataAccess;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Blood_Donation_System.BusinessLogic.MyModels.DTO;
 
 namespace Blood_Donation_System.Presentation.Controllers
 {
@@ -70,6 +74,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                 [Route("User/Insert")]
                 public async Task<ActionResult> insert(string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
                 {
+                    
                     var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
                     if (existingUser != null)
                     {
@@ -91,6 +96,8 @@ namespace Blood_Donation_System.Presentation.Controllers
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
+                    string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(); 
+                    user.UserId = "USER_" + uniqueSuffix;
                     user.Username = Username;
                     user.RoleId = RoleID;
                     user.Email = Email;
@@ -107,6 +114,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                 [Route("User/Register")]
                 public async Task<ActionResult> Register(string Username, string Email, string PhoneNumber, string PasswordHash)
                 {
+                    
                     var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
                     if (existingUser != null)
                     {
@@ -128,6 +136,8 @@ namespace Blood_Donation_System.Presentation.Controllers
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
+                    string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(); 
+                    user.UserId = "USER_" + uniqueSuffix;
                     user.Username = Username;
                     user.RoleId = 3;
                     user.Email = Email;
@@ -151,7 +161,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     }
                      if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || string.IsNullOrWhiteSpace(PhoneNumber))
                     {
-                        return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
+                        return BadRequest("User name , Email và password  is not empty.");
                     }
                     if (Regex.IsMatch(Username, @"\d")) 
                     {
@@ -203,33 +213,56 @@ namespace Blood_Donation_System.Presentation.Controllers
                     {
                     return Unauthorized(new { message = "User role not found" });
                     }
-                    var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, user.Email), // Hoặc user.Username
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(ClaimTypes.Role, Role.RoleName) 
-                    };
+                    user.RoleName = Role.RoleName;
+                    var token = CreateToken(user);
 
-                var authSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]));
 
-                var token = new JwtSecurityToken(
-                   issuer: Configuration["Jwt:Issuer"],
-                   audience: Configuration["Jwt:Audience"],
-                   expires: DateTime.Now.AddHours(3), 
-                   claims: authClaims,
-                   signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                 );
-
-             
-                 return Ok(new { message = "Đăng nhập thành công!", user_id = user.UserId, email = user.Email ,
-                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                     expiration = token.ValidTo
+                 return Ok(new { message = "Login Successfully!", user_id = user.UserId, email = user.Email ,
+                     token = token.Token,
+                     expiration = token.Expiration
                  });
                 }
 
 
-   
-       
+
+
+
+
+        public AuthTokenResult CreateToken(User user)
+        {
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.RoleName) 
+        };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AppSettings:Token"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+            var expires = DateTime.UtcNow.AddDays(1); 
+
+            var tokenDescriptor = new JwtSecurityToken(
+                issuer: Configuration["AppSettings:Issuer"],
+                audience: Configuration["AppSettings:Audience"],
+                claims: claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+
+            return new AuthTokenResult
+            {
+                Token = tokenString,
+                Expiration = expires 
+            };
+        }
+
+
+
+
 
     }
 
