@@ -49,8 +49,8 @@ public partial class User
     [NotMapped]
     public string RoleName
     {
-        get { return Role?.RoleName; } // Lấy RoleName từ đối tượng Role đã được tải
-        set { /* Có thể không cần setter nếu chỉ muốn là read-only */ }
+        get { return Role?.RoleName; } 
+        set {  }
     }
 
     [InverseProperty("DonorUser")]

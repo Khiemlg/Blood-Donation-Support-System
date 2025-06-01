@@ -6,12 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blood_Donation_System.BusinessLogic.MyModels;
 
-[Index("UserId", Name = "UQ__UserProf__B9BE370E33FDDFE8", IsUnique = true)]
+[Table("UserProfiles")]
+[Index(nameof(UserId), IsUnique = true)]
+[Index(nameof(Cccd), IsUnique = true)]
+[Index(nameof(PhoneNumber), IsUnique = true)]
 public partial class UserProfile
 {
     [Key]
     [Column("profile_id")]
-    public String ProfileId { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int ProfileId { get; set; }
 
     [Column("user_id")]
     public int UserId { get; set; }
@@ -51,6 +55,16 @@ public partial class UserProfile
 
     [Column("last_blood_donation_date")]
     public DateOnly? LastBloodDonationDate { get; set; }
+
+    [Column("CCCD")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? Cccd { get; set; }
+
+    [Column("phone_number")]
+    [StringLength(20)]
+    [Unicode(false)]
+    public string? PhoneNumber { get; set; }
 
     [ForeignKey("BloodTypeId")]
     [InverseProperty("UserProfiles")]

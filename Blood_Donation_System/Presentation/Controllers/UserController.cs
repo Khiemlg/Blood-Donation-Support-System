@@ -72,7 +72,7 @@ namespace Blood_Donation_System.Presentation.Controllers
 
                 [HttpPost]
                 [Route("User/Insert")]
-                public async Task<ActionResult> insert(string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
+                public async Task<ActionResult> insert(string Username, int RoleID, string Email, string PasswordHash)
                 {
                     
                     var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
@@ -80,7 +80,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     {
                         BadRequest("Email already exist");
                     }
-                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || string.IsNullOrWhiteSpace(PhoneNumber))
+                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
                     {
                         return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
                     }
@@ -89,10 +89,10 @@ namespace Blood_Donation_System.Presentation.Controllers
                         return BadRequest("user name cannot use digit");
                     }
                     
-                    if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
-                    {
-                         return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
-                    }
+                 //   if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
+                   // {
+                   //      return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
+                   // }
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
@@ -101,7 +101,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     user.Username = Username;
                     user.RoleId = RoleID;
                     user.Email = Email;
-                    user.PhoneNumber = PhoneNumber;
+                    
                     user.PasswordHash = hashedPassword;
                     user.IsActive = true;
                     connect.Users.Add(user);
@@ -120,7 +120,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     {
                         BadRequest("Email already exist");
                     }
-                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash) || string.IsNullOrWhiteSpace(PhoneNumber))
+                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
                     {
                         return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
                     }
@@ -141,7 +141,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     user.Username = Username;
                     user.RoleId = 3;
                     user.Email = Email;
-                    user.PhoneNumber = PhoneNumber;
+                   
                     user.PasswordHash = hashedPassword;
                     user.IsActive = true;
                     connect.Users.Add(user);
@@ -168,10 +168,10 @@ namespace Blood_Donation_System.Presentation.Controllers
                         return BadRequest("user name cannot use digit");
                     }
                     
-                    if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
-                    {
-                         return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
-                    }
+                 //   if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
+                   // {
+                    //     return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
+                  //  }
 
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
@@ -180,7 +180,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     userToUpdate.Username = Username;
                     userToUpdate.RoleId = RoleID;
                     userToUpdate.Email = Email;
-                    userToUpdate.PhoneNumber = PhoneNumber;
+                    
                     userToUpdate.PasswordHash = hashedPassword;
 
                     connect.Users.Add(user);
@@ -233,7 +233,7 @@ namespace Blood_Donation_System.Presentation.Controllers
             var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+            //new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.RoleName) 
         };
