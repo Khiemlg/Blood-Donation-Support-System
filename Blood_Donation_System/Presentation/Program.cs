@@ -34,7 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ))
         };
     });
-
+// bị lỗi 500 Swagger
 
 builder.Services.AddAuthorization();
 
