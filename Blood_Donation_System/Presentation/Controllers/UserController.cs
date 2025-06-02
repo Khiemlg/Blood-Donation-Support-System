@@ -16,6 +16,7 @@ using Blood_Donation_System.BusinessLogic.MyModels.DTO;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 
 namespace Blood_Donation_System.Presentation.Controllers
 {
@@ -40,7 +41,9 @@ namespace Blood_Donation_System.Presentation.Controllers
                 [HttpGet]
                 [Route("User/List")]
                 public async Task<ActionResult> Read()
+
                 {
+                    
                     return Ok(new { data = await connect.Users.ToListAsync() });
                 }
                 
@@ -116,148 +119,190 @@ namespace Blood_Donation_System.Presentation.Controllers
                 }
 
 
+        /* [HttpPost]
+         [Route("Register")]
+         public async Task<ActionResult> Register([FromBody] UserRegisterDto model) // Nhận UserRegisterDto
+         {
+             if (!ModelState.IsValid)
+             {
+                 return BadRequest(ModelState); // Trả về lỗi xác thực chi tiết
+             }
+
+             var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+             if (existingUser != null)
+             {
+                 return Conflict("Email đã tồn tại.");
+             }
+
+             Otp o1 = new Otp();
+             string otp = o1.GenerateOtp();
+
+             var tempRegData = new UserRegistrationData()
+             {
+                 OtpCode = otp,
+                 Username = model.Username,
+                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password), // Hash mật khẩu trước khi lưu tạm vào cache
+                 Email = model.Email // Lưu email vào đây để tiện cho bước VerifyOtp
+             };
+
+             var cacheKey = $"RegOtp_{model.Email}"; // Key cache dựa trên email
+             var options = new DistributedCacheEntryOptions()
+                 .SetSlidingExpiration(TimeSpan.FromMinutes(5)); // OTP có hiệu lực trong 5 phút
+
+             string jsonData = JsonSerializer.Serialize(tempRegData);
+             await _cache.SetStringAsync(cacheKey, jsonData, options);
+
+             try
+             {
+                 await EmailService.SendAsync(
+                     model.Email,
+                     "Mã OTP xác minh đăng ký của bạn",
+                     $"Mã OTP của bạn là: <b>{otp}</b>. Mã này chỉ có giá trị trong một thời gian ngắn ({options.SlidingExpiration?.TotalMinutes} phút).",
+                     isHtml: true
+                 );
+                 return Ok(new { message = "Mã OTP đã được gửi đến email của bạn. Vui lòng xác minh để hoàn tất đăng ký." });
+             }
+             catch (Exception ex)
+             {
+                 Console.WriteLine($"Lỗi khi gửi email OTP cho {model.Email}: {ex.Message}");
+                 await _cache.RemoveAsync(cacheKey); // Xóa dữ liệu tạm nếu gửi email thất bại
+                 return StatusCode(500, "Không thể gửi email OTP. Vui lòng thử lại sau.");
+             }
+         }
+
+
+         [HttpPost]
+         [Route("VerifyOtp")]
+         public async Task<ActionResult> VerifyOtp(string Email, string Otp)
+         {
+             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Otp))
+             {
+                 return BadRequest("Email và mã OTP không được để trống.");
+             }
+
+             var cacheKey = $"RegOtp_{Email}";
+             string? jsonData = await _cache.GetStringAsync(cacheKey);
+
+             if (string.IsNullOrEmpty(jsonData))
+             {
+                 return BadRequest("Mã OTP không hợp lệ hoặc đã hết hạn. Vui lòng đăng ký lại.");
+             }
+
+             var tempRegData = JsonSerializer.Deserialize<UserRegistrationData>(jsonData);
+
+             // Kiểm tra null và so sánh OTP
+             if (tempRegData == null || tempRegData.OtpCode != Otp)
+             {
+                 return BadRequest("Mã OTP không đúng. Vui lòng thử lại.");
+             }
+
+             // Kiểm tra lại email trong DB để tránh trường hợp người dùng cố gắng đăng ký lại sau khi OTP hết hạn
+             var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
+             if (existingUser != null)
+             {
+                 await _cache.RemoveAsync(cacheKey); // Xóa cache OTP đã hết tác dụng
+                 return Conflict("Email này đã có tài khoản đăng ký. Vui lòng đăng nhập.");
+             }
+
+             User user = new User();
+             string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+             user.UserId = "USER_" + uniqueSuffix; // Tạo ID duy nhất
+             user.Username = tempRegData.Username;
+             user.RoleId = 3; // Mặc định role là User (3)
+             user.Email = tempRegData.Email; // Lấy email từ dữ liệu tạm
+             user.PasswordHash = tempRegData.PasswordHash; // Lấy password hash từ dữ liệu tạm
+             user.IsActive = true;
+
+             connect.Users.Add(user);
+             await connect.SaveChangesAsync();
+
+             await _cache.RemoveAsync(cacheKey); // Xóa OTP khỏi cache sau khi đăng ký thành công
+
+             return Ok(new { data = user, message = "Đăng ký thành công!" });
+         }
+
+
+
+
+         */
         [HttpPost]
-        [Route("Register")]
-        public async Task<ActionResult> Register([FromBody] UserRegisterDto model) // Nhận UserRegisterDto
+        [Route("User/Register")]
+        public async Task<ActionResult> Register(string Username, string Email, string PasswordHash)
         {
-            if (!ModelState.IsValid)
+            // Kiểm tra email đã tồn tại (vẫn giữ để cung cấp thông báo rõ ràng hơn trước khi vào DB)
+            var existingUserByEmail = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
+            if (existingUserByEmail != null)
             {
-                return BadRequest(ModelState); // Trả về lỗi xác thực chi tiết
+                return BadRequest("Email already exists.");
             }
 
-            var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
-            if (existingUser != null)
+            // Kiểm tra Username đã tồn tại (vẫn giữ)
+            var existingUserByUsername = await connect.Users.FirstOrDefaultAsync(x => x.Username == Username);
+            if (existingUserByUsername != null)
             {
-                return Conflict("Email đã tồn tại.");
+                return BadRequest("Username already exists.");
             }
 
-            Otp o1 = new Otp();
-            string otp = o1.GenerateOtp();
-
-            var tempRegData = new UserRegistrationData()
+            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
             {
-                OtpCode = otp,
-                Username = model.Username,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password), // Hash mật khẩu trước khi lưu tạm vào cache
-                Email = model.Email // Lưu email vào đây để tiện cho bước VerifyOtp
-            };
+                return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
+            }
+            if (Regex.IsMatch(Username, @"\d"))
+            {
+                return BadRequest("User name cannot contain digits.");
+            }
 
-            var cacheKey = $"RegOtp_{model.Email}"; // Key cache dựa trên email
-            var options = new DistributedCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromMinutes(5)); // OTP có hiệu lực trong 5 phút
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
+            User user = new User();
 
-            string jsonData = JsonSerializer.Serialize(tempRegData);
-            await _cache.SetStringAsync(cacheKey, jsonData, options);
+            user.UserId = Guid.NewGuid().ToString();
+
+            user.Username = Username;
+            user.RoleId = 3; // Mặc định role là Member (3)
+            user.Email = Email;
+
+            user.PasswordHash = hashedPassword;
+            user.IsActive = true;
 
             try
             {
-                await EmailService.SendAsync(
-                    model.Email,
-                    "Mã OTP xác minh đăng ký của bạn",
-                    $"Mã OTP của bạn là: <b>{otp}</b>. Mã này chỉ có giá trị trong một thời gian ngắn ({options.SlidingExpiration?.TotalMinutes} phút).",
-                    isHtml: true
-                );
-                return Ok(new { message = "Mã OTP đã được gửi đến email của bạn. Vui lòng xác minh để hoàn tất đăng ký." });
+                connect.Users.Add(user);
+                await connect.SaveChangesAsync();
+                return Ok(new { data = user, message = "Đăng ký thành công!" });
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
-                Console.WriteLine($"Lỗi khi gửi email OTP cho {model.Email}: {ex.Message}");
-                await _cache.RemoveAsync(cacheKey); // Xóa dữ liệu tạm nếu gửi email thất bại
-                return StatusCode(500, "Không thể gửi email OTP. Vui lòng thử lại sau.");
-            }
-        }
-
-
-        [HttpPost]
-        [Route("VerifyOtp")]
-        public async Task<ActionResult> VerifyOtp(string Email, string Otp)
-        {
-            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Otp))
-            {
-                return BadRequest("Email và mã OTP không được để trống.");
-            }
-
-            var cacheKey = $"RegOtp_{Email}";
-            string? jsonData = await _cache.GetStringAsync(cacheKey);
-
-            if (string.IsNullOrEmpty(jsonData))
-            {
-                return BadRequest("Mã OTP không hợp lệ hoặc đã hết hạn. Vui lòng đăng ký lại.");
-            }
-
-            var tempRegData = JsonSerializer.Deserialize<UserRegistrationData>(jsonData);
-
-            // Kiểm tra null và so sánh OTP
-            if (tempRegData == null || tempRegData.OtpCode != Otp)
-            {
-                return BadRequest("Mã OTP không đúng. Vui lòng thử lại.");
-            }
-
-            // Kiểm tra lại email trong DB để tránh trường hợp người dùng cố gắng đăng ký lại sau khi OTP hết hạn
-            var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
-            if (existingUser != null)
-            {
-                await _cache.RemoveAsync(cacheKey); // Xóa cache OTP đã hết tác dụng
-                return Conflict("Email này đã có tài khoản đăng ký. Vui lòng đăng nhập.");
-            }
-
-            User user = new User();
-            string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
-            user.UserId = "USER_" + uniqueSuffix; // Tạo ID duy nhất
-            user.Username = tempRegData.Username;
-            user.RoleId = 3; // Mặc định role là User (3)
-            user.Email = tempRegData.Email; // Lấy email từ dữ liệu tạm
-            user.PasswordHash = tempRegData.PasswordHash; // Lấy password hash từ dữ liệu tạm
-            user.IsActive = true;
-
-            connect.Users.Add(user);
-            await connect.SaveChangesAsync();
-
-            await _cache.RemoveAsync(cacheKey); // Xóa OTP khỏi cache sau khi đăng ký thành công
-
-            return Ok(new { data = user, message = "Đăng ký thành công!" });
-        }
-
-
-
-
-        /*
-                [HttpPost]
-                [Route("User/Register")]
-                public async Task<ActionResult> Register(string Username, string Email, string PasswordHash)
+                // Kiểm tra InnerException để xác định loại lỗi SQL
+                if (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx)
                 {
-
-                    var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
-                    if (existingUser != null)
+                    // Lỗi 2627: Violation of UNIQUE KEY constraint (cho các UNIQUE INDEX)
+                    // Lỗi 2601: Violation of PRIMARY KEY constraint (cho PRIMARY KEY)
+                    if (sqlEx.Number == 2627 || sqlEx.Number == 2601)
                     {
-                        BadRequest("Email already exist");
+                        // Bạn có thể phân tích sqlEx.Message để xác định cụ thể cột nào bị trùng lặp
+                        // Ví dụ: "Violation of UNIQUE KEY constraint 'UQ__Users__F3DBC572EA33BF68'. Cannot insert duplicate key in object 'dbo.Users'. The duplicate key value is (testuser)."
+                        if (sqlEx.Message.Contains("UQ__Users__F3DBC572EA33BF68")) // Ràng buộc Username
+                        {
+                            return BadRequest("Username already exists. Please choose a different username.");
+                        }
+                        else if (sqlEx.Message.Contains("UQ__Users__AB6E6164159AA181")) // Ràng buộc Email
+                        {
+                            return BadRequest("Email already exists. Please choose a different email.");
+                        }
+                        else
+                        {
+                            // Lỗi trùng lặp không xác định
+                            return BadRequest("A duplicate entry was found. Please check your username or email.");
+                        }
                     }
-                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
-                    {
-                        return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
-                    }
-                    if (Regex.IsMatch(Username, @"\d"))
-                    {
-                        return BadRequest("user name cannot use digit");
-                    }
-
-                    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
-                    User user = new User();
-                    string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
-                    user.UserId = "USER_" + uniqueSuffix;
-                    user.Username = Username;
-                    user.RoleId = 3;
-                    user.Email = Email;
-
-                    user.PasswordHash = hashedPassword;
-                    user.IsActive = true;
-                    connect.Users.Add(user);
-                    await connect.SaveChangesAsync();
-                    return Ok(new { data = user });
                 }
+                // Nếu không phải lỗi trùng lặp, ném lại ngoại lệ
+                throw;
+            }
+        }
 
-                */
-       
+
+
 
         [HttpPost]
                 [Route("User/Update")]
@@ -336,21 +381,35 @@ namespace Blood_Donation_System.Presentation.Controllers
         public AuthTokenResult CreateToken(User user)
         {
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            //new Claim(ClaimTypes.MobilePhone, user.PhoneNumber), xóa claimtype
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.RoleName) 
-        };
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.RoleName)
+            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AppSettings:Token"]));
+            // Lấy JWT Key từ cấu hình và kiểm tra null/empty
+            var jwtKey = Configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new InvalidOperationException("JWT Secret Key (Jwt:Key) is not configured or is empty in appsettings.json. Please ensure 'Jwt:Key' is set correctly.");
+            }
+
+            // Chuyển đổi khóa thành byte array và kiểm tra độ dài
+            byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+            const int requiredKeySizeBits = 512; // HS512 requires 512 bits
+            if (keyBytes.Length * 8 < requiredKeySizeBits)
+            {
+                throw new InvalidOperationException($"JWT Secret Key (Jwt:Key) is too short. It must be at least {requiredKeySizeBits} bits ({requiredKeySizeBits / 8} bytes) long for HS512 algorithm. Current key has {keyBytes.Length * 8} bits.");
+            }
+
+            var key = new SymmetricSecurityKey(keyBytes); // Sử dụng keyBytes đã kiểm tra
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
-            var expires = DateTime.UtcNow.AddDays(1); 
+            var expires = DateTime.UtcNow.AddDays(1);
 
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: Configuration["AppSettings:Issuer"],
-                audience: Configuration["AppSettings:Audience"],
+                issuer: Configuration["Jwt:Issuer"],
+                audience: Configuration["Jwt:Audience"],
                 claims: claims,
                 expires: expires,
                 signingCredentials: creds
@@ -361,10 +420,9 @@ namespace Blood_Donation_System.Presentation.Controllers
             return new AuthTokenResult
             {
                 Token = tokenString,
-                Expiration = expires 
+                Expiration = expires
             };
         }
-
 
 
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blood_Donation_System.BusinessLogic.MyModels;
 
-[Index("PhoneNumber", Name = "UQ__Users__A1936A6BC9898E59", IsUnique = true)]
+
 [Index("Email", Name = "UQ__Users__AB6E6164159AA181", IsUnique = true)]
 [Index("Username", Name = "UQ__Users__F3DBC572EA33BF68", IsUnique = true)]
 public partial class User
@@ -30,10 +30,7 @@ public partial class User
     [Unicode(false)]
     public string? Email { get; set; }
 
-    [Column("phone_number")]
-    [StringLength(20)]
-    [Unicode(false)]
-    public string? PhoneNumber { get; set; }
+   
 
     [Column("role_id")]
     public int RoleId { get; set; }

@@ -13,7 +13,7 @@ public partial class Notification
     public String NotificationId { get; set; }
 
     [Column("recipient_user_id")]
-    public int RecipientUserId { get; set; }
+    public String RecipientUserId { get; set; }
 
     [Column("message")]
     public string Message { get; set; } = null!;

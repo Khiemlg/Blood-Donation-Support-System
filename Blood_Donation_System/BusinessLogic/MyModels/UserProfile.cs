@@ -14,18 +14,18 @@ public partial class UserProfile
 {
     [Key]
     [Column("profile_id")]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int ProfileId { get; set; }
+    // Bỏ [DatabaseGenerated(DatabaseGeneratedOption.Identity)] vì ID được tạo bằng NEWID() trong DB
+    public string ProfileId { get; set; } = null!; // Đã đổi từ int sang string
 
     [Column("user_id")]
-    public int UserId { get; set; }
+    public string UserId { get; set; } = null!; // Đảm bảo là string
 
     [Column("full_name")]
     [StringLength(100)]
     public string FullName { get; set; } = null!;
 
     [Column("date_of_birth")]
-    public DateOnly? DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; } // Đã đổi từ DateOnly? sang DateTime?
 
     [Column("gender")]
     [StringLength(10)]
@@ -54,7 +54,7 @@ public partial class UserProfile
     public string? MedicalHistory { get; set; }
 
     [Column("last_blood_donation_date")]
-    public DateOnly? LastBloodDonationDate { get; set; }
+    public DateTime? LastBloodDonationDate { get; set; } // Đã đổi từ DateOnly? sang DateTime?
 
     [Column("CCCD")]
     [StringLength(20)]
