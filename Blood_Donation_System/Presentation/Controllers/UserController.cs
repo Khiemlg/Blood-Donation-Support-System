@@ -233,7 +233,7 @@ namespace Blood_Donation_System.Presentation.Controllers
             var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            //new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+            //new Claim(ClaimTypes.MobilePhone, user.PhoneNumber), xóa claimtype
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.RoleName) 
         };
