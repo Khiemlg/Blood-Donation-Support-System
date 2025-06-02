@@ -332,7 +332,7 @@ namespace Blood_Donation_System.Presentation.Controllers
 
 
 
-
+        [NonAction]
         public AuthTokenResult CreateToken(User user)
         {
             var claims = new List<Claim>

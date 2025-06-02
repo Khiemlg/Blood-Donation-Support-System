@@ -12,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 string cnn = builder.Configuration.GetConnectionString("cnn") ?? throw new InvalidOperationException("Connection string 'cnn' not found.");
@@ -78,3 +81,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
