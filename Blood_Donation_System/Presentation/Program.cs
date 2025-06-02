@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using Blood_Donation_System.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -51,9 +51,16 @@ builder.Services.AddMailKit(optionBuilder =>
         Security = true // Adjust based on your SMTP server
     });
 });
+
+object value = builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "OTP_"; // Tiền tố cho các khóa trong Redis
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

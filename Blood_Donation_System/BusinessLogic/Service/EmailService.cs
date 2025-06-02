@@ -63,8 +63,7 @@ namespace Blood_Donation_System.BusinessLogic.Service // Adjust this namespace t
 
         public async Task SendAsync(MimeMessage message, CancellationToken cancellationToken = default)
         {
-            // This is a basic example. You'll need to get your SMTP settings
-            // (host, port, username, password) from configuration.
+           
             var smtpHost = _configuration["Email:SmtpHost"];
             var smtpPort = int.Parse(_configuration["Email:SmtpPort"] ?? "587"); // Default to 587
             var smtpUser = _configuration["Email:SmtpUser"];
@@ -79,8 +78,7 @@ namespace Blood_Donation_System.BusinessLogic.Service // Adjust this namespace t
             }
         }
 
-        // You might need to implement other methods from IEmailService if they exist
-        // For example, an overload for SendAsync with simpler parameters
+      
         public async Task SendAsync(string to, string subject, string body, bool isHtml = false, CancellationToken cancellationToken = default)
         {
             var message = new MimeMessage();

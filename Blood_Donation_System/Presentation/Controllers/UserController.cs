@@ -13,6 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Blood_Donation_System.BusinessLogic.MyModels.DTO;
+using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Blood_Donation_System.Presentation.Controllers
 {
@@ -24,11 +27,14 @@ namespace Blood_Donation_System.Presentation.Controllers
         private readonly DButils connect;
         private readonly IConfiguration Configuration;
         private readonly IEmailService EmailService;
-        public UserController(DButils C_in, IConfiguration configuration, IEmailService emailservice)
+      
+        private readonly IDistributedCache _cache;
+        public UserController(DButils C_in, IConfiguration configuration, IEmailService emailservice, IDistributedCache cache)
         {
             connect = C_in;
             Configuration = configuration;
             EmailService = emailservice;
+            _cache = cache;
         }
         
                 [HttpGet]
@@ -110,38 +116,139 @@ namespace Blood_Donation_System.Presentation.Controllers
                 }
 
 
+        [HttpPost]
+        [Route("Register")]
+        public async Task<ActionResult> Register([FromBody] UserRegisterDto model) // Nhận UserRegisterDto
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // Trả về lỗi xác thực chi tiết
+            }
+
+            var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+            if (existingUser != null)
+            {
+                return Conflict("Email đã tồn tại.");
+            }
+
+            Otp o1 = new Otp();
+            string otp = o1.GenerateOtp();
+
+            var tempRegData = new UserRegistrationData()
+            {
+                OtpCode = otp,
+                Username = model.Username,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password), // Hash mật khẩu trước khi lưu tạm vào cache
+                Email = model.Email // Lưu email vào đây để tiện cho bước VerifyOtp
+            };
+
+            var cacheKey = $"RegOtp_{model.Email}"; // Key cache dựa trên email
+            var options = new DistributedCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5)); // OTP có hiệu lực trong 5 phút
+
+            string jsonData = JsonSerializer.Serialize(tempRegData);
+            await _cache.SetStringAsync(cacheKey, jsonData, options);
+
+            try
+            {
+                await EmailService.SendAsync(
+                    model.Email,
+                    "Mã OTP xác minh đăng ký của bạn",
+                    $"Mã OTP của bạn là: <b>{otp}</b>. Mã này chỉ có giá trị trong một thời gian ngắn ({options.SlidingExpiration?.TotalMinutes} phút).",
+                    isHtml: true
+                );
+                return Ok(new { message = "Mã OTP đã được gửi đến email của bạn. Vui lòng xác minh để hoàn tất đăng ký." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi gửi email OTP cho {model.Email}: {ex.Message}");
+                await _cache.RemoveAsync(cacheKey); // Xóa dữ liệu tạm nếu gửi email thất bại
+                return StatusCode(500, "Không thể gửi email OTP. Vui lòng thử lại sau.");
+            }
+        }
+
+
+        [HttpPost]
+        [Route("VerifyOtp")]
+        public async Task<ActionResult> VerifyOtp(string Email, string Otp)
+        {
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Otp))
+            {
+                return BadRequest("Email và mã OTP không được để trống.");
+            }
+
+            var cacheKey = $"RegOtp_{Email}";
+            string? jsonData = await _cache.GetStringAsync(cacheKey);
+
+            if (string.IsNullOrEmpty(jsonData))
+            {
+                return BadRequest("Mã OTP không hợp lệ hoặc đã hết hạn. Vui lòng đăng ký lại.");
+            }
+
+            var tempRegData = JsonSerializer.Deserialize<UserRegistrationData>(jsonData);
+
+            // Kiểm tra null và so sánh OTP
+            if (tempRegData == null || tempRegData.OtpCode != Otp)
+            {
+                return BadRequest("Mã OTP không đúng. Vui lòng thử lại.");
+            }
+
+            // Kiểm tra lại email trong DB để tránh trường hợp người dùng cố gắng đăng ký lại sau khi OTP hết hạn
+            var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
+            if (existingUser != null)
+            {
+                await _cache.RemoveAsync(cacheKey); // Xóa cache OTP đã hết tác dụng
+                return Conflict("Email này đã có tài khoản đăng ký. Vui lòng đăng nhập.");
+            }
+
+            User user = new User();
+            string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+            user.UserId = "USER_" + uniqueSuffix; // Tạo ID duy nhất
+            user.Username = tempRegData.Username;
+            user.RoleId = 3; // Mặc định role là User (3)
+            user.Email = tempRegData.Email; // Lấy email từ dữ liệu tạm
+            user.PasswordHash = tempRegData.PasswordHash; // Lấy password hash từ dữ liệu tạm
+            user.IsActive = true;
+
+            connect.Users.Add(user);
+            await connect.SaveChangesAsync();
+
+            await _cache.RemoveAsync(cacheKey); // Xóa OTP khỏi cache sau khi đăng ký thành công
+
+            return Ok(new { data = user, message = "Đăng ký thành công!" });
+        }
+
+
+
+
+        /*
                 [HttpPost]
                 [Route("User/Register")]
-                public async Task<ActionResult> Register(string Username, string Email, string PhoneNumber, string PasswordHash)
+                public async Task<ActionResult> Register(string Username, string Email, string PasswordHash)
                 {
-                    
+
                     var existingUser = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
                     if (existingUser != null)
                     {
                         BadRequest("Email already exist");
                     }
-                     if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
+                    if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
                     {
                         return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
                     }
-                    if (Regex.IsMatch(Username, @"\d")) 
+                    if (Regex.IsMatch(Username, @"\d"))
                     {
                         return BadRequest("user name cannot use digit");
-                    }
-                    
-                    if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
-                    {
-                         return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
                     }
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
-                    string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(); 
+                    string uniqueSuffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
                     user.UserId = "USER_" + uniqueSuffix;
                     user.Username = Username;
                     user.RoleId = 3;
                     user.Email = Email;
-                   
+
                     user.PasswordHash = hashedPassword;
                     user.IsActive = true;
                     connect.Users.Add(user);
@@ -149,8 +256,10 @@ namespace Blood_Donation_System.Presentation.Controllers
                     return Ok(new { data = user });
                 }
 
+                */
+       
 
-                [HttpPost]
+        [HttpPost]
                 [Route("User/Update")]
                 public async Task<ActionResult> Update(String id, string Username, int RoleID, string Email, string PhoneNumber, string PasswordHash)
                 {
@@ -168,11 +277,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                         return BadRequest("user name cannot use digit");
                     }
                     
-                 //   if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
-                   // {
-                    //     return BadRequest("The phone number is invalid. Please enter a number starting with 0 and consisting of 10 digits.");
-                  //  }
-
+                
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
