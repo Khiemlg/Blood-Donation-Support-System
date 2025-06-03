@@ -97,6 +97,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                     {
                         return BadRequest("user name cannot use digit");
                     }
+
                     
                  //   if(Regex.IsMatch(PhoneNumber, @"^0\d{9}$"))
                    // {
@@ -225,41 +226,118 @@ namespace Blood_Donation_System.Presentation.Controllers
 
 
          */
+        /* [HttpPost]
+         [Route("User/Register")]
+         public async Task<ActionResult> Register(string Username, string Email, string PasswordHash)
+         {
+             // Kiểm tra email đã tồn tại (vẫn giữ để cung cấp thông báo rõ ràng hơn trước khi vào DB)
+             var existingUserByEmail = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
+             if (existingUserByEmail != null)
+             {
+                 return BadRequest("Email already exists.");
+             }
+
+             // Kiểm tra Username đã tồn tại (vẫn giữ)
+             var existingUserByUsername = await connect.Users.FirstOrDefaultAsync(x => x.Username == Username);
+             if (existingUserByUsername != null)
+             {
+                 return BadRequest("Username already exists.");
+             }
+
+             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
+             {
+                 return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
+             }
+             if (Regex.IsMatch(Username, @"\d"))
+             {
+                 return BadRequest("User name cannot contain digits.");
+             }
+
+             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
+             User user = new User();
+
+             user.UserId = Guid.NewGuid().ToString();
+
+             user.Username = Username;
+             user.RoleId = 3; // Mặc định role là Member (3)
+             user.Email = Email;
+
+             user.PasswordHash = hashedPassword;
+             user.IsActive = true;
+
+             try
+             {
+                 connect.Users.Add(user);
+                 await connect.SaveChangesAsync();
+                 return Ok(new { data = user, message = "Đăng ký thành công!" });
+             }
+             catch (DbUpdateException ex)
+             {
+                 // Kiểm tra InnerException để xác định loại lỗi SQL
+                 if (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx)
+                 {
+                     // Lỗi 2627: Violation of UNIQUE KEY constraint (cho các UNIQUE INDEX)
+                     // Lỗi 2601: Violation of PRIMARY KEY constraint (cho PRIMARY KEY)
+                     if (sqlEx.Number == 2627 || sqlEx.Number == 2601)
+                     {
+                         // Bạn có thể phân tích sqlEx.Message để xác định cụ thể cột nào bị trùng lặp
+                         // Ví dụ: "Violation of UNIQUE KEY constraint 'UQ__Users__F3DBC572EA33BF68'. Cannot insert duplicate key in object 'dbo.Users'. The duplicate key value is (testuser)."
+                         if (sqlEx.Message.Contains("UQ__Users__F3DBC572EA33BF68")) // Ràng buộc Username
+                         {
+                             return BadRequest("Username already exists. Please choose a different username.");
+                         }
+                         else if (sqlEx.Message.Contains("UQ__Users__AB6E6164159AA181")) // Ràng buộc Email
+                         {
+                             return BadRequest("Email already exists. Please choose a different email.");
+                         }
+                         else
+                         {
+                             // Lỗi trùng lặp không xác định
+                             return BadRequest("A duplicate entry was found. Please check your username or email.");
+                         }
+                     }
+                 }
+                 // Nếu không phải lỗi trùng lặp, ném lại ngoại lệ
+                 throw;
+             }
+         }
+
+         */
         [HttpPost]
         [Route("User/Register")]
-        public async Task<ActionResult> Register(string Username, string Email, string PasswordHash)
+        public async Task<ActionResult> Register([FromBody] UserRegistrationData model) 
         {
-            // Kiểm tra email đã tồn tại (vẫn giữ để cung cấp thông báo rõ ràng hơn trước khi vào DB)
-            var existingUserByEmail = await connect.Users.FirstOrDefaultAsync(x => x.Email == Email);
+            
+            var existingUserByEmail = await connect.Users.FirstOrDefaultAsync(x => x.Email == model.Email); 
             if (existingUserByEmail != null)
             {
                 return BadRequest("Email already exists.");
             }
 
-            // Kiểm tra Username đã tồn tại (vẫn giữ)
-            var existingUserByUsername = await connect.Users.FirstOrDefaultAsync(x => x.Username == Username);
+            
+            var existingUserByUsername = await connect.Users.FirstOrDefaultAsync(x => x.Username == model.Username); 
             if (existingUserByUsername != null)
             {
                 return BadRequest("Username already exists.");
             }
 
-            if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(PasswordHash))
+            if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.PasswordHash))
             {
                 return BadRequest("Tên người dùng, Email và Mật khẩu không được để trống.");
             }
-            if (Regex.IsMatch(Username, @"\d"))
+            if (Regex.IsMatch(model.Username, @"\d"))
             {
                 return BadRequest("User name cannot contain digits.");
             }
 
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash); 
             User user = new User();
 
             user.UserId = Guid.NewGuid().ToString();
 
-            user.Username = Username;
-            user.RoleId = 3; // Mặc định role là Member (3)
-            user.Email = Email;
+            user.Username = model.Username; 
+            user.RoleId = 3; 
+            user.Email = model.Email; 
 
             user.PasswordHash = hashedPassword;
             user.IsActive = true;
@@ -272,36 +350,28 @@ namespace Blood_Donation_System.Presentation.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // Kiểm tra InnerException để xác định loại lỗi SQL
+            
                 if (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx)
                 {
-                    // Lỗi 2627: Violation of UNIQUE KEY constraint (cho các UNIQUE INDEX)
-                    // Lỗi 2601: Violation of PRIMARY KEY constraint (cho PRIMARY KEY)
                     if (sqlEx.Number == 2627 || sqlEx.Number == 2601)
                     {
-                        // Bạn có thể phân tích sqlEx.Message để xác định cụ thể cột nào bị trùng lặp
-                        // Ví dụ: "Violation of UNIQUE KEY constraint 'UQ__Users__F3DBC572EA33BF68'. Cannot insert duplicate key in object 'dbo.Users'. The duplicate key value is (testuser)."
-                        if (sqlEx.Message.Contains("UQ__Users__F3DBC572EA33BF68")) // Ràng buộc Username
+                        if (sqlEx.Message.Contains("UQ__Users__F3DBC572EA33BF68")) 
                         {
                             return BadRequest("Username already exists. Please choose a different username.");
                         }
-                        else if (sqlEx.Message.Contains("UQ__Users__AB6E6164159AA181")) // Ràng buộc Email
+                        else if (sqlEx.Message.Contains("UQ__Users__AB6E6164159AA181")) 
                         {
                             return BadRequest("Email already exists. Please choose a different email.");
                         }
                         else
                         {
-                            // Lỗi trùng lặp không xác định
                             return BadRequest("A duplicate entry was found. Please check your username or email.");
                         }
                     }
                 }
-                // Nếu không phải lỗi trùng lặp, ném lại ngoại lệ
-                throw;
+                throw; 
             }
         }
-
-
 
 
         [HttpPost]
@@ -322,7 +392,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                         return BadRequest("user name cannot use digit");
                     }
                     
-                
+                    
 
                     string hashedPassword = BCrypt.Net.BCrypt.HashPassword(PasswordHash);
                     User user = new User();
@@ -376,7 +446,6 @@ namespace Blood_Donation_System.Presentation.Controllers
 
 
 
-
         [NonAction]
         public AuthTokenResult CreateToken(User user)
         {
@@ -387,14 +456,14 @@ namespace Blood_Donation_System.Presentation.Controllers
                 new Claim(ClaimTypes.Role, user.RoleName)
             };
 
-            // Lấy JWT Key từ cấu hình và kiểm tra null/empty
+           
             var jwtKey = Configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(jwtKey))
             {
                 throw new InvalidOperationException("JWT Secret Key (Jwt:Key) is not configured or is empty in appsettings.json. Please ensure 'Jwt:Key' is set correctly.");
             }
 
-            // Chuyển đổi khóa thành byte array và kiểm tra độ dài
+          
             byte[] keyBytes = Encoding.UTF8.GetBytes(jwtKey);
             const int requiredKeySizeBits = 512; // HS512 requires 512 bits
             if (keyBytes.Length * 8 < requiredKeySizeBits)
@@ -402,7 +471,7 @@ namespace Blood_Donation_System.Presentation.Controllers
                 throw new InvalidOperationException($"JWT Secret Key (Jwt:Key) is too short. It must be at least {requiredKeySizeBits} bits ({requiredKeySizeBits / 8} bytes) long for HS512 algorithm. Current key has {keyBytes.Length * 8} bits.");
             }
 
-            var key = new SymmetricSecurityKey(keyBytes); // Sử dụng keyBytes đã kiểm tra
+            var key = new SymmetricSecurityKey(keyBytes); 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var expires = DateTime.UtcNow.AddDays(1);

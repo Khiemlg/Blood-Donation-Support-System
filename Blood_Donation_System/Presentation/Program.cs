@@ -20,6 +20,7 @@ builder.Services.AddOpenApi();
 string cnn = builder.Configuration.GetConnectionString("cnn") ?? throw new InvalidOperationException("Connection string 'cnn' not found.");
 builder.Services.AddDbContext<DButils>(options => options.UseSqlServer(cnn));
 
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -60,7 +61,14 @@ object value = builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
     options.InstanceName = "OTP_"; // Tiền tố cho các khóa trong Redis
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendOrigin",
+        builder => builder.WithOrigins("http://localhost:3000") // Đã sửa từ 3000 thành 5678 [cite: image_f5c43c.png]
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials());
+});
 var app = builder.Build();
 
 
@@ -75,6 +83,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowFrontendOrigin");
 
 app.UseAuthorization();
 
