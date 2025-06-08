@@ -41,9 +41,7 @@ namespace BloodDonation_System.Service.Implementation
         public async Task<UserProfileDto> GetProfileByIdAsync(string profileId)
         {
             var profile = await _context.UserProfiles.FindAsync(profileId);
-
-            if (profile == null)
-                return null;
+            if (profile == null) return null;
 
             return new UserProfileDto
             {
@@ -66,16 +64,46 @@ namespace BloodDonation_System.Service.Implementation
 
         public async Task<UserProfileDto> CreateProfileAsync(CreateUserProfileDto dto)
         {
+            if (!string.IsNullOrWhiteSpace(dto.Cccd))
+            {
+                bool cccdExists = await _context.UserProfiles.AnyAsync(p => p.Cccd == dto.Cccd);
+                if (cccdExists)
+                    throw new InvalidOperationException("CCCD has been registered.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                bool phoneExists = await _context.UserProfiles.AnyAsync(p => p.PhoneNumber == dto.PhoneNumber);
+                if (phoneExists)
+                    throw new InvalidOperationException("Phone number already in use.");
+            }
+
+            // ✅ Tạo ProfileId dạng PROFILE_0001 dựa trên ID hiện có lớn nhất
+            var maxId = await _context.UserProfiles
+                .Where(p => p.ProfileId.StartsWith("PROFILE_"))
+                .OrderByDescending(p => p.ProfileId)
+                .Select(p => p.ProfileId)
+                .FirstOrDefaultAsync();
+
+            int nextNumber = 1;
+            if (!string.IsNullOrEmpty(maxId) &&
+                int.TryParse(maxId.Substring("PROFILE_".Length), out int currentMax))
+            {
+                nextNumber = currentMax + 1;
+            }
+
+            string newId = $"PROFILE_{nextNumber:D4}";
+
             var profile = new UserProfile
             {
-                ProfileId = Guid.NewGuid().ToString(),
+                ProfileId = newId,
                 UserId = dto.UserId,
-                FullName = dto.FullName,
+                FullName = dto.FullName ?? string.Empty,
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
                 Address = dto.Address,
-                Latitude = dto.Latitude,
-                Longitude = dto.Longitude,
+                Latitude = dto.Latitude ?? 0,
+                Longitude = dto.Longitude ?? 0,
                 BloodTypeId = dto.BloodTypeId,
                 RhFactor = dto.RhFactor,
                 MedicalHistory = dto.MedicalHistory,
@@ -93,11 +121,26 @@ namespace BloodDonation_System.Service.Implementation
         public async Task<UserProfileDto> UpdateProfileAsync(string profileId, UpdateUserProfileDto dto)
         {
             var profile = await _context.UserProfiles.FindAsync(profileId);
-
             if (profile == null)
                 return null;
 
-            profile.FullName = dto.FullName;
+            if (!string.IsNullOrWhiteSpace(dto.Cccd))
+            {
+                bool duplicateCccd = await _context.UserProfiles
+                    .AnyAsync(p => p.Cccd == dto.Cccd && p.ProfileId != profileId);
+                if (duplicateCccd)
+                    throw new InvalidOperationException("CCCD has been registered.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                bool duplicatePhone = await _context.UserProfiles
+                    .AnyAsync(p => p.PhoneNumber == dto.PhoneNumber && p.ProfileId != profileId);
+                if (duplicatePhone)
+                    throw new InvalidOperationException("Phone number already in use.");
+            }
+
+            profile.FullName = dto.FullName ?? profile.FullName;
             profile.DateOfBirth = dto.DateOfBirth;
             profile.Gender = dto.Gender;
             profile.Address = dto.Address;
@@ -118,7 +161,6 @@ namespace BloodDonation_System.Service.Implementation
         public async Task<bool> DeleteProfileAsync(string profileId)
         {
             var profile = await _context.UserProfiles.FindAsync(profileId);
-
             if (profile == null)
                 return false;
 

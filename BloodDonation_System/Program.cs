@@ -1,12 +1,19 @@
 ﻿using BloodDonation_System.Data;
+using BloodDonation_System.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NETCore.MailKit.Extensions;
 using NETCore.MailKit.Infrastructure.Internal;
 using System.Text;
+using BloodDonation_System.Service.Interface;
+using BloodDonation_System.Service.Implementation;
+
 
 var builder = WebApplication.CreateBuilder(args);
+//dinh vi vi tri 
+builder.Services.AddHttpClient<GeocodingService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
