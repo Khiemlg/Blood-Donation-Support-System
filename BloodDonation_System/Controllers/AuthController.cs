@@ -3,7 +3,7 @@ using BloodDonation_System.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BloodDonation_System.Controllers
-{
+{   
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
