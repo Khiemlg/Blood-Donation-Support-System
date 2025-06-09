@@ -48,6 +48,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "Create",
+    "RelativePath": "api/EmergencyRequest/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Emergency.EmergencyRequestCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.UserProfileController",
     "Method": "GetAll",
     "RelativePath": "api/UserProfile",

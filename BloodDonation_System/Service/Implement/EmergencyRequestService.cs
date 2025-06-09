@@ -18,6 +18,32 @@ namespace BloodDonation_System.Service.Implement
         {
             _context = context;
         }
+        // code để tạo yêu cầu máu khẩn cấp từ Staff 8/6/-15h code by khiem
+        public async Task<(bool Success, string Message)> CreateEmergencyRequestAsync(EmergencyRequestCreateDto dto, string staffUserId)
+        {
+            if (dto.QuantityNeededMl <= 0 || string.IsNullOrWhiteSpace(dto.Priority))
+                return (false, "Invalid data");
+
+            var emergency = new EmergencyRequest
+            {
+                EmergencyId = Guid.NewGuid().ToString(), // sinh ID dạng chuỗi nếu bạn dùng string
+                RequesterUserId = staffUserId,
+                BloodTypeId = dto.BloodTypeId,
+                ComponentId = dto.ComponentId,
+                QuantityNeededMl = dto.QuantityNeededMl,
+                Priority = dto.Priority,
+                DueDate = dto.DueDate,
+                Description = dto.Description,
+                CreationDate = DateTime.Now,
+                Status = "Pending"
+            };
+
+            _context.EmergencyRequests.Add(emergency);
+            await _context.SaveChangesAsync();
+
+            return (true, "Urgent blood request created successfully");
+        }
+        // -------------------------------------------
 
         public async Task<IEnumerable<EmergencyRequestDto>> GetAllAsync()
         {

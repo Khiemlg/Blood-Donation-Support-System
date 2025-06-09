@@ -98,6 +98,37 @@
         }
       }
     },
+    "/api/EmergencyRequest/create": {
+      "post": {
+        "tags": [
+          "EmergencyRequest"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencyRequestCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencyRequestCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencyRequestCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/UserProfile": {
       "get": {
         "tags": [
@@ -280,6 +311,36 @@
             "nullable": true
           },
           "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmergencyRequestCreateDto": {
+        "type": "object",
+        "properties": {
+          "bloodTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "componentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantityNeededMl": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "priority": {
+            "type": "string",
+            "nullable": true
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
             "type": "string",
             "nullable": true
           }

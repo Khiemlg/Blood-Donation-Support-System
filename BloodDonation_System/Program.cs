@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BloodDonation_System.Utilities;
+using BloodDonation_System.Service.Implement;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +26,17 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "OTP_";
 });
 
+
+
+builder.Services.AddScoped<IEmergencyRequestService, EmergencyRequestService>();
+
+
+
+
 // ✅ CORS cho frontend (React chạy port 3000)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontendOrigin",
+    options.AddPolicy("AllowAll",  // khiem
         policy => policy.WithOrigins("http://localhost:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
@@ -83,7 +91,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors("AllowFrontendOrigin");
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
