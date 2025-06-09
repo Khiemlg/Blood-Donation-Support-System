@@ -15,5 +15,6 @@
         public string? Status { get; set; }
         public string? EmergencyId { get; set; }
         public string? Descriptions { get; set; }
+        public string? DonationRequestId { get; internal set; }
     }
 }

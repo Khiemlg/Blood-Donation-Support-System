@@ -54,6 +54,10 @@ public partial class DonationHistory
     [StringLength(36)]
     public string? EmergencyId { get; set; }
 
+    [Column("donation_request_id")]
+    [StringLength(36)]
+    public string? DonationRequestId { get; set; }
+
     public string? Descriptions { get; set; }
 
     [ForeignKey("BloodTypeId")]
@@ -78,4 +82,9 @@ public partial class DonationHistory
     [ForeignKey("StaffUserId")]
     [InverseProperty("DonationHistoryStaffUsers")]
     public virtual User? StaffUser { get; set; }
+
+    [ForeignKey("DonationRequestId")]
+    [InverseProperty("DonationHistories")]
+    public virtual DonationRequest? DonationRequest { get; set; }
+
 }

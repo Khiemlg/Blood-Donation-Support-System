@@ -47,7 +47,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>(); // ✅ Email gửi OTP
-
+builder.Services.AddScoped<IDonationRequestService, DonationRequestService>();
+builder.Services.AddScoped<IDonationHistoryService, DonationHistoryService>();
 // ✅ Swagger cấu hình chuẩn
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
