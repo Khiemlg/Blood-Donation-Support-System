@@ -137,3 +137,5 @@ _NCrunch*
 *.bin
 *.bin
 *.bin
+*.props
+*.props
