@@ -1,26 +1,51 @@
 ﻿using BloodDonation_System.Data;
+using BloodDonation_System.Service.Interface;
+using BloodDonation_System.Service.Implementation;
+using BloodDonation_System.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NETCore.MailKit.Extensions;
-using NETCore.MailKit.Infrastructure.Internal;
 using System.Text;
+using BloodDonation_System.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
-
-// ✅ Sửa đúng Swagger
-builder.Services.AddEndpointsApiExplorer(); // Cho Swagger hoạt động đúng
-builder.Services.AddSwaggerGen();          // Thêm generator
-
-// ✅ Cấu hình DB
+// ✅ Cấu hình DbContext
 string cnn = builder.Configuration.GetConnectionString("cnn")
     ?? throw new InvalidOperationException("Connection string 'cnn' not found.");
 builder.Services.AddDbContext<DButils>(options => options.UseSqlServer(cnn));
 
-// ✅ JWT
+// ✅ Cấu hình HttpClient (cho Geocoding hoặc gọi API ngoài)
+builder.Services.AddHttpClient<GeocodingService>();
+
+// ✅ Redis Cache (nếu bạn dùng để lưu OTP hoặc session)
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "OTP_";
+});
+
+// ✅ CORS cho frontend (React chạy port 3000)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontendOrigin",
+        policy => policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+});
+
+// ✅ Đăng ký các service
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>(); // ✅ Email gửi OTP
+
+// ✅ Swagger cấu hình chuẩn
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// ✅ Cấu hình JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -31,71 +56,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"]
-                ?? throw new InvalidOperationException("JWT Issuer not found in configuration."),
+                ?? throw new InvalidOperationException("JWT Issuer not found."),
             ValidAudience = builder.Configuration["Jwt:Audience"]
-                ?? throw new InvalidOperationException("JWT Audience not found in configuration."),
+                ?? throw new InvalidOperationException("JWT Audience not found."),
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 builder.Configuration["Jwt:Key"]
-                    ?? throw new InvalidOperationException("JWT Key not found in configuration.")
+                    ?? throw new InvalidOperationException("JWT Key not found.")
             ))
         };
     });
 
 builder.Services.AddAuthorization();
 
-// ✅ MailKit cấu hình
-builder.Services.AddMailKit(optionBuilder =>
-{
-    optionBuilder.UseMailKit(new MailKitOptions()
-    {
-        Server = builder.Configuration["Email:SmtpHost"],
-        Port = int.Parse(builder.Configuration["Email:SmtpPort"] ?? "587"),
-        SenderName = builder.Configuration["Email:SenderName"] ?? "Your App",
-        SenderEmail = builder.Configuration["Email:SenderEmail"] ?? "no-reply@example.com",
-        Account = builder.Configuration["Email:SmtpUser"],
-        Password = builder.Configuration["Email:SmtpPass"],
-        Security = true
-    });
-});
-
-// ✅ Redis
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
-    options.InstanceName = "OTP_";
-});
-
-// ✅ CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontendOrigin",
-        policy => policy.WithOrigins("http://localhost:3000")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials());
-});
-
 var app = builder.Build();
 
-// ✅ Swagger UI hiển thị ở root nếu là Development
+// ✅ Swagger hiển thị root nếu là môi trường DEV
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "BloodDonationSystem");
-        options.RoutePrefix = ""; // Truy cập swagger ở: http://localhost:5000/
+        options.RoutePrefix = ""; // http://localhost:5000/
     });
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseCors("AllowFrontendOrigin");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

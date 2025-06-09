@@ -1,7 +1,5 @@
 ﻿using BloodDonation_System.Model.DTO.Auth;
 using BloodDonation_System.Model.DTO.User;
-using BloodDonation_System.Model.Enties;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BloodDonation_System.Service.Interface
 {
@@ -10,6 +8,6 @@ namespace BloodDonation_System.Service.Interface
         Task<UserDto> CreateUserByAdminAsync(CreateUserByAdminDto dto);
         Task<TokenDto> LoginAsync(LoginDto loginDto);
         Task<TokenDto> RegisterAsync(RegisterDto registerDto);
-
+        Task SendOtpAsync(string email); // <- thêm mới
     }
 }

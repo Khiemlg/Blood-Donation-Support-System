@@ -47,16 +47,16 @@
           }
         }
       },
-      "BCrypt.Net-Core/1.6.0": {
+      "BCrypt.Net-Next/4.0.3": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/BCrypt.Net-Core.dll": {
-            "related": ".pdb"
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/BCrypt.Net-Core.dll": {
-            "related": ".pdb"
+          "lib/net6.0/BCrypt.Net-Next.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -1973,27 +1973,35 @@
         "lib/netstandard2.0/Azure.Identity.xml"
       ]
     },
-    "BCrypt.Net-Core/1.6.0": {
-      "sha512": "hsKiHGjrnlDW05MzuzzlD9gNP8YOW2KbZ+FbvISrilsKJJ76tXKhWey6psZX5sd7DczNpSU2U6ldjPoblk8BLw==",
+    "BCrypt.Net-Next/4.0.3": {
+      "sha512": "W+U9WvmZQgi5cX6FS5GDtDoPzUCV4LkBLkywq/kRZhuDwcbavOzcDAr3LXJFqHUi952Yj3LEYoWW0jbEUQChsA==",
       "type": "package",
-      "path": "bcrypt.net-core/1.6.0",
+      "path": "bcrypt.net-next/4.0.3",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "bcrypt.net-core.1.6.0.nupkg.sha512",
-        "bcrypt.net-core.nuspec",
-        "lib/net40/BCrypt.Net-Core.dll",
-        "lib/net40/BCrypt.Net-Core.pdb",
-        "lib/net45/BCrypt.Net-Core.dll",
-        "lib/net45/BCrypt.Net-Core.pdb",
-        "lib/net451/BCrypt.Net-Core.dll",
-        "lib/net451/BCrypt.Net-Core.pdb",
-        "lib/net452/BCrypt.Net-Core.dll",
-        "lib/net452/BCrypt.Net-Core.pdb",
-        "lib/netstandard1.3/BCrypt.Net-Core.dll",
-        "lib/netstandard1.3/BCrypt.Net-Core.pdb",
-        "lib/netstandard2.0/BCrypt.Net-Core.dll",
-        "lib/netstandard2.0/BCrypt.Net-Core.pdb"
+        "bcrypt.net-next.4.0.3.nupkg.sha512",
+        "bcrypt.net-next.nuspec",
+        "ico.png",
+        "lib/net20/BCrypt.Net-Next.dll",
+        "lib/net20/BCrypt.Net-Next.xml",
+        "lib/net35/BCrypt.Net-Next.dll",
+        "lib/net35/BCrypt.Net-Next.xml",
+        "lib/net462/BCrypt.Net-Next.dll",
+        "lib/net462/BCrypt.Net-Next.xml",
+        "lib/net472/BCrypt.Net-Next.dll",
+        "lib/net472/BCrypt.Net-Next.xml",
+        "lib/net48/BCrypt.Net-Next.dll",
+        "lib/net48/BCrypt.Net-Next.xml",
+        "lib/net5.0/BCrypt.Net-Next.dll",
+        "lib/net5.0/BCrypt.Net-Next.xml",
+        "lib/net6.0/BCrypt.Net-Next.dll",
+        "lib/net6.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.0/BCrypt.Net-Next.dll",
+        "lib/netstandard2.0/BCrypt.Net-Next.xml",
+        "lib/netstandard2.1/BCrypt.Net-Next.dll",
+        "lib/netstandard2.1/BCrypt.Net-Next.xml",
+        "readme.md"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -5480,7 +5488,7 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "BCrypt.Net-Core >= 1.6.0",
+      "BCrypt.Net-Next >= 4.0.3",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 9.0.5",
       "Microsoft.AspNetCore.Cors >= 2.3.0",
       "Microsoft.AspNetCore.OpenApi >= 9.0.5",
@@ -5494,23 +5502,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\vobam\\.nuget\\packages\\": {},
+    "C:\\Users\\Admin\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\SWP391\\BloodDonation_System\\BloodDonation_System\\BloodDonation_System.csproj",
+      "projectUniqueName": "D:\\KY 5\\SWP\\backend\\Blood-Donation-Support-System\\BloodDonation_System\\BloodDonation_System.csproj",
       "projectName": "BloodDonation_System",
-      "projectPath": "D:\\SWP391\\BloodDonation_System\\BloodDonation_System\\BloodDonation_System.csproj",
-      "packagesPath": "C:\\Users\\vobam\\.nuget\\packages\\",
-      "outputPath": "D:\\SWP391\\BloodDonation_System\\BloodDonation_System\\obj\\",
+      "projectPath": "D:\\KY 5\\SWP\\backend\\Blood-Donation-Support-System\\BloodDonation_System\\BloodDonation_System.csproj",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
+      "outputPath": "D:\\KY 5\\SWP\\backend\\Blood-Donation-Support-System\\BloodDonation_System\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\vobam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5543,9 +5551,9 @@
       "net9.0": {
         "targetAlias": "net9.0",
         "dependencies": {
-          "BCrypt.Net-Core": {
+          "BCrypt.Net-Next": {
             "target": "Package",
-            "version": "[1.6.0, )"
+            "version": "[4.0.3, )"
           },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",

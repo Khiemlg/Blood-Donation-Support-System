@@ -4,7 +4,6 @@ using BloodDonation_System.Model.DTO.User;
 using BloodDonation_System.Model.Enties;
 using BloodDonation_System.Service.Interface;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -16,27 +15,30 @@ namespace BloodDonation_System.Service.Implementation
     {
         private readonly DButils _context;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public AuthService(DButils context, IConfiguration configuration)
+        public AuthService(DButils context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         public async Task<UserDto> CreateUserByAdminAsync(CreateUserByAdminDto dto)
         {
-            // Kiểm tra username hoặc email đã tồn tại chưa
             if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
                 throw new Exception("Username đã tồn tại.");
 
             if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
                 throw new Exception("Email đã tồn tại.");
 
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.PasswordHash);
+
             var user = new User
             {
-                UserId = Guid.NewGuid().ToString(),
+                UserId = GenerateCustomUserId(),
                 Username = dto.Username,
-                PasswordHash = dto.PasswordHash,
+                PasswordHash = hashedPassword,
                 Email = dto.Email,
                 RoleId = dto.RoleId,
                 RegistrationDate = DateTime.UtcNow,
@@ -44,7 +46,7 @@ namespace BloodDonation_System.Service.Implementation
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await SaveChangesWithErrorHandling();
 
             return new UserDto
             {
@@ -59,72 +61,107 @@ namespace BloodDonation_System.Service.Implementation
 
         public async Task<TokenDto> LoginAsync(LoginDto loginDto)
         {
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-
-            if (user == null)
+            var user = await _context.Users.Include(u => u.Role)
+                                           .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+            //by Long
+            if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
                 throw new Exception("Email hoặc mật khẩu không đúng.");
 
-            // TODO: So sánh mật khẩu (bạn cần implement kiểm tra hash mật khẩu)
-            if (!VerifyPassword(loginDto.Password, user.PasswordHash))
-                throw new Exception("Email hoặc mật khẩu không đúng.");
-
-            // Cập nhật last login
             user.LastLoginDate = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+            await SaveChangesWithErrorHandling();
 
             string token = GenerateJwtToken(user);
-
             return new TokenDto { Token = token };
         }
 
-        public async Task<TokenDto> RegisterAsync(RegisterDto registerDto)
+        public async Task<TokenDto> RegisterAsync(RegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
+            var otp = await _context.OtpCodes
+                .FirstOrDefaultAsync(x =>
+                    x.Email == dto.Email &&
+                    x.Code == dto.OtpCode &&
+                    !x.IsUsed &&
+                    x.ExpiredAt > DateTime.UtcNow);
+
+            if (otp == null)
+                throw new Exception("Mã OTP không hợp lệ hoặc đã hết hạn.");
+
+            if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
                 throw new Exception("Email đã được sử dụng.");
 
-            if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
+            if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
                 throw new Exception("Username đã tồn tại.");
+
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             var user = new User
             {
-                UserId = Guid.NewGuid().ToString(),
-                Username = registerDto.Username,
-                PasswordHash = registerDto.PasswordHash,
-                Email = registerDto.Email,
-                RoleId = 2, 
+                UserId = GenerateCustomUserId(),
+                Username = dto.Username,
+                PasswordHash = hashedPassword,
+                Email = dto.Email,
+                RoleId = 1, // default: Member
                 RegistrationDate = DateTime.UtcNow,
                 IsActive = true
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            otp.IsUsed = true;
 
-            string token = GenerateJwtToken(user);
+            await SaveChangesWithErrorHandling();
 
+            var token = GenerateJwtToken(user);
             return new TokenDto { Token = token };
         }
 
-        // Hàm kiểm tra mật khẩu, ví dụ dùng BCrypt
+        public async Task SendOtpAsync(string email)
+        {
+            if (await _context.Users.AnyAsync(u => u.Email == email))
+                throw new Exception("Email đã tồn tại.");
+
+            var code = new Random().Next(100000, 999999).ToString();
+
+            var otp = new OtpCode
+            {
+                Email = email,
+                Code = code,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(5),
+                IsUsed = false
+            };
+
+            _context.OtpCodes.Add(otp);
+            await SaveChangesWithErrorHandling();
+
+            string subject = "Your OTP Code for Blood Donation System";
+            string body = $"""
+                <h3>Xin chào 👋</h3>
+                <p>Mã OTP của bạn là: <strong>{code}</strong></p>
+                <p>Mã này sẽ hết hạn sau 5 phút.</p>
+            """;
+
+            await _emailService.SendEmailAsync(email, subject, body);
+        }
+
+        // -------------------- Utility Methods --------------------
+
         private bool VerifyPassword(string password, string passwordHash)
         {
-            return password == passwordHash;
+            return BCrypt.Net.BCrypt.Verify(password, passwordHash);
         }
 
         private string GenerateJwtToken(User user)
         {
-            var jwtSecret = _configuration["JwtSettings:SecretKey"];
-            var issuer = _configuration["JwtSettings:Issuer"];
-            var audience = _configuration["JwtSettings:Audience"];
-            var expireMinutes = int.Parse(_configuration["JwtSettings:ExpireMinutes"] ?? "1440");
+            var jwtSecret = _configuration["Jwt:Key"];
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
+            var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "1440");
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
                 new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -139,6 +176,31 @@ namespace BloodDonation_System.Service.Implementation
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task SaveChangesWithErrorHandling()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("Không thể lưu dữ liệu: " + (ex.InnerException?.Message ?? ex.Message));
+            }
+        }
+
+        private string GenerateCustomUserId()
+        {
+            string prefix = "USER_";
+            string suffix;
+            do
+            {
+                suffix = Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper();
+            }
+            while (_context.Users.Any(u => u.UserId == prefix + suffix));
+
+            return prefix + suffix;
         }
     }
 }
