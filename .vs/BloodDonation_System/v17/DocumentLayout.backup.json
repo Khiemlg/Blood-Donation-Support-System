@@ -248,8 +248,12 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -258,7 +262,7 @@
               "RelativeDocumentMoniker": "BloodDonation_System\\Service\\Implement\\BloodComponentService.cs",
               "ToolTip": "D:\\SWP391\\BloodDonation_System\\BloodDonation_System\\Service\\Implement\\BloodComponentService.cs",
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\BloodComponentService.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAmwAIAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-07T10:24:13.38Z",
               "EditorCaption": ""
@@ -273,8 +277,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IBloodComponentService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:22:01.68Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:22:01.68Z"
             },
             {
               "$type": "Document",
@@ -286,8 +289,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Blood\\BloodComponentDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:21:25.204Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:21:25.204Z"
             },
             {
               "$type": "Document",
@@ -299,8 +301,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\BloodComponent.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:20:22.681Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:20:22.681Z"
             },
             {
               "$type": "Document",
@@ -312,8 +313,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\BloodTypeService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:19:59.285Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:19:59.285Z"
             },
             {
               "$type": "Document",
@@ -325,8 +325,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IBloodTypeService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:18:56.762Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:18:56.762Z"
             },
             {
               "$type": "Document",
@@ -338,8 +337,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\BloodType.cs",
               "ViewState": "AgIAAAQAAAAAAAAAAAAmwA4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:18:02.654Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:18:02.654Z"
             },
             {
               "$type": "Document",
@@ -351,8 +349,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Blood\\BloodTypeDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:18:00.887Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:18:00.887Z"
             },
             {
               "$type": "Document",
@@ -364,8 +361,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\BloodUnitService.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAcwA0AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:17:08.659Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:17:08.659Z"
             },
             {
               "$type": "Document",
@@ -377,8 +373,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IBloodUnitService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:16:21.236Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:16:21.236Z"
             },
             {
               "$type": "Document",
@@ -390,8 +385,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Blood\\BloodUnitDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:15:27.278Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:15:27.278Z"
             },
             {
               "$type": "Document",
@@ -403,8 +397,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\BloodUnit.cs",
               "ViewState": "AgIAABsAAAAAAAAAAAAmwD0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:14:52.354Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:14:52.354Z"
             },
             {
               "$type": "Document",
@@ -416,8 +409,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\DonationHistoryService.cs",
               "ViewState": "AgIAACcAAAAAAAAAAAAmwAwAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:13:36.992Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:13:36.992Z"
             },
             {
               "$type": "Document",
@@ -429,8 +421,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IDonationHistoryService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:13:00.919Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:13:00.919Z"
             },
             {
               "$type": "Document",
@@ -442,8 +433,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\DonationRequestService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:07:49.26Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:07:49.26Z"
             },
             {
               "$type": "Document",
@@ -455,8 +445,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\DonationRequest.cs",
               "ViewState": "AgIAABUAAAAAAAAAAAAmwDcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:58:45.402Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:58:45.402Z"
             },
             {
               "$type": "Document",
@@ -468,8 +457,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IDonationRequestService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:01:52.406Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:01:52.406Z"
             },
             {
               "$type": "Document",
@@ -481,8 +469,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Donation\\DonationHistoryDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T10:00:01.182Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T10:00:01.182Z"
             },
             {
               "$type": "Document",
@@ -494,8 +481,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Donation\\DonationRequestDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:59:51.572Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:59:51.572Z"
             },
             {
               "$type": "Document",
@@ -507,8 +493,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\DonationHistory.cs",
               "ViewState": "AgIAAC8AAAAAAAAAAAAmwFEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:15:38.637Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:15:38.637Z"
             },
             {
               "$type": "Document",
@@ -520,8 +505,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\EmergencyNotificationService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:57:39.419Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:57:39.419Z"
             },
             {
               "$type": "Document",
@@ -533,8 +517,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IEmergencyNotificationService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:57:01.195Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:57:01.195Z"
             },
             {
               "$type": "Document",
@@ -546,8 +529,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\EmergencyRequest.cs",
               "ViewState": "AgIAACIAAAAAAAAAAAA6wEAAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:15:26.245Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:15:26.245Z"
             },
             {
               "$type": "Document",
@@ -559,8 +541,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\Notification.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAAqwBoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:32:32.713Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:32:32.713Z"
             },
             {
               "$type": "Document",
@@ -572,8 +553,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\EmergencyNotification.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAmwB8AAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:50:48.151Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:50:48.151Z"
             },
             {
               "$type": "Document",
@@ -585,8 +565,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\EmergencyRequestService.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:55:31.728Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:55:31.728Z"
             },
             {
               "$type": "Document",
@@ -598,8 +577,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IEmergencyRequestService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:53:02.054Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:53:02.054Z"
             },
             {
               "$type": "Document",
@@ -611,8 +589,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Emergency\\EmergencyNotificationDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:50:57.114Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:50:57.114Z"
             },
             {
               "$type": "Document",
@@ -624,8 +601,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Emergency\\EmergencyRequestDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:50:45.526Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:50:45.526Z"
             },
             {
               "$type": "Document",
@@ -637,8 +613,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\NotificationService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:49:02.23Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:49:02.23Z"
             },
             {
               "$type": "Document",
@@ -650,12 +625,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\INotificationService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:47:21.338Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+              "WhenOpened": "2025-06-07T09:47:21.338Z"
             },
             {
               "$type": "Document",
@@ -667,8 +637,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\UserService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAI8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:29:42.047Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:29:42.047Z"
             },
             {
               "$type": "Document",
@@ -680,8 +649,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Notification\\NotificationDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:45:03.321Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:45:03.321Z"
             },
             {
               "$type": "Document",
@@ -693,8 +661,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\UserProfileService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAIMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:43:57.864Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:43:57.864Z"
             },
             {
               "$type": "Document",
@@ -706,8 +673,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IUserProfileService.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAAAwA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:43:32.61Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:43:32.61Z"
             },
             {
               "$type": "Document",
@@ -719,8 +685,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\UserProfile\\UpdateUserProfileDto.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAAxwAoAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:41:04.6Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:41:04.6Z"
             },
             {
               "$type": "Document",
@@ -732,8 +697,7 @@
               "RelativeToolTip": "BloodDonation_System\\Data\\DButils.cs",
               "ViewState": "AgIAABQAAAAAAAAAAAAgwL0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:28:37.912Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:28:37.912Z"
             },
             {
               "$type": "Document",
@@ -745,8 +709,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\UserProfile\\CreateUserProfileDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:37:02.996Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:37:02.996Z"
             },
             {
               "$type": "Document",
@@ -758,8 +721,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IUserService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T08:49:33.119Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T08:49:33.119Z"
             },
             {
               "$type": "Document",
@@ -771,8 +733,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\Role.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T07:59:42.331Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T07:59:42.331Z"
             },
             {
               "$type": "Document",
@@ -784,8 +745,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\User.cs",
               "ViewState": "AgIAADIAAAAAAAAAAAA0wD0AAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:33:43.266Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:33:43.266Z"
             },
             {
               "$type": "Document",
@@ -797,8 +757,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\Enties\\UserProfile.cs",
               "ViewState": "AgIAACoAAAAAAAAAAAAmwD0AAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:15:52.778Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:15:52.778Z"
             },
             {
               "$type": "Document",
@@ -810,8 +769,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\UserProfile\\UserProfileDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T08:04:08.155Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T08:04:08.155Z"
             },
             {
               "$type": "Document",
@@ -823,8 +781,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\User\\UpdateUserRoleDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:26:56.971Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:26:56.971Z"
             },
             {
               "$type": "Document",
@@ -836,8 +793,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\User\\UpdateUserDto.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T09:21:14.272Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T09:21:14.272Z"
             },
             {
               "$type": "Document",
@@ -849,8 +805,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\User\\CreateUserDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T08:50:16.52Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T08:50:16.52Z"
             },
             {
               "$type": "Document",
@@ -862,8 +817,7 @@
               "RelativeToolTip": "BloodDonation_System\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T05:49:34.457Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T05:49:34.457Z"
             },
             {
               "$type": "Document",
@@ -875,8 +829,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\User\\CreateUserByAdminDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T08:17:08.72Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T08:17:08.72Z"
             },
             {
               "$type": "Document",
@@ -888,8 +841,7 @@
               "RelativeToolTip": "BloodDonation_System\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-07T05:58:43.462Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T05:58:43.462Z"
             },
             {
               "$type": "Document",
@@ -901,8 +853,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Implement\\AuthService.cs",
               "ViewState": "AgIAABEAAAAAAAAAAAAAwDEAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:58:46.991Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:58:46.991Z"
             },
             {
               "$type": "Document",
@@ -914,8 +865,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\User\\UserDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T08:01:18.352Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T08:01:18.352Z"
             },
             {
               "$type": "Document",
@@ -927,8 +877,7 @@
               "RelativeToolTip": "BloodDonation_System\\Mappings\\ProfileMapping.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T08:45:30.984Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T08:45:30.984Z"
             },
             {
               "$type": "Document",
@@ -940,8 +889,7 @@
               "RelativeToolTip": "BloodDonation_System\\Service\\Interface\\IAuthService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:27:48.209Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:27:48.209Z"
             },
             {
               "$type": "Document",
@@ -953,8 +901,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Auth\\RegisterDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:19:22.034Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:19:22.034Z"
             },
             {
               "$type": "Document",
@@ -966,8 +913,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Auth\\TokenDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T07:48:02.35Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T07:48:02.35Z"
             },
             {
               "$type": "Document",
@@ -979,8 +925,7 @@
               "RelativeToolTip": "BloodDonation_System\\BloodDonation_System.http",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2025-06-07T07:36:13.502Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T07:36:13.502Z"
             },
             {
               "$type": "Document",
@@ -992,8 +937,7 @@
               "RelativeToolTip": "BloodDonation_System\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T07:23:05.524Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T07:23:05.524Z"
             },
             {
               "$type": "Document",
@@ -1005,8 +949,7 @@
               "RelativeToolTip": "BloodDonation_System\\Model\\DTO\\Auth\\LoginDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-07T06:19:17.128Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-07T06:19:17.128Z"
             },
             {
               "$type": "Document",
