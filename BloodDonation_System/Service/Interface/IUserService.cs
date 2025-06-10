@@ -5,11 +5,11 @@ namespace DrugUsePreventionAPI.Services.Interfaces
     public interface IUserService
     {
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
-        Task<UserDto> GetUserByIdAsync(int id);
+        Task<UserDto> GetUserByIdAsync(string id);
         Task<UserDto> CreateUserAsync(CreateUserDto createUserDto);
-        Task<UserDto> UpdateUserAsync(int id, UpdateUserDto updateUserDto);
-        Task<bool> DeleteUserAsync(int id);
-        Task<UserDto> UpdateUserRoleAsync(int id, string roleName, string callerRole);
+        Task<UserDto> UpdateUserAsync(string id, UpdateUserDto updateUserDto);
+        Task<bool> DeleteUserAsync(string id);
+        Task<UserDto> UpdateUserRoleAsync(string id, string roleName, string callerRole);
         
     }
 }
