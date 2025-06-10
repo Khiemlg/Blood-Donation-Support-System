@@ -7,14 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Model\DTO\Donation\DonatonHistoryDetailDto.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Include="Model\DTO\Donation\DonatonHistoryDetailDto.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.3.0" />
