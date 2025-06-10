@@ -151,13 +151,7 @@ namespace BloodDonation_System.Service.Implementation
             };
         }
 
-        /// <summary>
-        /// Cập nhật thông tin của một yêu cầu hiến máu từ Input DTO.
-        /// Tự động tạo DonationHistory nếu trạng thái chuyển sang "Completed".
-        /// </summary>
-        /// <param name="requestId">ID của yêu cầu hiến máu cần cập nhật.</param>
-        /// <param name="dto">Đối tượng DonationRequestInputDto chứa thông tin cập nhật.</param>
-        /// <returns>DonationRequestResponseDto của yêu cầu đã cập nhật, ngược lại là null nếu không tìm thấy.</returns>
+        
         public async Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto)
         {
             // Tìm yêu cầu hiện có trong cơ sở dữ liệu
@@ -200,7 +194,7 @@ namespace BloodDonation_System.Service.Implementation
                         BloodTypeId = existingRequest.BloodTypeId,
                         ComponentId = existingRequest.ComponentId,
                         DonationDate = DateTime.UtcNow, // Thời điểm hiến máu hoàn thành
-                        QuantityMl = 500, // Giá trị mặc định, cần cân nhắc nguồn dữ liệu thực tế
+                        QuantityMl = 0, // Giá trị mặc định, cần cân nhắc nguồn dữ liệu thực tế
                         EligibilityStatus = "Eligible", // Trạng thái mặc định
                         ReasonIneligible = null,
                         TestingResults = "Pending", // Kết quả xét nghiệm thường có sau
@@ -267,9 +261,6 @@ namespace BloodDonation_System.Service.Implementation
             return true;
         }
 
-        Task<DonationRequestDto?> IDonationRequestService.GetByIdAsync(string requestId)
-        {
-            throw new NotImplementedException();
-        }
+     
     }
 }

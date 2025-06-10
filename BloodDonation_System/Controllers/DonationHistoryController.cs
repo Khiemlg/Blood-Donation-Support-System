@@ -1,91 +1,118 @@
-﻿// File: YourProject.Controllers.DonationHistoryController.cs
-// (Không thay đổi so với lần cuối bạn cung cấp)
-
+﻿using BloodDonation_System.Model.DTO.Donation;
+using BloodDonation_System.Service.Interface;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Linq; // Added for .Any() check
 using System.Threading.Tasks;
 
-// Đảm bảo các using cần thiết:
-using BloodDonation_System.Data; // DButils của bạn
-using BloodDonation_System.Model.DTO.Donation; // DonationHistoryDto, DonationHistoryCreationDto
-using BloodDonation_System.Model.Enties; // DonationHistory, DonationRequest
-using BloodDonation_System.Service.Interface; // IDonationHistoryService
-
-[Route("api/[controller]")]
-[ApiController]
-public class DonationHistoryController : ControllerBase
+namespace BloodDonation_System.API.Controllers
 {
-    private readonly DButils _context;
-    private readonly IDonationHistoryService _donationHistoryService;
-
-    public DonationHistoryController(DButils context, IDonationHistoryService donationHistoryService)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DonationHistoryController : ControllerBase
     {
-        _context = context;
-        _donationHistoryService = donationHistoryService;
-    }
+        private readonly IDonationHistoryService _donationHistoryService;
 
-    // Các phương thức cơ bản CRUD cho DonationHistory (GetAllAsync, GetByIdAsync, CreateAsync, DeleteAsync) sẽ ở đây...
-
-    // *** Phương thức GET để lấy lịch sử bằng Request ID (được sử dụng bởi UI) ***
-    /// <summary>
-    /// Lấy một bản ghi lịch sử hiến máu theo ID Yêu cầu hiến máu liên quan của nó.
-    /// </summary>
-    [HttpGet("by-request/{requestId}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationHistoryDto))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<DonationHistoryDto>> GetHistoryByRequestId(string requestId)
-    {
-        var dh = await _context.DonationHistories
-                               .FirstOrDefaultAsync(h => h.DonationRequestId.Equals(requestId));
-
-        if (dh == null) return NotFound(new { message = "Không tìm thấy lịch sử hiến máu cho yêu cầu này." });
-
-        // Ánh xạ sang DTO
-        return Ok(new DonationHistoryDto
+        public DonationHistoryController(IDonationHistoryService donationHistoryService)
         {
-            DonationId = dh.DonationId,
-            DonorUserId = dh.DonorUserId,
-            DonationDate = dh.DonationDate,
-            BloodTypeId = dh.BloodTypeId,
-            ComponentId = dh.ComponentId,
-            QuantityMl = dh.QuantityMl,
-            EligibilityStatus = dh.EligibilityStatus,
-            ReasonIneligible = dh.ReasonIneligible,
-            TestingResults = dh.TestingResults,
-            StaffUserId = dh.StaffUserId,
-            Status = dh.Status,
-            EmergencyId = dh.EmergencyId,
-            Descriptions = dh.Descriptions,
-            DonationRequestId = dh.DonationRequestId
-        });
-    }
-
-    // *** Phương thức PUT để cập nhật lịch sử (được sử dụng bởi UI) ***
-    /// <summary>
-    /// Cập nhật một bản ghi lịch sử hiến máu hiện có.
-    /// </summary>
-    [HttpPut("{donationId}")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationHistoryDto))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<DonationHistoryDto>> UpdateHistory(
-        string donationId,
-        [FromBody] DonationHistoryDto dto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
+            _donationHistoryService = donationHistoryService;
         }
 
-        var updatedDto = await _donationHistoryService.UpdateAsync(donationId, dto);
-
-        if (updatedDto == null)
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationHistoryDetailDto>))]
+        public async Task<ActionResult<IEnumerable<DonationHistoryDetailDto>>> GetAllDonationHistories()
         {
-            return NotFound(new { message = "Không tìm thấy lịch sử hiến máu." });
+            var histories = await _donationHistoryService.GetAllAsync();
+            return Ok(histories);
         }
 
-        return Ok(updatedDto);
+        [HttpGet("{donationId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationHistoryDetailDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<DonationHistoryDetailDto>> GetDonationHistoryById(string donationId)
+        {
+            var history = await _donationHistoryService.GetByIdAsync(donationId);
+            if (history == null)
+            {
+                return NotFound(new { message = "Donation history not found." });
+            }
+            return Ok(history);
+        }
+
+        [HttpGet("by-request/{requestId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationHistoryDetailDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<DonationHistoryDetailDto>> GetHistoryByRequestId(string requestId)
+        {
+            var donationHistoryDto = await _donationHistoryService.GetDonationHistoryByRequestIdAsync(requestId);
+
+            if (donationHistoryDto == null)
+            {
+                return NotFound(new { message = "Donation history not found for this request." });
+            }
+
+            return Ok(donationHistoryDto);
+        }
+
+        [HttpGet("by-donor/{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationHistoryDetailDto>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<DonationHistoryDetailDto>>> GetDonationHistoryByDonorId(string userId)
+        {
+            var histories = await _donationHistoryService.GetHistoryByDonorUserIdAsync(userId);
+
+            if (histories == null || !histories.Any())
+            {
+                return NotFound(new { message = $"Donation history not found for user with ID {userId}." });
+            }
+            return Ok(histories);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(DonationHistoryDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<DonationHistoryDto>> CreateDonationHistory([FromBody] DonationHistoryDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var createdHistory = await _donationHistoryService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetDonationHistoryById), new { donationId = createdHistory.DonationId }, createdHistory);
+        }
+
+        [HttpPut("{donationId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationHistoryDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<DonationHistoryDto>> UpdateDonationHistory(string donationId, [FromBody] DonationHistoryUpdateDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updatedHistory = await _donationHistoryService.UpdateAsync(donationId, dto);
+            if (updatedHistory == null)
+            {
+                return NotFound(new { message = "Donation history not found for update." });
+            }
+            return Ok(updatedHistory);
+        }
+
+        [HttpDelete("{donationId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteDonationHistory(string donationId)
+        {
+            var deleted = await _donationHistoryService.DeleteAsync(donationId);
+            if (!deleted)
+            {
+                return NotFound(new { message = "Donation history not found for deletion." });
+            }
+            return NoContent();
+        }
     }
 }

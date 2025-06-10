@@ -48,8 +48,323 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "DonationHistoryController",
-    "Method": "UpdateHistory",
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "GetAllBloodUnits",
+    "RelativePath": "api/BloodUnit",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BloodDonation_System.Model.DTO.Blood.BloodUnitDto, BloodDonation_System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "CreateBloodUnit",
+    "RelativePath": "api/BloodUnit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Blood.BloodUnitDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BloodDonation_System.Model.DTO.Blood.BloodUnitDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 201
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "GetBloodUnitById",
+    "RelativePath": "api/BloodUnit/{unitId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "unitId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BloodDonation_System.Model.DTO.Blood.BloodUnitDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "UpdateBloodUnit",
+    "RelativePath": "api/BloodUnit/{unitId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "unitId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Blood.BloodUnitDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BloodDonation_System.Model.DTO.Blood.BloodUnitDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "DeleteBloodUnit",
+    "RelativePath": "api/BloodUnit/{unitId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "unitId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 204
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "GetInventoryUnits",
+    "RelativePath": "api/BloodUnit/inventory",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BloodDonation_System.Model.DTO.Blood.BloodUnitInventoryDto, BloodDonation_System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "GetInventoryUnitById",
+    "RelativePath": "api/BloodUnit/inventory/{unitId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "unitId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BloodDonation_System.Model.DTO.Blood.BloodUnitInventoryDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
+    "Method": "GetAllDonationHistories",
+    "RelativePath": "api/DonationHistory",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BloodDonation_System.Model.DTO.Donation.DonationHistoryDetailDto, BloodDonation_System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
+    "Method": "CreateDonationHistory",
+    "RelativePath": "api/DonationHistory",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 201
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
+    "Method": "GetDonationHistoryById",
+    "RelativePath": "api/DonationHistory/{donationId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "donationId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryDetailDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
+    "Method": "UpdateDonationHistory",
     "RelativePath": "api/DonationHistory/{donationId}",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -62,7 +377,7 @@
       },
       {
         "Name": "dto",
-        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryDto",
+        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryUpdateDto",
         "IsRequired": true
       }
     ],
@@ -97,7 +412,73 @@
     ]
   },
   {
-    "ContainingType": "DonationHistoryController",
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
+    "Method": "DeleteDonationHistory",
+    "RelativePath": "api/DonationHistory/{donationId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "donationId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 204
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
+    "Method": "GetDonationHistoryByDonorId",
+    "RelativePath": "api/DonationHistory/by-donor/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BloodDonation_System.Model.DTO.Donation.DonationHistoryDetailDto, BloodDonation_System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 404
+      }
+    ]
+  },
+  {
+    "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
     "Method": "GetHistoryByRequestId",
     "RelativePath": "api/DonationHistory/by-request/{requestId}",
     "HttpMethod": "GET",
@@ -112,7 +493,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryDto",
+        "Type": "BloodDonation_System.Model.DTO.Donation.DonationHistoryDetailDto",
         "MediaTypes": [
           "text/plain",
           "application/json",
