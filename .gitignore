@@ -133,9 +133,4 @@ $RECYCLE.BIN/
 _NCrunch*
 /.vs
 *.v2
-*.json
-*.bin
-*.bin
-*.bin
-*.props
-*.props
+
