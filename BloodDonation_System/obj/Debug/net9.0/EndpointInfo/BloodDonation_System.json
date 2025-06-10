@@ -1203,6 +1203,13 @@
           },
           "donorUser": {
             "$ref": "#/components/schemas/User"
+          },
+          "donationHistories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DonationHistory"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
