@@ -19,6 +19,28 @@ namespace BloodDonation_System.Controllers
 
         //tạm thời khoá chức năng này do chưa có user_id thật từ JWT token sau khi đăng nhập
 
+        [HttpPost("create")]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> Create([FromBody] EmergencyRequestCreateDto dto)
+        {
+            // Lấy claim 'sub' chứa user_id
+            //var userId = User.FindFirst("sub")?.Value;
+            var userId = User.FindFirst("user_id")?.Value;
+
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not identified.");
+
+            var result = await _service.CreateEmergencyRequestAsync(dto, userId);
+
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = result.Message });
+        }
+
+
+
         //[HttpPost("create")]
         //[Authorize(Roles = "Staff")]
         //public async Task<IActionResult> Create([FromBody] EmergencyRequestCreateDto dto)
@@ -40,18 +62,18 @@ namespace BloodDonation_System.Controllers
 
         // ban test tạm BỎ [Authorize] và gán staffUserId thủ công for test
 
-        [HttpPost("create")]
-        // [Authorize(Roles = "Staff")] // Tạm thời bỏ để test
-        public async Task<IActionResult> Create([FromBody] EmergencyRequestCreateDto dto)
-        {
-            var userId = "STAFF_001"; // Gán cứng userID tồn tại trong DB chưa có user_id thật từ JWT token sau khi đăng nhập
+        //[HttpPost("create")]
+        //// [Authorize(Roles = "Staff")] // Tạm thời bỏ để test
+        //public async Task<IActionResult> Create([FromBody] EmergencyRequestCreateDto dto)
+        //{
+        //    var userId = "STAFF_001"; // Gán cứng userID tồn tại trong DB chưa có user_id thật từ JWT token sau khi đăng nhập
 
-            var result = await _service.CreateEmergencyRequestAsync(dto, userId);
-            if (!result.Success)
-                return BadRequest(new { message = result.Message });
+        //    var result = await _service.CreateEmergencyRequestAsync(dto, userId);
+        //    if (!result.Success)
+        //        return BadRequest(new { message = result.Message });
 
-            return Ok(new { message = result.Message });
-        }
+        //    return Ok(new { message = result.Message });
+        //}
 
 
 
