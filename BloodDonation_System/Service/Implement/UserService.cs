@@ -32,7 +32,7 @@ namespace DrugUsePreventionAPI.Services.Implementations
             });
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int id)
+        public async Task<UserDto> GetUserByIdAsync(string id)
         {
             var user = await _context.Users.FindAsync(id.ToString());
             if (user == null) return null;
@@ -79,7 +79,7 @@ namespace DrugUsePreventionAPI.Services.Implementations
             };
         }
 
-        public async Task<UserDto> UpdateUserAsync(int id, UpdateUserDto updateUserDto)
+        public async Task<UserDto> UpdateUserAsync(string id, UpdateUserDto updateUserDto)
         {
             var user = await _context.Users.FindAsync(id.ToString());
             if (user == null) return null;
@@ -105,7 +105,7 @@ namespace DrugUsePreventionAPI.Services.Implementations
             };
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
             var user = await _context.Users.FindAsync(id.ToString());
             if (user == null) return false;
@@ -116,7 +116,7 @@ namespace DrugUsePreventionAPI.Services.Implementations
             return true;
         }
 
-        public async Task<UserDto> UpdateUserRoleAsync(int id, string roleName, string callerRole)
+        public async Task<UserDto> UpdateUserRoleAsync(string id, string roleName, string callerRole)
         {
             var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserId == id.ToString());
             if (user == null) return null;

@@ -31,9 +31,12 @@ namespace BloodDonation_System.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-  
         
 
+
+
+        
+        
         /// <summary>
         /// Đăng ký tài khoản (có xác minh OTP)
         /// </summary>
