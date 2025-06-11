@@ -1,12 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "lDFOcTG/Rw//FrhbojV0iCMcCFLxUin8+cuqBuzGmMo=",
-  "Source": "BloodDonation_System",
-  "BasePath": "_content/BloodDonation_System",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
-}
+{"Version":1,"Hash":"lDFOcTG/Rw//FrhbojV0iCMcCFLxUin8+cuqBuzGmMo=","Source":"BloodDonation_System","BasePath":"_content/BloodDonation_System","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

@@ -833,6 +833,38 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.ResetPasswordController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/ResetPassword/reset",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Auth.ResetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.ResetPasswordController",
+    "Method": "SendOtp",
+    "RelativePath": "api/ResetPassword/send-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Auth.ForgotPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.UserProfileController",
     "Method": "GetAll",
     "RelativePath": "api/UserProfile",

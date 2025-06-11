@@ -27,6 +27,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "OTP_";
 });
 
+builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
 
 builder.Services.AddScoped<IEmergencyRequestService, EmergencyRequestService>();
