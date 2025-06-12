@@ -2,7 +2,7 @@
 {
     public class BloodUnitDto
     {
-        public string? UnitId { get; set; }
+     //   public string? UnitId { get; set; }
         public string? DonationId { get; set; }
         public int BloodTypeId { get; set; }
         public int ComponentId { get; set; }

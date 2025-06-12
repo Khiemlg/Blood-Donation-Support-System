@@ -111,7 +111,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BloodUnitDto"
+                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
                   }
                 }
               },
@@ -119,7 +119,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BloodUnitDto"
+                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
                   }
                 }
               },
@@ -127,11 +127,14 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BloodUnitDto"
+                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
                   }
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -164,17 +167,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               }
             }
@@ -198,6 +201,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -223,17 +229,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               }
             }
@@ -257,6 +263,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -299,17 +308,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitDto"
+                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
                 }
               }
             }
@@ -353,6 +362,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -393,60 +405,46 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/BloodUnit/inventory": {
-      "get": {
-        "tags": [
-          "BloodUnit"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
+          },
+          "400": {
+            "description": "Bad Request",
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
-                  }
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/api/BloodUnit/inventory/{unitId}": {
+    "/api/BloodUnit/bybloodtype/{bloodTypeId}": {
       "get": {
         "tags": [
           "BloodUnit"
         ],
         "parameters": [
           {
-            "name": "unitId",
+            "name": "bloodTypeId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -456,23 +454,32 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloodUnitInventoryDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BloodUnitInventoryDto"
+                  }
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "text/plain": {
                 "schema": {
@@ -490,6 +497,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -1810,10 +1820,6 @@
       "BloodUnitDto": {
         "type": "object",
         "properties": {
-          "unitId": {
-            "type": "string",
-            "nullable": true
-          },
           "donationId": {
             "type": "string",
             "nullable": true

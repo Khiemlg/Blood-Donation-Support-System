@@ -1,7 +1,8 @@
-﻿using BloodDonation_System.Model.DTO.Blood; // Make sure this namespace is correct for your DTOs
-using BloodDonation_System.Service.Interface; // Make sure this namespace is correct for your service interface
+﻿using BloodDonation_System.Model.DTO.Blood;
+using BloodDonation_System.Service.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,127 +19,165 @@ namespace BloodDonation_System.Controllers
             _bloodUnitService = bloodUnitService;
         }
 
-        /// <summary>
-        /// Retrieves all blood units with basic information.
-        /// </summary>
-        /// <returns>A collection of BloodUnitDto.</returns>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BloodUnitDto>))]
-        public async Task<ActionResult<IEnumerable<BloodUnitDto>>> GetAllBloodUnits()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BloodUnitInventoryDto>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<BloodUnitInventoryDto>>> GetAllBloodUnits()
         {
-            var units = await _bloodUnitService.GetAllAsync();
-            return Ok(units);
+            try
+            {
+                var units = await _bloodUnitService.GetAllAsync();
+                return Ok(units);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in GetAllBloodUnits: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while retrieving blood units." });
+            }
         }
 
-        /// <summary>
-        /// Retrieves a single blood unit by its ID with basic information.
-        /// </summary>
-        /// <param name="unitId">The ID of the blood unit.</param>
-        /// <returns>A BloodUnitDto if found, otherwise 404 Not Found.</returns>
         [HttpGet("{unitId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BloodUnitDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BloodUnitInventoryDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<BloodUnitDto>> GetBloodUnitById(string unitId)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<BloodUnitInventoryDto>> GetBloodUnitById(string unitId)
         {
-            var unit = await _bloodUnitService.GetByIdAsync(unitId);
-            if (unit == null)
+            try
             {
-                return NotFound(new { message = "Blood unit not found." });
+                var unit = await _bloodUnitService.GetByIdAsync(unitId);
+                if (unit == null)
+                {
+                    return NotFound(new { message = $"Blood unit with ID '{unitId}' not found." });
+                }
+                return Ok(unit);
             }
-            return Ok(unit);
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error in GetBloodUnitById (ID: {unitId}): {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while retrieving the blood unit." });
+            }
         }
 
-        /// <summary>
-        /// Creates a new blood unit.
-        /// </summary>
-        /// <param name="dto">The BloodUnitDto containing the data for the new unit.</param>
-        /// <returns>The created BloodUnitDto if successful, otherwise 400 Bad Request.</returns>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BloodUnitDto))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(BloodUnitInventoryDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BloodUnitDto>> CreateBloodUnit([FromBody] BloodUnitDto dto)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<BloodUnitInventoryDto>> CreateBloodUnit([FromBody] BloodUnitDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdUnit = await _bloodUnitService.CreateAsync(dto);
-            // Returns 201 Created with the location of the new resource
-            return CreatedAtAction(nameof(GetBloodUnitById), new { unitId = createdUnit.UnitId }, createdUnit);
+            try
+            {
+                var createdUnit = await _bloodUnitService.CreateAsync(dto);
+                return CreatedAtAction(nameof(GetBloodUnitById), new { unitId = createdUnit.UnitId }, createdUnit);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.Error.WriteLine($"Validation error in CreateBloodUnit: {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.Error.WriteLine($"Operation error in CreateBloodUnit: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to create blood unit due to a service operation error.", details = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Unhandled error in CreateBloodUnit: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred while creating the blood unit." });
+            }
         }
 
-        /// <summary>
-        /// Updates an existing blood unit.
-        /// </summary>
-        /// <param name="unitId">The ID of the blood unit to update.</param>
-        /// <param name="dto">The BloodUnitDto containing the updated data.</param>
-        /// <returns>The updated BloodUnitDto if successful, 404 Not Found if the unit doesn't exist, or 400 Bad Request.</returns>
         [HttpPut("{unitId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BloodUnitDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BloodUnitInventoryDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BloodUnitDto>> UpdateBloodUnit(string unitId, [FromBody] BloodUnitDto dto)
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<BloodUnitInventoryDto>> UpdateBloodUnit(string unitId, [FromBody] BloodUnitDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var updatedUnit = await _bloodUnitService.UpdateAsync(unitId, dto);
-            if (updatedUnit == null)
+            try
             {
-                return NotFound(new { message = "Blood unit not found for update." });
+                var updatedUnit = await _bloodUnitService.UpdateAsync(unitId, dto);
+                if (updatedUnit == null)
+                {
+                    return NotFound(new { message = $"Blood unit with ID '{unitId}' not found for update." });
+                }
+                return Ok(updatedUnit);
             }
-            return Ok(updatedUnit);
+            catch (ArgumentException ex)
+            {
+                Console.Error.WriteLine($"Validation error in UpdateBloodUnit (ID: {unitId}): {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.Error.WriteLine($"Operation error in UpdateBloodUnit (ID: {unitId}): {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to update blood unit due to a service operation error.", details = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Unhandled error in UpdateBloodUnit (ID: {unitId}): {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred while updating the blood unit." });
+            }
         }
 
-        /// <summary>
-        /// Deletes a blood unit by its ID.
-        /// </summary>
-        /// <param name="unitId">The ID of the blood unit to delete.</param>
-        /// <returns>204 No Content if successful, or 404 Not Found if the unit doesn't exist.</returns>
         [HttpDelete("{unitId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteBloodUnit(string unitId)
         {
-            var deleted = await _bloodUnitService.DeleteAsync(unitId);
-            if (!deleted)
+            try
             {
-                return NotFound(new { message = "Blood unit not found for deletion." });
+                var deleted = await _bloodUnitService.DeleteAsync(unitId);
+                if (!deleted)
+                {
+                    return NotFound(new { message = $"Blood unit with ID '{unitId}' not found for deletion." });
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (InvalidOperationException ex)
+            {
+                Console.Error.WriteLine($"Deletion error in DeleteBloodUnit (ID: {unitId}): {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Unhandled error in DeleteBloodUnit (ID: {unitId}): {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred while deleting the blood unit." });
+            }
         }
 
-        /// <summary>
-        /// Retrieves all blood units with detailed inventory information (including BloodType and Component names).
-        /// </summary>
-        /// <returns>A collection of BloodUnitInventoryDto.</returns>
-        [HttpGet("inventory")]
+        [HttpGet("bybloodtype/{bloodTypeId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BloodUnitInventoryDto>))]
-        public async Task<ActionResult<IEnumerable<BloodUnitInventoryDto>>> GetInventoryUnits()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<BloodUnitInventoryDto>>> GetBloodUnitsByBloodTypeId(int bloodTypeId)
         {
-            var units = await _bloodUnitService.GetInventoryUnitsAsync();
-            return Ok(units);
-        }
-
-        /// <summary>
-        /// Retrieves a single blood unit by its ID with detailed inventory information.
-        /// </summary>
-        /// <param name="unitId">The ID of the blood unit.</param>
-        /// <returns>A BloodUnitInventoryDto if found, otherwise 404 Not Found.</returns>
-        [HttpGet("inventory/{unitId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BloodUnitInventoryDto))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<BloodUnitInventoryDto>> GetInventoryUnitById(string unitId)
-        {
-            var unit = await _bloodUnitService.GetInventoryUnitByIdAsync(unitId);
-            if (unit == null)
+            try
             {
-                return NotFound(new { message = "Blood unit not found in inventory." });
+                var units = await _bloodUnitService.GetByBloodTypeIdAsync(bloodTypeId);
+                return Ok(units);
             }
-            return Ok(unit);
+            catch (ArgumentException ex)
+            {
+                Console.Error.WriteLine($"Validation error in GetBloodUnitsByBloodTypeId (ID: {bloodTypeId}): {ex.Message}");
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Unhandled error in GetBloodUnitsByBloodTypeId (ID: {bloodTypeId}): {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred while retrieving blood units by blood type." });
+            }
         }
     }
 }
