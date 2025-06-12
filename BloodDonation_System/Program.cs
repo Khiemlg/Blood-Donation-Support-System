@@ -32,6 +32,8 @@ builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 
 builder.Services.AddScoped<IEmergencyRequestService, EmergencyRequestService>();
 
+builder.Services.AddScoped<IDonationReminderService, DonationReminderService>();
+
 
 
 

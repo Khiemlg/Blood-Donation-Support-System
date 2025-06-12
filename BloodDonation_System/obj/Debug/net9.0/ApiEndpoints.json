@@ -532,6 +532,16 @@
     ]
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.DonationReminderController",
+    "Method": "RunReminder",
+    "RelativePath": "api/DonationReminder/run-job",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.DonationRequestController",
     "Method": "GetAllDonationRequests",
     "RelativePath": "api/DonationRequest",

@@ -930,6 +930,18 @@
         }
       }
     },
+    "/api/DonationReminder/run-job": {
+      "post": {
+        "tags": [
+          "DonationReminder"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/DonationRequest/RegisterDonationRequest": {
       "post": {
         "tags": [
