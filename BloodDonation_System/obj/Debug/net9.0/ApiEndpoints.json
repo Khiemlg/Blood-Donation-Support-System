@@ -292,6 +292,16 @@
     ]
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.DashboardController",
+    "Method": "GetDashboardSummary",
+    "RelativePath": "api/Dashboard/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BloodDonation_System.API.Controllers.DonationHistoryController",
     "Method": "GetAllDonationHistories",
     "RelativePath": "api/DonationHistory",

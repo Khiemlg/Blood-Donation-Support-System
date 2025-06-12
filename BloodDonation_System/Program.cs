@@ -34,6 +34,7 @@ builder.Services.AddScoped<IEmergencyRequestService, EmergencyRequestService>();
 
 builder.Services.AddScoped<IDonationReminderService, DonationReminderService>();
 
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 
 
