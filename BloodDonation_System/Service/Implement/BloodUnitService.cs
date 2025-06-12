@@ -76,26 +76,82 @@ namespace BloodDonation_System.Service.Implement
         /// <returns>The created BloodUnitDto with the generated UnitId.</returns>
         public async Task<BloodUnitDto> CreateAsync(BloodUnitDto dto)
         {
+            // 1. Tính toán ExpirationDate dựa trên ComponentId
+            DateOnly expirationDate;
+            switch (dto.ComponentId)
+            {
+                case 1: // Hồng cầu (Red Blood Cells)
+                    expirationDate = dto.CollectionDate.AddDays(42); // Khoảng 6 tuần
+                    break;
+                case 2: // Huyết tương (Plasma)
+                    expirationDate = dto.CollectionDate.AddYears(1); // Thường là 1 năm
+                    break;
+                case 3: // Tiểu cầu (Platelets)
+                    expirationDate = dto.CollectionDate.AddDays(5); // Rất ngắn
+                    break;
+                case 4: // Máu toàn phần (Whole Blood)
+                    expirationDate = dto.CollectionDate.AddDays(35); // Khoảng 5 tuần
+                    break;
+                default:
+                    // Giá trị mặc định nếu ComponentId không xác định hoặc không có quy tắc cụ thể
+                    expirationDate = dto.CollectionDate.AddDays(30);
+                    Console.WriteLine($"[WARNING] Unknown ComponentId {dto.ComponentId}. Using default expiration date (30 days).");
+                    break;
+            }
+
+            // 2. Gán StorageLocation dựa trên ComponentId
+            string assignedStorageLocation;
+            switch (dto.ComponentId)
+            {
+                case 1: // Hồng cầu
+                    assignedStorageLocation = "COLD_STORAGE_A";
+                    break;
+                case 2: // Huyết tương
+                    assignedStorageLocation = "FREEZER_ZONE_P";
+                    break;
+                case 3: // Tiểu cầu
+                    assignedStorageLocation = "AGITATOR_ROOM_T";
+                    break;
+                case 4: // Máu toàn phần
+                    assignedStorageLocation = "REFRIGERATED_CABINET_W";
+                    break;
+                default:
+                    assignedStorageLocation = "GENERAL_STORAGE_UNKNOWN";
+                    Console.WriteLine($"[WARNING] Unknown ComponentId {dto.ComponentId}. Assigning to default storage: {assignedStorageLocation}.");
+                    break;
+            }
+
+            // 3. Tạo BloodUnit entity
             var entity = new BloodUnit
             {
-                UnitId = Guid.NewGuid().ToString(), // Generate a unique ID
+                // UnitId: Tạo ID duy nhất tại đây.
+                // Nếu bạn muốn định dạng "Buits_" + GUID, hãy làm như sau:
+                UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                // Nếu bạn muốn Guid.NewGuid().ToString() đầy đủ, hãy dùng:
+                // UnitId = Guid.NewGuid().ToString(),
+
                 DonationId = dto.DonationId,
                 BloodTypeId = dto.BloodTypeId,
                 ComponentId = dto.ComponentId,
                 VolumeMl = dto.VolumeMl,
                 CollectionDate = dto.CollectionDate,
-                ExpirationDate = dto.ExpirationDate,
-                StorageLocation = dto.StorageLocation,
+                ExpirationDate = expirationDate,     // <-- Đã tính toán
+                StorageLocation = assignedStorageLocation, // <-- Đã xác định
                 TestResults = dto.TestResults,
-                Status = dto.Status,
-                DiscardReason = dto.DiscardReason
+                Status = dto.Status, // Có thể mặc định là "Available" nếu bạn không muốn DTO cung cấp
+                DiscardReason = dto.DiscardReason    // Thường là null khi tạo mới
             };
 
+            // 4. Thêm vào DbContext và lưu vào database
             _context.BloodUnits.Add(entity);
             await _context.SaveChangesAsync();
 
-            dto.UnitId = entity.UnitId; // Update DTO with the generated ID
-            return dto;
+            // 5. Cập nhật DTO với các giá trị đã được hệ thống gán/tạo
+            dto.UnitId = entity.UnitId;
+            dto.ExpirationDate = entity.ExpirationDate;
+            dto.StorageLocation = entity.StorageLocation;
+
+            return dto; // Trả về DTO đã được cập nhật
         }
 
         /// <summary>

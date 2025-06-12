@@ -51,6 +51,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>(); // ✅ Email gửi OTP
 builder.Services.AddScoped<IDonationRequestService, DonationRequestService>();
 builder.Services.AddScoped<IDonationHistoryService, DonationHistoryService>();
+builder.Services.AddScoped<IBloodUnitService, BloodUnitService>();
 // ✅ Swagger cấu hình chuẩn
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
