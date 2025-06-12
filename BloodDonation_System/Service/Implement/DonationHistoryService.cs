@@ -115,11 +115,201 @@ namespace BloodDonation_System.Service.Implement
 
         // Trong BloodDonation_System.Service.Implement.DonationHistoryService.cs
 
+        /*  public async Task<DonationHistoryDetailDto?> UpdateAsync(string donationId, DonationHistoryUpdateDto dto)
+          {
+              // 1. Tìm bản ghi DonationHistory hiện có
+              var donationHistory = await _context.DonationHistories
+                  .FirstOrDefaultAsync(dh => dh.DonationId == donationId);
+
+              if (donationHistory == null)
+              {
+                  return null; // Không tìm thấy lịch sử hiến máu để cập nhật
+              }
+
+              // 2. Lưu trữ trạng thái cũ TRƯỚC KHI cập nhật để kiểm tra sau này
+              var oldStatus = donationHistory.Status;
+
+
+
+              // Cập nhật các thuộc tính non-nullable (hoặc luôn có giá trị)
+              // (Đảm bảo các thuộc tính này luôn được DTO cung cấp giá trị hợp lệ)
+              donationHistory.DonorUserId = dto.DonorUserId;
+              donationHistory.DonationDate = dto.DonationDate;
+              donationHistory.BloodTypeId = dto.BloodTypeId;
+              donationHistory.ComponentId = dto.ComponentId;
+
+              // Cập nhật các thuộc tính nullable, sử dụng ?? để giữ giá trị cũ nếu DTO cung cấp null
+              donationHistory.QuantityMl = dto.QuantityMl ?? donationHistory.QuantityMl;
+              donationHistory.EligibilityStatus = dto.EligibilityStatus ?? donationHistory.EligibilityStatus;
+              donationHistory.ReasonIneligible = dto.ReasonIneligible ?? donationHistory.ReasonIneligible;
+              donationHistory.TestingResults = dto.TestingResults ?? donationHistory.TestingResults;
+              donationHistory.StaffUserId = dto.StaffUserId ?? donationHistory.StaffUserId;
+              donationHistory.Status = dto.Status ?? donationHistory.Status; // Cập nhật trạng thái mới
+
+              // Xử lý EmergencyId: Nếu DTO cung cấp null hoặc chuỗi rỗng, gán null.
+              // Nếu có giá trị, kiểm tra sự tồn tại trong EmergencyRequests để đảm bảo tính hợp lệ.
+              if (string.IsNullOrEmpty(dto.EmergencyId)) // Bao gồm cả null và chuỗi rỗng
+              {
+                  donationHistory.EmergencyId = null; // Đặt thành NULL trong entity
+              }
+              else
+              {
+                  // Kiểm tra sự tồn tại của EmergencyId nếu nó được cung cấp
+                  var emergencyExists = await _context.EmergencyRequests
+                                                      .AnyAsync(er => er.EmergencyId == dto.EmergencyId);
+                  if (!emergencyExists)
+                  {
+                      // Ném lỗi để báo cho người dùng rằng EmergencyId không hợp lệ
+                      throw new ArgumentException($"The provided Emergency ID '{dto.EmergencyId}' does not exist.");
+                  }
+                  else
+                  {
+                      donationHistory.EmergencyId = dto.EmergencyId; // Gán ID hợp lệ
+                  }
+              }
+
+              donationHistory.Descriptions = dto.Descriptions ?? donationHistory.Descriptions;
+
+              // 4. Lưu thay đổi vào cơ sở dữ liệu
+              try
+              {
+                  await _context.SaveChangesAsync();
+              }
+              catch (DbUpdateException ex)
+              {
+                  var sqlException = ex.InnerException as Microsoft.Data.SqlClient.SqlException;
+                  if (sqlException != null)
+                  {
+                      if (sqlException.Number == 547) // Foreign Key Violation hoặc NOT NULL constraint violation
+                      {
+                          Console.Error.WriteLine($"[DB_ERROR] Foreign Key/NULL Constraint Violation (547). " +
+                                                  $"EmergencyId: '{donationHistory.EmergencyId ?? "NULL"}' " +
+                                                  $"DonationRequestId: '{donationHistory.DonationRequestId ?? "NULL"}'. " +
+                                                  $"SQL Error: {sqlException.Message}");
+                          // Thêm thông báo rõ ràng hơn về nguyên nhân
+                          throw new InvalidOperationException("A foreign key or NOT NULL constraint was violated. " +
+                                                              "This usually means the associated Emergency Request ID or Donation Request ID does not exist, " +
+                                                              "OR you are trying to save NULL to a column that does not allow NULL in the database. " +
+                                                              "Please ensure your database schema is up-to-date with your entity model (e.g., columns are nullable if intended).", ex);
+                      }
+                  }
+                  Console.Error.WriteLine($"[DB_ERROR] An error occurred during database update: {ex.Message}");
+                  throw; // Ném lại ngoại lệ gốc
+              }
+              catch (ArgumentException ex) // Bắt lỗi ArgumentException mà chúng ta chủ động ném ra
+              {
+                  Console.Error.WriteLine($"[VALIDATION_ERROR] {ex.Message}");
+                  throw;
+              }
+              catch (Exception ex) // Bắt các lỗi chung khác
+              {
+                  Console.Error.WriteLine($"[GENERAL_ERROR] An unexpected error occurred: {ex.Message}");
+                  throw;
+              }
+
+              // 5. Lấy lại bản ghi sau khi cập nhật với các mối quan hệ cần thiết cho DTO trả về
+              // Việc này cần thiết để có các đối tượng navigation properties (như DonorUser, BloodType)
+              // đã được tải đầy đủ, phục vụ cho việc tạo DonationHistoryDetailDto.
+              var updatedEntity = await _context.DonationHistories
+                  .Include(dh => dh.DonorUser).ThenInclude(u => u.UserProfile)
+                  .Include(dh => dh.BloodType)
+                  .Include(dh => dh.Component)
+                  .Include(dh => dh.StaffUser).ThenInclude(u => u.UserProfile)
+                  .FirstOrDefaultAsync(dh => dh.DonationId == donationId);
+
+              if (updatedEntity == null)
+              {
+                  // Điều này có thể xảy ra nếu bản ghi bị xóa ngay sau khi cập nhật nhưng trước khi được đọc lại,
+                  // mặc dù rất hiếm trong một luồng đồng bộ.
+                  return null;
+              }
+
+              // 6. LOGIC TẠO BLOODUNIT KHI TRẠNG THÁI CHUYỂN SANG "Complete"
+              // (Chỉ chạy khi trạng thái thay đổi từ khác "Complete" sang "Complete")
+              if (oldStatus != "Complete" && updatedEntity.Status == "Complete")
+              {
+                  DateOnly expirationDate;
+                  int componentId = updatedEntity.ComponentId;
+
+                  switch (componentId)
+                  {
+                      case 1: expirationDate = DateOnly.FromDateTime(updatedEntity.DonationDate.AddDays(42)); break; // Hồng cầu
+                      case 2: expirationDate = DateOnly.FromDateTime(updatedEntity.DonationDate.AddYears(1)); break;  // Huyết tương
+                      case 3: expirationDate = DateOnly.FromDateTime(updatedEntity.DonationDate.AddDays(5)); break;   // Tiểu cầu
+                      case 4: expirationDate = DateOnly.FromDateTime(updatedEntity.DonationDate.AddDays(35)); break;  // Toàn phần
+                      default:
+                          expirationDate = DateOnly.FromDateTime(updatedEntity.DonationDate.AddDays(30)); // Mặc định
+                          Console.WriteLine($"[WARNING] Unknown ComponentId {componentId} for DonationId {updatedEntity.DonationId}. Using default expiration date (30 days).");
+                          break;
+                  }
+
+                  string assignedStorageLocation;
+                  switch (componentId)
+                  {
+                      case 1: assignedStorageLocation = "COLD_STORAGE_A"; break;
+                      case 2: assignedStorageLocation = "FREEZER_ZONE_P"; break;
+                      case 3: assignedStorageLocation = "AGITATOR_ROOM_T"; break;
+                      case 4: assignedStorageLocation = "REFRIGERATED_CABINET_W"; break;
+                      default: assignedStorageLocation = "GENERAL_STORAGE_UNKNOWN"; break;
+                  }
+
+                  var newBloodUnit = new BloodUnit
+                  {
+                      // Tạo UnitId duy nhất
+                      UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                      DonationId = updatedEntity.DonationId, // Sử dụng updatedEntity.DonationId
+                      BloodTypeId = updatedEntity.BloodTypeId,
+                      ComponentId = updatedEntity.ComponentId,
+                      VolumeMl = updatedEntity.QuantityMl ?? 0, // QuantityMl là int? trong entity, VolumeMl là int trong BloodUnit entity
+                      CollectionDate = DateOnly.FromDateTime(updatedEntity.DonationDate),
+                      ExpirationDate = expirationDate,
+                      StorageLocation = assignedStorageLocation,
+                      TestResults = updatedEntity.TestingResults,
+                      Status = "Available", // Trạng thái mặc định cho đơn vị máu mới tạo
+                      DiscardReason = ""
+                  };
+
+                  // THÊM BLOODUNIT MỚI VÀO CONTEXT
+                  _context.BloodUnits.Add(newBloodUnit);
+
+                  // Lưu ý: Không cần await _context.SaveChangesAsync() riêng ở đây.
+                  // Việc lưu sẽ diễn ra cùng với DonationHistory trong khối try-catch lớn hơn.
+                  Console.WriteLine($"[INFO] BloodUnit marked for creation for DonationId: {updatedEntity.DonationId} with UnitId: {newBloodUnit.UnitId}.");
+              }
+
+              // 7. Chuyển đổi updatedEntity sang DonationHistoryDetailDto và trả về
+              // Đảm bảo tất cả các thuộc tính DTO được ánh xạ, sử dụng toán tử null-conditional ?. để an toàn
+              return new DonationHistoryDetailDto
+              {
+                  DonationId = updatedEntity.DonationId,
+                  DonationRequestId = updatedEntity.DonationRequestId,
+                  DonorUserId = updatedEntity.DonorUserId,
+                  BloodTypeId = updatedEntity.BloodTypeId,
+                  ComponentId = updatedEntity.ComponentId,
+                  DonationDate = updatedEntity.DonationDate,
+                  QuantityMl = (int)updatedEntity.QuantityMl, // Giữ nguyên int? nếu DTO cho phép
+                  EligibilityStatus = updatedEntity.EligibilityStatus,
+                  ReasonIneligible = updatedEntity.ReasonIneligible,
+                  TestingResults = updatedEntity.TestingResults,
+                  StaffUserId = updatedEntity.StaffUserId,
+                  Status = updatedEntity.Status,
+                  EmergencyId = updatedEntity.EmergencyId,
+                  Descriptions = updatedEntity.Descriptions,
+
+                  // Các thuộc tính từ các bảng liên quan (sử dụng null-conditional operator)
+                  DonorUserName = updatedEntity.DonorUser?.UserProfile?.FullName,
+                  BloodTypeName = updatedEntity.BloodType?.TypeName,
+                  ComponentName = updatedEntity.Component?.ComponentName,
+
+              };
+          }*/
+
+
         public async Task<DonationHistoryDetailDto?> UpdateAsync(string donationId, DonationHistoryUpdateDto dto)
         {
             // 1. Tìm bản ghi DonationHistory hiện có
             var donationHistory = await _context.DonationHistories
-                .FirstOrDefaultAsync(dh => dh.DonationId == donationId);
+                .FirstOrDefaultAsync(dh => dh.DonationId.Equals(donationId));
 
             if (donationHistory == null)
             {
@@ -129,8 +319,84 @@ namespace BloodDonation_System.Service.Implement
             // 2. Lưu trữ trạng thái cũ TRƯỚC KHI cập nhật để kiểm tra sau này
             var oldStatus = donationHistory.Status;
 
-            
-           
+            // --- BẮT ĐẦU PHẦN XỬ LÝ DonationRequestId và EmergencyId MỚI (PHƯƠNG ÁN B) ---
+
+            // Biến để theo dõi xem đã xử lý các trường này chưa, để tránh kiểm tra lại
+            bool donationRequestIdHandled = false;
+            bool emergencyIdHandled = false;
+
+            // Trường hợp 1: Cả hai đều rỗng/null
+            if (string.IsNullOrEmpty(dto.DonationRequestId) && string.IsNullOrEmpty(dto.EmergencyId))
+            {
+                // Theo yêu cầu của bạn: cả hai đều rỗng thì gán cả hai về NULL (tương đương rỗng trong ngữ cảnh DB nullable)
+                // và bỏ qua kiểm tra AnyAsync.
+                donationHistory.DonationRequestId = null;
+                donationHistory.EmergencyId = null;
+                donationRequestIdHandled = true;
+                emergencyIdHandled = true;
+            }
+            else
+            {
+                // Trường hợp 2: Áp dụng logic 'check' nếu không rơi vào Trường hợp 1
+                // 'checkCondition = true' nếu EmergencyId rỗng/null. Ngược lại, 'checkCondition = false'.
+                bool checkCondition = string.IsNullOrEmpty(dto.EmergencyId);
+
+                if (checkCondition) // Nếu EmergencyId rỗng/null (và RequestId không rỗng/null)
+                {
+                    donationHistory.EmergencyId = ""; // Gán null cho EmergencyId
+                    emergencyIdHandled = true; // Đánh dấu đã xử lý EmergencyId
+                                               // DonationRequestId sẽ được xử lý ở khối code tiếp theo (không bị ảnh hưởng bởi 'checkCondition')
+                }
+                else // Nếu EmergencyId CÓ giá trị (không rỗng/null), và RequestId có thể rỗng hoặc không rỗng
+                {
+                    donationHistory.DonationRequestId = ""; // Gán null cho DonationRequestId
+                    donationRequestIdHandled = true; // Đánh dấu đã xử lý DonationRequestId
+                                                     // EmergencyId sẽ được xử lý ở khối code tiếp theo (không bị ảnh hưởng bởi 'checkCondition')
+                }
+            }
+
+            // 3. Validate và gán giá trị cuối cùng cho Entity cho các trường CHƯA được xử lý
+            // Xử lý DonationRequestId nếu CHƯA được xử lý bởi logic bên trên
+            if (!donationRequestIdHandled)
+            {
+                if (string.IsNullOrEmpty(dto.DonationRequestId))
+                {
+                    donationHistory.DonationRequestId = null; // Gán null nếu DTO cung cấp rỗng
+                }
+                else
+                {
+                    // Kiểm tra sự tồn tại của ID nếu nó không rỗng
+                    var requestExists = await _context.DonationRequests.AnyAsync(dr => dr.RequestId == dto.DonationRequestId);
+                    if (!requestExists)
+                    {
+                        throw new ArgumentException($"The provided Donation Request ID '{dto.DonationRequestId}' does not exist.");
+                    }
+                    donationHistory.DonationRequestId = dto.DonationRequestId; // Gán ID hợp lệ
+                }
+            }
+
+            // Xử lý EmergencyId nếu CHƯA được xử lý bởi logic bên trên
+            if (!emergencyIdHandled)
+            {
+                if (string.IsNullOrEmpty(dto.EmergencyId))
+                {
+                    donationHistory.EmergencyId = null; // Gán null nếu DTO cung cấp rỗng
+                }
+                else
+                {
+                    // Kiểm tra sự tồn tại của ID nếu nó không rỗng
+                    var emergencyExists = await _context.EmergencyRequests.AnyAsync(er => er.EmergencyId == dto.EmergencyId);
+                    if (!emergencyExists)
+                    {
+                        throw new ArgumentException($"The provided Emergency ID '{dto.EmergencyId}' does not exist.");
+                    }
+                    donationHistory.EmergencyId = dto.EmergencyId; // Gán ID hợp lệ
+                }
+            }
+
+            // --- KẾT THÚC PHẦN XỬ LÝ DonationRequestId và EmergencyId MỚI ---
+
+
             // Cập nhật các thuộc tính non-nullable (hoặc luôn có giá trị)
             // (Đảm bảo các thuộc tính này luôn được DTO cung cấp giá trị hợp lệ)
             donationHistory.DonorUserId = dto.DonorUserId;
@@ -145,28 +411,6 @@ namespace BloodDonation_System.Service.Implement
             donationHistory.TestingResults = dto.TestingResults ?? donationHistory.TestingResults;
             donationHistory.StaffUserId = dto.StaffUserId ?? donationHistory.StaffUserId;
             donationHistory.Status = dto.Status ?? donationHistory.Status; // Cập nhật trạng thái mới
-
-            // Xử lý EmergencyId: Nếu DTO cung cấp null hoặc chuỗi rỗng, gán null.
-            // Nếu có giá trị, kiểm tra sự tồn tại trong EmergencyRequests để đảm bảo tính hợp lệ.
-            if (string.IsNullOrEmpty(dto.EmergencyId)) // Bao gồm cả null và chuỗi rỗng
-            {
-                donationHistory.EmergencyId = null; // Đặt thành NULL trong entity
-            }
-            else
-            {
-                // Kiểm tra sự tồn tại của EmergencyId nếu nó được cung cấp
-                var emergencyExists = await _context.EmergencyRequests
-                                                    .AnyAsync(er => er.EmergencyId == dto.EmergencyId);
-                if (!emergencyExists)
-                {
-                    // Ném lỗi để báo cho người dùng rằng EmergencyId không hợp lệ
-                    throw new ArgumentException($"The provided Emergency ID '{dto.EmergencyId}' does not exist.");
-                }
-                else
-                {
-                    donationHistory.EmergencyId = dto.EmergencyId; // Gán ID hợp lệ
-                }
-            }
 
             donationHistory.Descriptions = dto.Descriptions ?? donationHistory.Descriptions;
 
@@ -186,9 +430,9 @@ namespace BloodDonation_System.Service.Implement
                                                 $"EmergencyId: '{donationHistory.EmergencyId ?? "NULL"}' " +
                                                 $"DonationRequestId: '{donationHistory.DonationRequestId ?? "NULL"}'. " +
                                                 $"SQL Error: {sqlException.Message}");
-                        // Thêm thông báo rõ ràng hơn về nguyên nhân
+                        // Thông báo lỗi rõ ràng hơn về nguyên nhân:
                         throw new InvalidOperationException("A foreign key or NOT NULL constraint was violated. " +
-                                                            "This usually means the associated Emergency Request ID or Donation Request ID does not exist, " +
+                                                            "This usually means an associated ID (Emergency, Donation Request, Donor, Staff) does not exist, " +
                                                             "OR you are trying to save NULL to a column that does not allow NULL in the database. " +
                                                             "Please ensure your database schema is up-to-date with your entity model (e.g., columns are nullable if intended).", ex);
                     }
@@ -208,19 +452,17 @@ namespace BloodDonation_System.Service.Implement
             }
 
             // 5. Lấy lại bản ghi sau khi cập nhật với các mối quan hệ cần thiết cho DTO trả về
-            // Việc này cần thiết để có các đối tượng navigation properties (như DonorUser, BloodType)
-            // đã được tải đầy đủ, phục vụ cho việc tạo DonationHistoryDetailDto.
             var updatedEntity = await _context.DonationHistories
                 .Include(dh => dh.DonorUser).ThenInclude(u => u.UserProfile)
                 .Include(dh => dh.BloodType)
                 .Include(dh => dh.Component)
                 .Include(dh => dh.StaffUser).ThenInclude(u => u.UserProfile)
+                .Include(dh => dh.Emergency) // Cần include nếu EmergencyName được dùng trong DTO
+                .Include(dh => dh.DonationRequest) // Cần include nếu DonationRequestStatus được dùng trong DTO
                 .FirstOrDefaultAsync(dh => dh.DonationId == donationId);
 
             if (updatedEntity == null)
             {
-                // Điều này có thể xảy ra nếu bản ghi bị xóa ngay sau khi cập nhật nhưng trước khi được đọc lại,
-                // mặc dù rất hiếm trong một luồng đồng bộ.
                 return null;
             }
 
@@ -255,30 +497,24 @@ namespace BloodDonation_System.Service.Implement
 
                 var newBloodUnit = new BloodUnit
                 {
-                    // Tạo UnitId duy nhất
                     UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
-                    DonationId = updatedEntity.DonationId, // Sử dụng updatedEntity.DonationId
+                    DonationId = updatedEntity.DonationId,
                     BloodTypeId = updatedEntity.BloodTypeId,
                     ComponentId = updatedEntity.ComponentId,
-                    VolumeMl = updatedEntity.QuantityMl ?? 0, // QuantityMl là int? trong entity, VolumeMl là int trong BloodUnit entity
+                    VolumeMl = updatedEntity.QuantityMl ?? 0,
                     CollectionDate = DateOnly.FromDateTime(updatedEntity.DonationDate),
                     ExpirationDate = expirationDate,
                     StorageLocation = assignedStorageLocation,
                     TestResults = updatedEntity.TestingResults,
-                    Status = "Available", // Trạng thái mặc định cho đơn vị máu mới tạo
-                    DiscardReason = ""
+                    Status = "Available",
+                    DiscardReason = "no"
                 };
 
-                // THÊM BLOODUNIT MỚI VÀO CONTEXT
                 _context.BloodUnits.Add(newBloodUnit);
-
-                // Lưu ý: Không cần await _context.SaveChangesAsync() riêng ở đây.
-                // Việc lưu sẽ diễn ra cùng với DonationHistory trong khối try-catch lớn hơn.
                 Console.WriteLine($"[INFO] BloodUnit marked for creation for DonationId: {updatedEntity.DonationId} with UnitId: {newBloodUnit.UnitId}.");
             }
 
             // 7. Chuyển đổi updatedEntity sang DonationHistoryDetailDto và trả về
-            // Đảm bảo tất cả các thuộc tính DTO được ánh xạ, sử dụng toán tử null-conditional ?. để an toàn
             return new DonationHistoryDetailDto
             {
                 DonationId = updatedEntity.DonationId,
@@ -287,7 +523,7 @@ namespace BloodDonation_System.Service.Implement
                 BloodTypeId = updatedEntity.BloodTypeId,
                 ComponentId = updatedEntity.ComponentId,
                 DonationDate = updatedEntity.DonationDate,
-                QuantityMl = (int)updatedEntity.QuantityMl, // Giữ nguyên int? nếu DTO cho phép
+                QuantityMl = (int)updatedEntity.QuantityMl,
                 EligibilityStatus = updatedEntity.EligibilityStatus,
                 ReasonIneligible = updatedEntity.ReasonIneligible,
                 TestingResults = updatedEntity.TestingResults,
@@ -304,7 +540,7 @@ namespace BloodDonation_System.Service.Implement
             };
         }
 
-  
+
 
         public async Task<bool> DeleteAsync(string donationId)
         {
