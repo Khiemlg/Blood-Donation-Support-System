@@ -1,0 +1,114 @@
+/* src/styles/Register.css */
+
+/* Specific styles for the register form */
+
+/* Register Button */
+.register-form .btn-primary {
+    padding: 1rem 2rem; /* Generous padding for prominent buttons */
+    font-size: 1.15rem; /* Slightly larger font size */
+    font-weight: 700; /* Bolder text */
+    border-radius: 12px; /* More rounded buttons */
+    border: none;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #28a745; /* Green color for Register button */
+    color: white;
+    box-shadow: 0 6px 18px rgba(40, 167, 69, 0.3); /* Green shadow */
+}
+
+.register-form .btn-primary:hover {
+    background-color: #1e7e34; /* Darker green on hover */
+    transform: translateY(-3px); /* Slight lift effect */
+    box-shadow: 0 8px 24px rgba(40, 167, 69, 0.4); /* Enhanced green shadow on hover */
+}
+
+.register-form .btn-primary:disabled {
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Verify OTP Button */
+.register-form .btn-success {
+    padding: 1rem 2rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-radius: 12px;
+    border: none;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #17a2b8; /* Info blue/cyan color for OTP verify */
+    color: white;
+    box-shadow: 0 6px 18px rgba(23, 162, 184, 0.3);
+}
+
+.register-form .btn-success:hover {
+    background-color: #138496;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(23, 162, 184, 0.4);
+}
+
+.register-form .btn-success:disabled {
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* OTP Countdown Timer and Resend Link specific styles */
+.register-form .otp-countdown-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -0.5rem; /* Adjust negative margin if needed */
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.register-form .otp-countdown-text {
+    color: #777;
+}
+
+.register-form .otp-countdown-text.expired {
+    color: #dc3545; /* Red for expired OTP */
+    font-weight: 600;
+}
+
+.register-form .btn-link-resend-otp {
+    color: #dc3545;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0; /* Remove default button padding */
+    transition: color 0.2s ease;
+}
+
+.register-form .btn-link-resend-otp:hover {
+    color: #a71d2a;
+    text-decoration: underline;
+}
+
+.register-form .btn-link-resend-otp:disabled {
+    color: #a0a0a0;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+/* Responsive adjustments for Register form */
+@media (max-width: 576px) {
+    .register-form .btn-primary,
+    .register-form .btn-success {
+        font-size: 1.05rem;
+        padding: 0.9rem 1.5rem;
+    }
+    .register-form .otp-countdown-wrapper {
+        flex-direction: column; /* Stack countdown and resend link */
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .register-form .btn-link-resend-otp {
+        padding: 0;
+        margin-left: 0;
+    }
+}

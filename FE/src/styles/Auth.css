@@ -1,0 +1,259 @@
+/* src/styles/Auth.css */
+
+/* Global Auth Container: Contains all auth-related content (Login, Register, ForgotPassword forms) */
+.auth-container {
+    display: flex;
+    flex-direction: column; /* Stacks logo/header section above the card */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensures the container takes full viewport height */
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #fde7e7, #ffe3e3, #fcebeb); /* Softer, subtle gradient background */
+    font-family: 'Inter', sans-serif; /* Applies Inter font within this container */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Login Header Logo Section: Styles for the BloodLife logo and slogan above the form */
+.login-header-logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2.5rem; /* Increased space between logo section and the auth card */
+    text-align: center;
+}
+
+.login-logo-wrapper {
+    width: 70px; /* Slightly larger wrapper */
+    height: 70px;
+    border-radius: 50%;
+    background-color: transparent; /* No background color, just the icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.75rem; /* More space between icon and text */
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.15); /* Subtle shadow for the logo */
+}
+
+.login-logo-icon {
+    width: 55px; /* Larger icon size */
+    height: 55px;
+    color: #dc3545; /* Red heart icon color */
+    fill: currentColor; /* Fills the icon with the specified color */
+}
+
+.login-logo-text {
+    font-size: 2.8rem; /* Larger font size for brand name */
+    font-weight: 800; /* Extra bold for emphasis */
+    color: #a71d2a; /* Deeper red color for brand name */
+    line-height: 1; /* Tightens line height for a compact look */
+    margin-bottom: 0.8rem; /* Space between brand name and slogan */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05); /* Light text shadow */
+}
+
+.login-slogan-text {
+    font-size: 1.2rem; /* Larger font size for the slogan */
+    color: #666; /* Grey color for slogan */
+    margin-bottom: 0;
+    font-weight: 400;
+}
+
+
+/* Auth Card: Styles for the main login/register form card */
+.auth-card {
+    background-color: #ffffff;
+    border-radius: 16px; /* More rounded corners */
+    overflow: hidden; /* Ensures content respects border-radius */
+    max-width: 480px; /* Slightly wider card */
+    width: 100%; /* Allows card to be responsive up to max-width */
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); /* More prominent shadow */
+    border: none; /* No border for a cleaner look */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth hover effects */
+}
+
+.auth-card:hover {
+    transform: translateY(-5px); /* Lifts the card slightly more on hover */
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Card Header: Styles for the top section of the auth card (e.g., "Đăng Nhập" title) */
+.auth-card .card-header {
+    background-color: transparent; /* Transparent background */
+    border-bottom: none; /* Removes default border */
+    padding: 2.2rem 2.5rem 1.2rem; /* Adjusted padding for a balanced look */
+    color: #333; /* Dark text color */
+    text-align: center;
+}
+
+.auth-card .card-header h3 {
+    font-size: 2.1rem; /* Adjusted title size */
+    font-weight: 700; /* Bold title */
+    color: #333; /* Darker color for "Đăng Nhập" text */
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.02em; /* Tightens letter spacing */
+}
+
+/* Form Subtitle (placed inside card-header for design consistency) */
+.auth-card .form-subtitle {
+    font-size: 1rem;
+    color: #777; /* Grey text color */
+    margin-bottom: 0; /* No bottom margin as it's part of the header's flow */
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Card Body: Styles for the main content area of the auth card (form fields) */
+.auth-card .card-body {
+    padding: 2.5rem; /* Generous padding */
+    padding-top: 1.5rem; /* Adjusted top padding to match new header */
+}
+
+/* Auth Form Body: Container for form elements */
+.auth-form-body {
+    /* No specific styles needed here, relies on child elements */
+}
+
+/* Form Group Labels */
+.auth-form-body .form-label {
+    font-weight: 500; /* Medium font weight */
+    color: #444; /* Dark grey text */
+    margin-bottom: 0.7rem; /* More space below label */
+    display: block; /* Ensures label takes full width */
+    font-size: 0.98rem;
+}
+
+/* Form Inputs */
+.auth-form-body .form-control {
+    border-radius: 10px; /* More rounded input fields */
+    border: 1px solid #d0d0d0; /* Lighter grey border */
+    padding: 0.9rem 1.2rem; /* Comfortable padding */
+    font-size: 1rem;
+    color: #333; /* Dark text color for input */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06); /* Subtle inner shadow */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions for focus */
+}
+
+.auth-form-body .form-control::placeholder {
+    color: #a0a0a0; /* Lighter placeholder text */
+}
+
+.auth-form-body .form-control:focus {
+    border-color: #dc3545; /* Red border on focus */
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.3); /* Slightly larger, more opaque focus shadow */
+    outline: none; /* Removes default browser outline */
+}
+
+/* Password input with eye icon (for toggle visibility) */
+.password-input-group {
+    position: relative;
+}
+
+.password-input-group .form-control {
+    padding-right: 3.5rem; /* More space for the eye icon */
+}
+
+.password-input-group .toggle-password {
+    position: absolute;
+    right: 1.5rem; /* Adjusted right position */
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999; /* Grey icon color */
+    padding: 0;
+    font-size: 1.2rem; /* Slightly larger icon */
+    transition: color 0.2s ease;
+}
+
+.password-input-group .toggle-password:hover {
+    color: #555; /* Darker grey on hover */
+}
+
+
+/* Links below the form (e.g., "Đã có tài khoản? Đăng nhập") */
+.auth-card .mt-3.text-center {
+    margin-top: 1.8rem !important; /* Increased space */
+    font-size: 1rem;
+    color: #666;
+}
+
+.auth-card .mt-3.text-center a {
+    color: #dc3545;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.auth-card .mt-3.text-center a:hover {
+    color: #a71d2a;
+    text-decoration: underline;
+}
+
+
+/* Alert messages (for error/info feedback) */
+.auth-card .alert {
+    border-radius: 8px;
+    font-size: 0.95rem;
+    padding: 0.9rem 1.5rem;
+    margin-bottom: 2rem; /* Increased margin */
+    border: 1px solid transparent;
+}
+.auth-card .alert-danger {
+    background-color: #fdd; /* Lighter red background */
+    color: #c00; /* Darker red text */
+    border-color: #fbc; /* Red border */
+}
+.auth-card .alert-info {
+    background-color: #e0f7fa; /* Light cyan background */
+    color: #00796b; /* Dark cyan text */
+    border-color: #b2ebf2; /* Cyan border */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .login-header-logo-section {
+        margin-bottom: 1.5rem;
+    }
+    .login-logo-icon {
+        width: 45px;
+        height: 45px;
+    }
+    .login-logo-text {
+        font-size: 2.2rem;
+    }
+    .login-slogan-text {
+        font-size: 1rem;
+    }
+
+    .auth-card {
+        margin: 0 0.8rem;
+        border-radius: 12px;
+        max-width: 100%; /* Allow full width on small screens */
+    }
+    .auth-card .card-body {
+        padding: 2rem;
+        padding-top: 1.2rem;
+    }
+    .auth-card .card-header h3 {
+        font-size: 1.9rem;
+    }
+    .auth-card .form-subtitle {
+        font-size: 0.9rem;
+    }
+    .auth-form-body .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    .auth-form-body .form-control {
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+    }
+    .auth-card .mt-3.text-center {
+        margin-top: 1.5rem !important;
+    }
+    .auth-card .alert {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+}

@@ -1,0 +1,53 @@
+/* src/styles/Header.css */
+
+.header-custom {
+    background-color: #ffffff; /* Nền trắng */
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0; /* Viền dưới nhẹ */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Bóng nhẹ cho header */
+    display: flex;
+    justify-content: center; /* Căn giữa toàn bộ nội dung header */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+    position: sticky; /* Sticky header */
+    top: 0;
+    z-index: 50; /* Đảm bảo header hiển thị trên các nội dung khác */
+}
+
+.container-custom {
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng nội dung */
+    display: flex;
+    justify-content: center; /* Căn giữa logo và tiêu đề */
+    align-items: center;
+    padding: 0 15px; /* Padding ngang */
+}
+
+.logo-link {
+    display: flex; /* Biến Link thành flex container */
+    align-items: center; /* Căn giữa logo và tiêu đề theo chiều dọc */
+    text-decoration: none; /* Xóa gạch chân mặc định */
+    color: #333; /* Màu chữ mặc định */
+    transition: opacity 0.3s ease;
+}
+
+.logo-link:hover {
+    opacity: 0.8; /* Hiệu ứng mờ khi hover */
+}
+
+.header-logo-img {
+    width: 40px; /* Kích thước logo: 32px */
+    height: 40px;
+    object-fit: contain; /* Đảm bảo ảnh không bị méo */
+    margin-right: 12px; /* Khoảng cách giữa logo và chữ */
+    flex-shrink: 0; /* Ngăn logo bị co lại */
+}
+
+.header-title {
+    font-size: 28px; /* Kích thước chữ to hơn cho tên hệ thống */
+    font-weight: 800; /* In đậm hơn */
+    color: #cc0000; /* Màu đỏ đậm cho tên */
+    margin: 0; /* Loại bỏ margin mặc định của span */
+    /* Có thể dùng gradient nếu muốn, nhưng cần CSS phức tạp hơn không dùng Tailwind */
+    /* text-shadow: 1px 1px 2px rgba(0,0,0,0.1); */ /* Thêm bóng chữ nhẹ */
+}

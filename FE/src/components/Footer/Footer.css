@@ -1,0 +1,22 @@
+.app-footer {
+    background-color: #343a40; /* Màu tối Bootstrap */
+    color: white;
+    padding: 2rem 1rem;
+    margin-top: auto; /* Đẩy footer xuống cuối trang */
+}
+
+.app-footer .container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.app-footer p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.app-footer .contact-info {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: #bbb;
+}

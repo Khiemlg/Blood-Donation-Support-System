@@ -1,0 +1,15 @@
+/* Styling for LoadingSpinner */
+.loading-spinner-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px; /* Minimum height for spinner to be visible */
+    width: 100%;
+}
+
+.loading-text {
+    margin-top: 15px;
+    font-size: 1.1em;
+    color: #555;
+}
