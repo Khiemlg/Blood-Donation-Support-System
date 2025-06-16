@@ -756,6 +756,22 @@
     ]
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyNotificationController",
+    "Method": "RespondToEmergency",
+    "RelativePath": "api/EmergencyNotification/respond",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Emergency.EmergencyResponseDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
     "Method": "Create",
     "RelativePath": "api/EmergencyRequest/create",

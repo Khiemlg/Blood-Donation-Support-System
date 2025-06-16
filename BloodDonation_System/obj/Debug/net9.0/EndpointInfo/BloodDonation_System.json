@@ -1290,6 +1290,37 @@
         }
       }
     },
+    "/api/EmergencyNotification/respond": {
+      "post": {
+        "tags": [
+          "EmergencyNotification"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencyResponseDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencyResponseDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencyResponseDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/EmergencyRequest/create": {
       "post": {
         "tags": [
@@ -2814,6 +2845,20 @@
             "format": "date-time"
           },
           "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmergencyResponseDTO": {
+        "type": "object",
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "responseStatus": {
             "type": "string",
             "nullable": true
           }

@@ -13,11 +13,18 @@ namespace BloodDonation_System.Service.Implement
     public class EmergencyRequestService : IEmergencyRequestService
     {
         private readonly DButils _context;
+        
+        private readonly IEmergencyNotificationService _emergencyNotificationService;
 
-        public EmergencyRequestService(DButils context)
+
+        public EmergencyRequestService(
+     DButils context,
+     IEmergencyNotificationService emergencyNotificationService)
         {
             _context = context;
+            _emergencyNotificationService = emergencyNotificationService;
         }
+
         // code để tạo yêu cầu máu khẩn cấp từ Staff 8/6/-15h code by khiem
         public async Task<(bool Success, string Message)> CreateEmergencyRequestAsync(EmergencyRequestCreateDto dto, string staffUserId)
         {
@@ -39,7 +46,13 @@ namespace BloodDonation_System.Service.Implement
             };
 
             _context.EmergencyRequests.Add(emergency);
+            await _context.EmergencyRequests.AddAsync(emergency);
             await _context.SaveChangesAsync();
+
+            // Gửi thông báo đến các member phù hợp
+            await _emergencyNotificationService.NotifyMatchingMembersAsync(emergency);
+
+
 
             return (true, "Urgent blood request created successfully");
         }
