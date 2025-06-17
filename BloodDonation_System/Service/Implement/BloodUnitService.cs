@@ -20,6 +20,42 @@ namespace BloodDonation_System.Service.Implement
             _context = context;
         }
 
+
+        public async Task<bool> DiscardBloodUnitAsync(string bloodUnitId, string discardReason)
+        {
+            // Tìm đơn vị máu trong cơ sở dữ liệu
+            var bloodUnit = await _context.BloodUnits.FirstOrDefaultAsync(b => b.UnitId == bloodUnitId);
+
+            // Kiểm tra nếu không tìm thấy đơn vị máu hoặc trạng thái không phải "Available" hoặc "Reserved"
+            if (bloodUnit == null || (bloodUnit.Status != "Available" && bloodUnit.Status != "Reserved"))
+            {
+                return false; // Trạng thái không hợp lệ để loại bỏ
+            }
+
+            // Cập nhật trạng thái và lý do loại bỏ
+            bloodUnit.Status = "Discarded";
+            bloodUnit.DiscardReason = discardReason;
+
+            // Cập nhật vào cơ sở dữ liệu
+            _context.BloodUnits.Update(bloodUnit);
+            await _context.SaveChangesAsync();
+
+            return true; // Thành công
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Lấy tất cả các đơn vị máu với thông tin kho chi tiết (bao gồm tên BloodType và Component).
         /// </summary>

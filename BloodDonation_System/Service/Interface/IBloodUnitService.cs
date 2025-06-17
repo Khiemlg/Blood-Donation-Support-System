@@ -19,5 +19,7 @@ namespace BloodDonation_System.Service.Interface
         Task<bool> DeleteAsync(string unitId);
 
         Task<IEnumerable<BloodUnitInventoryDto>> GetByBloodTypeIdAsync(int bloodTypeId);
+
+        Task<bool> DiscardBloodUnitAsync(string bloodUnitId, string discardReason);
     }
 }

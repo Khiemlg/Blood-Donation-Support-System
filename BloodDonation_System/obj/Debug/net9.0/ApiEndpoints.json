@@ -292,6 +292,27 @@
     ]
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.BloodUnitController",
+    "Method": "DiscardBloodUnit",
+    "RelativePath": "api/BloodUnit/discard/{bloodUnitId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bloodUnitId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "BloodDonation_System.Model.DTO.Blood.DiscardBloodUnitDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.DashboardController",
     "Method": "GetDashboardSummary",
     "RelativePath": "api/Dashboard/summary",

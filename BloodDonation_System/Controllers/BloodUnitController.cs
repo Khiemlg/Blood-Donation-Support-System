@@ -19,6 +19,49 @@ namespace BloodDonation_System.Controllers
             _bloodUnitService = bloodUnitService;
         }
 
+
+
+
+        /// <summary>
+        /// Cập nhật trạng thái đơn vị máu thành "Discarded" và lý do loại bỏ
+        /// </summary>
+        [HttpPost("discard/{bloodUnitId}")]
+        public async Task<IActionResult> DiscardBloodUnit(string bloodUnitId, [FromBody] DiscardBloodUnitDto dto)
+        {
+            try
+            {
+                // Gọi service để loại bỏ đơn vị máu
+                var result = await _bloodUnitService.DiscardBloodUnitAsync(bloodUnitId, dto.DiscardReason);
+
+                // Nếu thành công
+                if (result)
+                {
+                    return Ok(new { message = "Đơn vị máu đã được loại bỏ thành công." });
+                }
+                else
+                {
+                    // Trả về lỗi nếu không thành công
+                    return BadRequest(new { message = "Không thể loại bỏ đơn vị máu, trạng thái không hợp lệ." });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Nếu có lỗi trong quá trình xử lý
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BloodUnitInventoryDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
