@@ -3,6 +3,7 @@ using BloodDonation_System.Model.DTO.Auth;
 using BloodDonation_System.Model.DTO.User;
 using BloodDonation_System.Model.Enties;
 using BloodDonation_System.Service.Interface;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -66,7 +67,11 @@ namespace BloodDonation_System.Service.Implementation
             //by Long
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
                 throw new Exception("Email hoặc mật khẩu không đúng.");
-
+            if(user.IsActive == false)
+            {
+                throw new Exception("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+            }
+        
             user.LastLoginDate = DateTime.UtcNow;
             await SaveChangesWithErrorHandling();
 
@@ -171,6 +176,7 @@ namespace BloodDonation_System.Service.Implementation
                 new Claim("user_id", user.UserId), // ✅ thêm dòng này
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
                 new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
+                new Claim("isActive", (bool)user.IsActive ? "true" : "false"),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
