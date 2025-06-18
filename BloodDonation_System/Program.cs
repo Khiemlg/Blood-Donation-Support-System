@@ -9,6 +9,8 @@ using System.Text;
 using BloodDonation_System.Utilities;
 using BloodDonation_System.Service.Implement;
 using Microsoft.OpenApi.Models;
+using DrugUsePreventionAPI.Services.Interfaces;
+using DrugUsePreventionAPI.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +39,7 @@ builder.Services.AddScoped<IDonationReminderService, DonationReminderService>();
 
 //builder.Services.AddScoped<IDashboardService, DashboardService>();
 
-
+builder.Services.AddScoped<IUserService, UserService>();
 
 // ✅ CORS cho frontend (React chạy port 3000)
 builder.Services.AddCors(options =>

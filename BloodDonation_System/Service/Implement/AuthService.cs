@@ -50,8 +50,8 @@ namespace BloodDonation_System.Service.Implementation
 
             return new UserDto
             {
-                UserID = user.UserId,
-                UserName = user.Username,
+             //  UserID = user.UserId,
+               // UserName = user.Username,
                 Email = user.Email,
                 RoleName = (await _context.Roles.FindAsync(user.RoleId))?.RoleName ?? "Unknown",
                 CreatedAt = user.RegistrationDate ?? DateTime.UtcNow,

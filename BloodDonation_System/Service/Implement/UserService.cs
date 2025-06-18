@@ -54,11 +54,11 @@ namespace DrugUsePreventionAPI.Services.Implementations
         {
             var newUser = new User
             {
-                UserId = Guid.NewGuid().ToString(),
+                UserId = "USER_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
                 Username = createUserDto.Username,
                 PasswordHash = createUserDto.Password,
                 Email = createUserDto.Email,
-                RoleId = 2, // Default to normal user
+                RoleId = createUserDto.RoleId, // Default to normal user
                 RegistrationDate = DateTime.UtcNow,
                 IsActive = true
             };
