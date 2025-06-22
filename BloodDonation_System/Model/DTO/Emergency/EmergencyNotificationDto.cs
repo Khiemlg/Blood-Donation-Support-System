@@ -9,5 +9,7 @@
         public string DeliveryMethod { get; set; } = null!;
         public bool? IsRead { get; set; }
         public string? ResponseStatus { get; set; }
+        public string? Message { get; set; } = null!;
+
     }
 }
