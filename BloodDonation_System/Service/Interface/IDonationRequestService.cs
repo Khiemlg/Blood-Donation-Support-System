@@ -20,6 +20,7 @@ namespace BloodDonation_System.Service.Interface
         Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto);
 
         // Xóa yêu cầu hiến máu
+        Task<Dictionary<string, int>> GetSlotCountsByDateAsync(DateOnly date);
         Task<bool> DeleteAsync(string requestId);
     }
 }

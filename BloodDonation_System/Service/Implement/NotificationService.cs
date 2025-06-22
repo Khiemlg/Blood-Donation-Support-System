@@ -93,5 +93,23 @@ namespace BloodDonation_System.Service.Implement
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<NotificationDto>> GetNotificationsByRecipientUserIdAsync(string userId)
+        {
+            return await _context.Notifications
+                .Where(n => n.RecipientUserId == userId || n.RecipientUserId == "ALL")
+                // Sắp xếp an toàn hơn: dùng toán tử null-coalescing cho SentDate khi sắp xếp
+                .OrderByDescending(n => n.SentDate ?? DateTime.MinValue)
+                .Select(n => new NotificationDto
+                {
+                    NotificationId = n.NotificationId,
+                    RecipientUserId = n.RecipientUserId,
+                    Message = n.Message,
+                    Type = n.Type,
+                    SentDate = n.SentDate, // SỬA ĐỔI: Ánh xạ trực tiếp vì DTO đã là nullable
+                    IsRead = n.IsRead // SỬA ĐỔI: Ánh xạ trực tiếp vì DTO đã là nullable
+                })
+                .ToListAsync();
+        }
     }
 }

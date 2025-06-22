@@ -146,5 +146,35 @@ namespace BloodDonation_System.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"Đã xảy ra lỗi khi xóa yêu cầu hiến máu ID {requestId}.", details = ex.Message });
             }
         }
+
+
+        [HttpGet("SlotCounts")]
+        [ProducesResponseType(typeof(Dictionary<string, int>), 200)]
+        [ProducesResponseType(400)] // Bad Request nếu ngày không hợp lệ
+        public async Task<ActionResult<Dictionary<string, int>>> GetSlotCounts([FromQuery] string date)
+        {
+            if (string.IsNullOrEmpty(date))
+            {
+                return BadRequest("Date parameter is required.");
+            }
+
+            // Chuyển đổi chuỗi ngày sang DateOnly
+            if (!DateOnly.TryParse(date, out DateOnly parsedDate))
+            {
+                return BadRequest("Invalid date format. Please use yyyy-MM-dd.");
+            }
+
+            try
+            {
+                var slotCounts = await _donationRequestService.GetSlotCountsByDateAsync(parsedDate);
+                return Ok(slotCounts);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi và trả về Internal Server Error
+                Console.WriteLine($"Error fetching slot counts: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching slot counts.");
+            }
+        }
     }
 }

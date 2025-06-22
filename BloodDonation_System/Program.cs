@@ -41,7 +41,7 @@ builder.Services.AddScoped<IEmergencyRequestService, EmergencyRequestService>();
 
 builder.Services.AddScoped<IDonationReminderService, DonationReminderService>();
 builder.Services.AddHttpClient<GeocodingService>();
-
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
 builder.Services.AddScoped<IUserService, UserService>();

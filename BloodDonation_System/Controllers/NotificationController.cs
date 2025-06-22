@@ -7,7 +7,7 @@ namespace BloodDonation_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")] // Có thể điều chỉnh thêm cho Member nếu cần
+    [Authorize(Roles = "Admin,Staff,Member")]  // Có thể điều chỉnh thêm cho Member nếu cần
     public class NotificationController : ControllerBase
     {
         private readonly INotificationService _notificationService;
@@ -59,5 +59,28 @@ namespace BloodDonation_System.Controllers
             if (!success) return NotFound();
             return Ok("Deleted");
         }
+
+        [HttpGet("by-user/{userId}")]
+        [ProducesResponseType(typeof(IEnumerable<NotificationDto>), 200)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<IEnumerable<NotificationDto>>> GetNotificationsForUser(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("User ID is required.");
+            }
+
+            try
+            {
+                var notifications = await _notificationService.GetNotificationsByRecipientUserIdAsync(userId);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi
+                Console.WriteLine($"Error fetching notifications for user {userId}: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching notifications.");
+            }
+        }
     }
-}
+    }

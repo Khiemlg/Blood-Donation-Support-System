@@ -180,7 +180,7 @@ namespace BloodDonation_System.Service.Implementation
 
             // --- Logic Tự động tạo DonationHistory khi trạng thái là "Completed" ---
             // Chỉ tạo lịch sử nếu trạng thái MỚI là "completed" và trạng thái CŨ KHÔNG phải là "completed"
-            if (existingRequest.Status?.ToLower() == "completed" && oldStatus?.ToLower() != "completed")
+            if (existingRequest.Status?.ToLower() == "accepted" && oldStatus?.ToLower() != "accepted")
             {
                 try
                 {
@@ -261,6 +261,45 @@ namespace BloodDonation_System.Service.Implementation
             return true;
         }
 
-     
+        public async Task<Dictionary<string, int>> GetSlotCountsByDateAsync(DateOnly date)
+        {
+            // Định nghĩa các khung giờ bạn có (phải khớp với Frontend)
+            // Đây là các giá trị cứng. Nếu các khung giờ có thể thay đổi, bạn nên lưu chúng trong DB.
+            var timeSlots = new List<string>
+            {
+                "08:00 - 09:30",
+                "09:30 - 11:00",
+                "13:30 - 15:00",
+                "15:00 - 16:30"
+            };
+
+            // Lấy tất cả các yêu cầu hiến máu cho ngày đã chọn và ở trạng thái "Pending" hoặc "Approved" (tùy theo logic của bạn)
+            // mà bạn muốn tính vào số lượng slot.
+            // So sánh DateOnly trực tiếp.
+            var requestsForDate = await _context.DonationRequests
+                .Where(dr => dr.PreferredDate == date &&
+                             (dr.Status == "Pending" || dr.Status == "Accepted")) // CHỈNH SỬA TÙY VÀO TRẠNG THÁI NÀO BẠN COI LÀ ĐÃ CHIẾM SLOT
+                .ToListAsync();
+
+            // Khởi tạo dictionary để lưu số lượng, đảm bảo tất cả slot đều có giá trị ban đầu là 0
+            var slotCounts = new Dictionary<string, int>();
+            foreach (var slot in timeSlots)
+            {
+                slotCounts[slot] = 0;
+            }
+
+            // Đếm số lượng request cho từng khung giờ
+            foreach (var request in requestsForDate)
+            {
+                if (!string.IsNullOrEmpty(request.PreferredTimeSlot) && slotCounts.ContainsKey(request.PreferredTimeSlot))
+                {
+                    slotCounts[request.PreferredTimeSlot]++;
+                }
+            }
+
+            return slotCounts;
+        }
+
+
     }
 }
