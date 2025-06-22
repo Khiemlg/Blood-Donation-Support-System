@@ -8,7 +8,8 @@ namespace BloodDonation_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")] // Chỉ Admin được phép quản lý tài khoản
+    [Authorize(Roles = "Admin, Staff")]
+    // Chỉ Admin được phép quản lý tài khoản
     public class ManageUserAccountsController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -66,7 +67,7 @@ namespace BloodDonation_System.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var callerRole = User.IsInRole("Admin") ? "Admin" : "Other"; // Có thể mở rộng xác thực phân quyền chi tiết
+            var callerRole = User.IsInRole("Admin") ? "Admin" : "Other"; 
             var updatedUser = await _userService.UpdateUserRoleAsync(id, roleDto.RoleName, callerRole);
 
             if (updatedUser == null)

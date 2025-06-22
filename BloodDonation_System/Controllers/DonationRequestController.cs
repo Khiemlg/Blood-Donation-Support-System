@@ -1,4 +1,4 @@
-﻿// File: BloodDonation_System.Controllers.DonationRequestController.cs
+﻿
 
 using BloodDonation_System.Model.DTO.Donation;
 using BloodDonation_System.Model.Enties;
@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks; // Thêm using này
+using System.Threading.Tasks; 
 
 namespace BloodDonation_System.Controllers
 {
@@ -39,7 +39,7 @@ namespace BloodDonation_System.Controllers
             try
             {
                 var result = await _donationRequestService.CreateAsync(Dto);
-                return Ok(result); // Service trả về DonationRequestDto, OK
+                return Ok(result); 
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace BloodDonation_System.Controllers
 
         // --- Lấy Tất Cả Yêu Cầu (GET) ---
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationRequestDto>))] // TRẢ VỀ DonationRequestDetailDto (CÓ TÊN)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationRequestDto>))] 
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllDonationRequests()
         {
@@ -66,7 +66,7 @@ namespace BloodDonation_System.Controllers
 
         // --- Lấy Yêu Cầu Theo ID (GET) ---
         [HttpGet("{requestId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))] // TRẢ VỀ DonationRequestDetailDto (CÓ TÊN)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))] 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetDonationRequestById(string requestId)
@@ -88,12 +88,12 @@ namespace BloodDonation_System.Controllers
 
         // --- Cập Nhật Yêu Cầu (PUT) ---
         [HttpPut("{requestId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequest))] // TRẢ VỀ DonationRequestDetailDto (CÓ TÊN)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequest))] 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDonationRequest(string requestId, [FromBody] DonationRequestInputDto dto) // NHẬN DonationRequestDto (CHỈ CÓ ID)
+        public async Task<IActionResult> UpdateDonationRequest(string requestId, [FromBody] DonationRequestInputDto dto) 
         {
             if (!ModelState.IsValid)
             {
@@ -109,7 +109,7 @@ namespace BloodDonation_System.Controllers
                     return NotFound($"Không tìm thấy yêu cầu hiến máu với ID: {requestId}");
                 }
 
-                return Ok(updatedRequest); // Service trả về DonationRequestDetailDto, OK
+                return Ok(updatedRequest); 
             }
             catch (InvalidOperationException ex)
             {

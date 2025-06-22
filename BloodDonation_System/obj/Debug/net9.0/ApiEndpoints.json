@@ -777,6 +777,32 @@
     ]
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.DonorSearchController",
+    "Method": "SearchDonors",
+    "RelativePath": "api/DonorSearch/search",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BloodDonation_System.Model.DTO.UserProfile.SearchDonorDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[BloodDonation_System.Model.DTO.UserProfile.UserProfileDto, BloodDonation_System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.EmergencyNotificationController",
     "Method": "RespondToEmergency",
     "RelativePath": "api/EmergencyNotification/respond",

@@ -1,18 +1,21 @@
 ﻿using BloodDonation_System.Data;
-using BloodDonation_System.Service.Interface;
+using BloodDonation_System.Service.Implement;
 using BloodDonation_System.Service.Implementation;
+using BloodDonation_System.Service.Interface;
+
 using BloodDonation_System.Utilities;
+using DrugUsePreventionAPI.Services.Implementations;
+using DrugUsePreventionAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using BloodDonation_System.Utilities;
-using BloodDonation_System.Service.Implement;
 using Microsoft.OpenApi.Models;
-using DrugUsePreventionAPI.Services.Interfaces;
-using DrugUsePreventionAPI.Services.Implementations;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient<GeocodingService>();
+
 
 // ✅ Cấu hình DbContext
 string cnn = builder.Configuration.GetConnectionString("cnn")
@@ -28,6 +31,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
     options.InstanceName = "OTP_";
 });
+
 builder.Services.AddScoped<IEmergencyNotificationService, EmergencyNotificationService>();
 
 builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
@@ -36,8 +40,9 @@ builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
 builder.Services.AddScoped<IEmergencyRequestService, EmergencyRequestService>();
 
 builder.Services.AddScoped<IDonationReminderService, DonationReminderService>();
+builder.Services.AddHttpClient<GeocodingService>();
 
-//builder.Services.AddScoped<IDashboardService, DashboardService>();
+
 
 builder.Services.AddScoped<IUserService, UserService>();
 
@@ -50,6 +55,11 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader()
                         .AllowCredentials());
 });
+
+builder.Services.AddScoped<DonorSearchService>();
+builder.Services.AddScoped<ISearchDonorService, DonorSearchService>();
+
+
 
 // ✅ Đăng ký các service
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();

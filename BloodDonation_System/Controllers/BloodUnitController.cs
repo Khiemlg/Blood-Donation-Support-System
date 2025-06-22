@@ -30,7 +30,7 @@ namespace BloodDonation_System.Controllers
         {
             try
             {
-                // Gọi service để loại bỏ đơn vị máu
+                
                 var result = await _bloodUnitService.DiscardBloodUnitAsync(bloodUnitId, dto.DiscardReason);
 
                 // Nếu thành công
@@ -40,13 +40,12 @@ namespace BloodDonation_System.Controllers
                 }
                 else
                 {
-                    // Trả về lỗi nếu không thành công
                     return BadRequest(new { message = "Không thể loại bỏ đơn vị máu, trạng thái không hợp lệ." });
                 }
             }
             catch (Exception ex)
             {
-                // Nếu có lỗi trong quá trình xử lý
+              
                 return BadRequest(new { error = ex.Message });
             }
         }

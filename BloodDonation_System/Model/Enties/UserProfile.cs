@@ -35,10 +35,10 @@ namespace BloodDonation_System.Model.Enties
         [StringLength(255)]
         public string? Address { get; set; }
 
-        [Column("latitude", TypeName = "decimal(10, 8)")]
+        [Column("latitude", TypeName = "decimal(9, 6)")]
         public decimal? Latitude { get; set; }
 
-        [Column("longitude", TypeName = "decimal(11, 8)")]
+        [Column("longitude", TypeName = "decimal(9, 6)")]
         public decimal? Longitude { get; set; }
 
         [Column("blood_type_id")]

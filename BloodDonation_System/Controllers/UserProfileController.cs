@@ -29,13 +29,13 @@ namespace BloodDonation_System.Controllers
         }
 
         [HttpGet("by-user/{userId}")]
-public async Task<IActionResult> GetByUserId(string userId)
-{
-    var profile = await _userProfileService.GetProfileByUserIdAsync(userId);
-    if (profile == null)
-        return NotFound("Profile not found.");
-    return Ok(profile);
-}
+        public async Task<IActionResult> GetByUserId(string userId)
+        {
+            var profile = await _userProfileService.GetProfileByUserIdAsync(userId);
+            if (profile == null)
+                return NotFound("Profile not found.");
+            return Ok(profile);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserProfileDto dto)
@@ -47,15 +47,23 @@ public async Task<IActionResult> GetByUserId(string userId)
             if (validationError != null)
                 return BadRequest(validationError);
 
-            var (lat, lon) = await _geocodingService.GetCoordinatesFromAddressAsync(dto.Address);
-            dto.Latitude = lat;
-            dto.Longitude = lon;
+            var trimmedAddress = dto.Address?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(trimmedAddress))
+            {
+                var (lat, lon) = await _geocodingService.GetCoordinatesFromAddressAsync(trimmedAddress);
+                if (lat == 0 && lon == 0)
+                    return BadRequest("Địa chỉ không hợp lệ, vui lòng nhập chi tiết hơn (ít nhất quận/huyện và thành phố).");
+
+                dto.Address = trimmedAddress;
+                dto.Latitude = lat;
+                dto.Longitude = lon;
+            }
 
             try
             {
                 var created = await _userProfileService.CreateProfileAsync(dto);
                 return CreatedAtAction(nameof(GetByUserId), new { userId = created.UserId }, created);
-
             }
             catch (InvalidOperationException ex)
             {
@@ -70,9 +78,15 @@ public async Task<IActionResult> GetByUserId(string userId)
             if (validationError != null)
                 return BadRequest(validationError);
 
-            if (!string.IsNullOrWhiteSpace(dto.Address))
+            var trimmedAddress = dto.Address?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(trimmedAddress))
             {
-                var (lat, lon) = await _geocodingService.GetCoordinatesFromAddressAsync(dto.Address);
+                var (lat, lon) = await _geocodingService.GetCoordinatesFromAddressAsync(trimmedAddress);
+                if (lat == 0 && lon == 0)
+                    return BadRequest("Địa chỉ không hợp lệ, vui lòng nhập chi tiết hơn (ít nhất quận/huyện và thành phố).");
+
+                dto.Address = trimmedAddress;
                 dto.Latitude = lat;
                 dto.Longitude = lon;
             }
@@ -91,14 +105,12 @@ public async Task<IActionResult> GetByUserId(string userId)
             }
         }
 
-
         [HttpDelete("by-user/{userId}")]
         public async Task<IActionResult> DeleteByUserId(string userId)
         {
             var deleted = await _userProfileService.DeleteProfileByUserIdAsync(userId);
             return deleted ? NoContent() : NotFound("Profile not found.");
         }
-
 
         // ✅ Validation cho các trường không bắt buộc (nếu có nhập thì phải hợp lệ)
         private string? ValidateOptionalFields(dynamic dto)
@@ -116,8 +128,8 @@ public async Task<IActionResult> GetByUserId(string userId)
                 return "Invalid blood type ID.";
 
             if (!string.IsNullOrWhiteSpace(dto.Gender) &&
-                dto.Gender != "Male" && dto.Gender != "Female" && dto.Gender != "Other")
-                return "Gender must be 'Male', 'Female', or 'Other'.";
+                dto.Gender != "Nam" && dto.Gender != "Nữ" && dto.Gender != "Khác")
+                return "Gender must be 'Nam', 'Nữ', or 'Khác'.";
 
             if (!string.IsNullOrWhiteSpace(dto.Cccd) &&
                 !Regex.IsMatch(dto.Cccd, @"^\d{12}$"))
@@ -125,6 +137,5 @@ public async Task<IActionResult> GetByUserId(string userId)
 
             return null;
         }
-        //byte Long
     }
 }

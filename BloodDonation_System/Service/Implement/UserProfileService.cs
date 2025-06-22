@@ -1,18 +1,23 @@
 ﻿using BloodDonation_System.Data;
 using BloodDonation_System.Model.DTO.UserProfile;
 using BloodDonation_System.Model.Enties;
+
 using BloodDonation_System.Service.Interface;
+using BloodDonation_System.Utilities;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BloodDonation_System.Service.Implementation
 {
     public class UserProfileService : IUserProfileService
     {
         private readonly DButils _context;
+        private readonly GeocodingService _geocodingService;
 
-        public UserProfileService(DButils context)
+        public UserProfileService(DButils context, GeocodingService geocodingService)
         {
             _context = context;
+            _geocodingService = geocodingService;
         }
 
         public async Task<IEnumerable<UserProfileDto>> GetAllProfilesAsync()
@@ -78,7 +83,6 @@ namespace BloodDonation_System.Service.Implementation
                     throw new InvalidOperationException("Phone number already in use.");
             }
 
-            // ✅ Tạo ProfileId dạng PROFILE_0001 dựa trên ID hiện có lớn nhất
             var maxId = await _context.UserProfiles
                 .Where(p => p.ProfileId.StartsWith("PROFILE_"))
                 .OrderByDescending(p => p.ProfileId)
@@ -86,13 +90,18 @@ namespace BloodDonation_System.Service.Implementation
                 .FirstOrDefaultAsync();
 
             int nextNumber = 1;
-            if (!string.IsNullOrEmpty(maxId) &&
-                int.TryParse(maxId.Substring("PROFILE_".Length), out int currentMax))
+            if (!string.IsNullOrEmpty(maxId) && int.TryParse(maxId.Substring("PROFILE_".Length), out int currentMax))
             {
                 nextNumber = currentMax + 1;
             }
 
             string newId = $"PROFILE_{nextNumber:D4}";
+
+            var trimmedAddress = dto.Address?.Trim();
+            var (lat, lon) = await _geocodingService.GetCoordinatesFromAddressAsync(trimmedAddress);
+
+            if (lat == 0 && lon == 0)
+                throw new InvalidOperationException("Địa chỉ không hợp lệ, vui lòng nhập chi tiết hơn (ít nhất quận/huyện và thành phố).");
 
             var profile = new UserProfile
             {
@@ -101,9 +110,9 @@ namespace BloodDonation_System.Service.Implementation
                 FullName = dto.FullName ?? string.Empty,
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
-                Address = dto.Address,
-                Latitude = dto.Latitude ?? 0,
-                Longitude = dto.Longitude ?? 0,
+                Address = trimmedAddress,
+                Latitude = lat,
+                Longitude = lon,
                 BloodTypeId = dto.BloodTypeId,
                 RhFactor = dto.RhFactor,
                 MedicalHistory = dto.MedicalHistory,
@@ -120,50 +129,65 @@ namespace BloodDonation_System.Service.Implementation
 
         public async Task<UserProfileDto?> UpdateProfileByUserIdAsync(string userId, UpdateUserProfileDto dto)
         {
-            var profile = await _context.UserProfiles
-                .FirstOrDefaultAsync(p => p.UserId == userId);
-            if (profile == null)
-                return null;
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (profile == null) return null;
 
             if (!string.IsNullOrWhiteSpace(dto.Cccd))
             {
-                bool duplicateCccd = await _context.UserProfiles
-                    .AnyAsync(p => p.Cccd == dto.Cccd && p.UserId != userId);
+                bool duplicateCccd = await _context.UserProfiles.AnyAsync(p => p.Cccd == dto.Cccd && p.UserId != userId);
                 if (duplicateCccd)
                     throw new InvalidOperationException("CCCD has been registered.");
             }
 
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
             {
-                bool duplicatePhone = await _context.UserProfiles
-                    .AnyAsync(p => p.PhoneNumber == dto.PhoneNumber && p.UserId != userId);
+                bool duplicatePhone = await _context.UserProfiles.AnyAsync(p => p.PhoneNumber == dto.PhoneNumber && p.UserId != userId);
                 if (duplicatePhone)
                     throw new InvalidOperationException("Phone number already in use.");
             }
 
-            profile.FullName = dto.FullName ?? profile.FullName;
-            profile.DateOfBirth = dto.DateOfBirth ?? profile.DateOfBirth;
-            profile.Gender = dto.Gender ?? profile.Gender;
-            profile.Address = dto.Address ?? profile.Address;
-            profile.Latitude = dto.Latitude ?? profile.Latitude;
-            profile.Longitude = dto.Longitude ?? profile.Longitude;
-            profile.BloodTypeId = dto.BloodTypeId ?? profile.BloodTypeId;
-            profile.RhFactor = dto.RhFactor ?? profile.RhFactor;
-            profile.MedicalHistory = dto.MedicalHistory ?? profile.MedicalHistory;
-            profile.LastBloodDonationDate = dto.LastBloodDonationDate ?? profile.LastBloodDonationDate;
-            profile.Cccd = dto.Cccd ?? profile.Cccd;
-            profile.PhoneNumber = dto.PhoneNumber ?? profile.PhoneNumber;
+            if (!string.IsNullOrWhiteSpace(dto.FullName))
+                profile.FullName = dto.FullName;
+            if (dto.DateOfBirth.HasValue)
+                profile.DateOfBirth = dto.DateOfBirth.Value;
+            if (!string.IsNullOrWhiteSpace(dto.Gender))
+                profile.Gender = dto.Gender;
+
+            var trimmedAddress = dto.Address?.Trim();
+            if (!string.IsNullOrWhiteSpace(trimmedAddress) && trimmedAddress != profile.Address)
+            {
+                var (lat, lon) = await _geocodingService.GetCoordinatesFromAddressAsync(trimmedAddress);
+                if (lat == 0 && lon == 0)
+                    throw new InvalidOperationException("Địa chỉ không hợp lệ, vui lòng nhập chi tiết hơn (ít nhất quận/huyện và thành phố).");
+
+                profile.Address = trimmedAddress;
+                profile.Latitude = lat;
+                profile.Longitude = lon;
+            }
+
+            if (dto.BloodTypeId.HasValue)
+                profile.BloodTypeId = dto.BloodTypeId.Value;
+            if (!string.IsNullOrWhiteSpace(dto.RhFactor))
+                profile.RhFactor = dto.RhFactor;
+            if (!string.IsNullOrWhiteSpace(dto.MedicalHistory))
+                profile.MedicalHistory = dto.MedicalHistory;
+            if (dto.LastBloodDonationDate.HasValue)
+                profile.LastBloodDonationDate = dto.LastBloodDonationDate.Value;
+            if (!string.IsNullOrWhiteSpace(dto.Cccd))
+                profile.Cccd = dto.Cccd;
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                profile.PhoneNumber = dto.PhoneNumber;
 
             await _context.SaveChangesAsync();
-
             return await GetProfileByUserIdAsync(profile.UserId);
+
+          
 
         }
 
         public async Task<bool> DeleteProfileByUserIdAsync(string userId)
         {
-            var profile = await _context.UserProfiles
-                .FirstOrDefaultAsync(p => p.UserId == userId);
+            var profile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == userId);
             if (profile == null)
                 return false;
 
@@ -171,7 +195,5 @@ namespace BloodDonation_System.Service.Implementation
             await _context.SaveChangesAsync();
             return true;
         }
-
-        //by Long
     }
 }
