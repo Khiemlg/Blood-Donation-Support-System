@@ -56,6 +56,7 @@ namespace BloodDonation_System.Service.Implement
                     SentDate = en.SentDate,
                     DeliveryMethod = en.DeliveryMethod,
                     IsRead = en.IsRead,
+                    Message = en.Message,
                     ResponseStatus = en.ResponseStatus
                 }).ToListAsync();
         }
@@ -73,6 +74,7 @@ namespace BloodDonation_System.Service.Implement
                 SentDate = en.SentDate,
                 DeliveryMethod = en.DeliveryMethod,
                 IsRead = en.IsRead,
+                Message = en.Message,
                 ResponseStatus = en.ResponseStatus
             };
         }
@@ -87,6 +89,7 @@ namespace BloodDonation_System.Service.Implement
                 SentDate = dto.SentDate ?? DateTime.UtcNow,
                 DeliveryMethod = dto.DeliveryMethod,
                 IsRead = dto.IsRead,
+                Message = dto.Message,
                 ResponseStatus = dto.ResponseStatus
             };
 
@@ -108,6 +111,7 @@ namespace BloodDonation_System.Service.Implement
             entity.DeliveryMethod = dto.DeliveryMethod;
             entity.IsRead = dto.IsRead;
             entity.ResponseStatus = dto.ResponseStatus;
+            entity.Message = dto.Message;
 
             _context.EmergencyNotifications.Update(entity);
             await _context.SaveChangesAsync();
