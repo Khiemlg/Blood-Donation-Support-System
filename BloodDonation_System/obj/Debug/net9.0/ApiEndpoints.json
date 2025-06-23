@@ -777,6 +777,41 @@
     ]
   },
   {
+    "ContainingType": "BloodDonation_System.Controllers.DonationRequestController",
+    "Method": "GetSlotCounts",
+    "RelativePath": "api/DonationRequest/SlotCounts",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "date",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.Dictionary\u00602[[System.String, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
+  },
+  {
     "ContainingType": "BloodDonation_System.Controllers.DonorSearchController",
     "Method": "SearchDonors",
     "RelativePath": "api/DonorSearch/search",
@@ -954,7 +989,7 @@
     "Parameters": [
       {
         "Name": "dto",
-        "Type": "BloodDonation_System.Model.DTO.Notification.NotificationDto",
+        "Type": "BloodDonation_System.Model.DTO.Notification.NotificationinputDto",
         "IsRequired": true
       }
     ],
@@ -1012,6 +1047,41 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.NotificationController",
+    "Method": "GetNotificationsForUser",
+    "RelativePath": "api/Notification/by-user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[BloodDonation_System.Model.DTO.Notification.NotificationDto, BloodDonation_System, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      },
+      {
+        "Type": "Microsoft.AspNetCore.Mvc.ProblemDetails",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 400
+      }
+    ]
   },
   {
     "ContainingType": "BloodDonation_System.Controllers.ResetPasswordController",

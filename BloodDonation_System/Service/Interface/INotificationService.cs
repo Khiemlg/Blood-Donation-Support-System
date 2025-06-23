@@ -6,7 +6,7 @@ namespace BloodDonation_System.Service.Interface
     {
         Task<IEnumerable<NotificationDto>> GetAllNotificationsAsync();
         Task<NotificationDto?> GetNotificationByIdAsync(string notificationId);
-        Task<NotificationDto> CreateNotificationAsync(NotificationDto notificationDto);
+        Task<NotificationDto> CreateNotificationAsync(NotificationinputDto notificationDto);
         Task<NotificationDto?> UpdateNotificationAsync(string notificationId, NotificationDto notificationDto);
         Task<IEnumerable<NotificationDto>> GetNotificationsByRecipientUserIdAsync(string userId);
         Task<bool> DeleteNotificationAsync(string notificationId);

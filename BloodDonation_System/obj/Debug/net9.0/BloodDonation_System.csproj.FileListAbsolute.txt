@@ -334,12 +334,6 @@ C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_Sys
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets.development.json
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets\msbuild.BloodDonation_System.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets\msbuild.BloodDonation_System.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
-C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets\msbuild.build.BloodDonation_System.props
-C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets\msbuild.buildMultiTargeting.BloodDonation_System.props
-C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets\msbuild.buildTransitive.BloodDonation_System.props
-C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets.pack.json
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\BloodDon.070EB112.Up2Date
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\BloodDonation_System.dll
@@ -347,3 +341,8 @@ C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_Sys
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\BloodDonation_System.pdb
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\BloodDonation_System.genruntimeconfig.cache
 C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\ref\BloodDonation_System.dll
+C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\rpswa.dswa.cache.json
+C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\rjimswa.dswa.cache.json
+C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
+C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
+C:\Users\VicTus\Desktop\BACK_END\Blood-Donation-Support-System\BloodDonation_System\obj\Debug\net9.0\staticwebassets.build.json.cache

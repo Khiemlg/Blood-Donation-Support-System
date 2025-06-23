@@ -36,7 +36,7 @@ namespace BloodDonation_System.Controllers
 
         // POST: api/notification
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] NotificationDto dto)
+        public async Task<IActionResult> Create([FromBody] NotificationinputDto dto)
         {
             var created = await _notificationService.CreateNotificationAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.NotificationId }, created);
