@@ -17,10 +17,11 @@ namespace BloodDonation_System.Controllers
     public class DonationRequestController : ControllerBase
     {
         private readonly IDonationRequestService _donationRequestService;
-
-        public DonationRequestController(IDonationRequestService donationRequestService)
+        private readonly IEmailService _emailService;
+        public DonationRequestController(IDonationRequestService donationRequestService, IEmailService emailService)
         {
             _donationRequestService = donationRequestService;
+            _emailService = emailService; 
         }
 
         // --- Tạo Yêu Cầu Hiến Máu (POST) ---
@@ -39,7 +40,7 @@ namespace BloodDonation_System.Controllers
             try
             {
                 var result = await _donationRequestService.CreateAsync(Dto);
-                return Ok(result); 
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -47,9 +48,13 @@ namespace BloodDonation_System.Controllers
             }
         }
 
+
+      
+
+
         // --- Lấy Tất Cả Yêu Cầu (GET) ---
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationRequestDto>))] 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationRequestDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllDonationRequests()
         {
@@ -66,7 +71,7 @@ namespace BloodDonation_System.Controllers
 
         // --- Lấy Yêu Cầu Theo ID (GET) ---
         [HttpGet("{requestId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))] 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetDonationRequestById(string requestId)
@@ -88,12 +93,12 @@ namespace BloodDonation_System.Controllers
 
         // --- Cập Nhật Yêu Cầu (PUT) ---
         [HttpPut("{requestId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequest))] 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequest))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateDonationRequest(string requestId, [FromBody] DonationRequestInputDto dto) 
+        public async Task<IActionResult> UpdateDonationRequest(string requestId, [FromBody] DonationRequestInputDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -109,7 +114,7 @@ namespace BloodDonation_System.Controllers
                     return NotFound($"Không tìm thấy yêu cầu hiến máu với ID: {requestId}");
                 }
 
-                return Ok(updatedRequest); 
+                return Ok(updatedRequest);
             }
             catch (InvalidOperationException ex)
             {
@@ -176,5 +181,7 @@ namespace BloodDonation_System.Controllers
                 return StatusCode(500, "An error occurred while fetching slot counts.");
             }
         }
+
+
     }
 }

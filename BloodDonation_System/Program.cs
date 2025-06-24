@@ -31,7 +31,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
     options.InstanceName = "OTP_";
 });
-
+//---------------------------------------------
+builder.Services.AddTransient<IEmailService, EmailService>(); 
+builder.Services.AddTransient<IDonationRequestService, DonationRequestService>();
+//---------------------------------------------
 builder.Services.AddScoped<IEmergencyNotificationService, EmergencyNotificationService>();
 
 builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
