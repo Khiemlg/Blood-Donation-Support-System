@@ -153,5 +153,106 @@ namespace BloodDonation_System.Service.Implement
             await _context.SaveChangesAsync();
             return true;
         }
+
+        // các hàm thêm bơi khiêm -------------------------------------- 25/06/2024
+        // Lấy tất cả yêu cầu máu khẩn cấp, có thể lọc theo trạng thái
+        public async Task<IEnumerable<EmergencyRequestDto>> GetAllEmergencyRequestsAsync(string? status)
+        {
+            var query = _context.EmergencyRequests.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(x => x.Status == status);
+            }
+            return await query
+                .Select(er => new EmergencyRequestDto
+                {
+                    EmergencyId = er.EmergencyId,
+                    RequesterUserId = er.RequesterUserId,
+                    BloodTypeId = er.BloodTypeId,
+                    ComponentId = er.ComponentId,
+                    QuantityNeededMl = er.QuantityNeededMl,
+                    Priority = er.Priority,
+                    DueDate = er.DueDate,
+                    CreationDate = er.CreationDate,
+                    FulfillmentDate = er.FulfillmentDate,
+                    Description = er.Description,
+                    Status = er.Status
+                }).ToListAsync();
+        }
+
+        // Lấy chi tiết một yêu cầu máu khẩn cấp theo ID
+        public async Task<EmergencyRequestDto?> GetEmergencyRequestByIdAsync(string emergencyId)
+        {
+            var er = await _context.EmergencyRequests.FindAsync(emergencyId);
+            if (er == null) return null;
+            return new EmergencyRequestDto
+            {
+                EmergencyId = er.EmergencyId,
+                RequesterUserId = er.RequesterUserId,
+                BloodTypeId = er.BloodTypeId,
+                ComponentId = er.ComponentId,
+                QuantityNeededMl = er.QuantityNeededMl,
+                Priority = er.Priority,
+                DueDate = er.DueDate,
+                CreationDate = er.CreationDate,
+                FulfillmentDate = er.FulfillmentDate,
+                Description = er.Description,
+                Status = er.Status
+            };
+        }
+
+        // Cập nhật trạng thái yêu cầu máu khẩn cấp
+        public async Task<(bool Success, string Message)> UpdateEmergencyRequestStatusAsync(string emergencyId, string status)
+        {
+            var entity = await _context.EmergencyRequests.FindAsync(emergencyId);
+            if (entity == null) return (false, "Request not found");
+            entity.Status = status;
+            _context.EmergencyRequests.Update(entity);
+            await _context.SaveChangesAsync();
+            return (true, "Status updated successfully");
+        }
+
+        // Gửi thông báo khẩn cấp tới các donor phù hợp
+        public async Task<(bool Success, string Message)> NotifyDonorsForEmergencyAsync(string emergencyId)
+        {
+            var emergency = await _context.EmergencyRequests.FindAsync(emergencyId);
+            if (emergency == null) return (false, "Emergency request not found");
+            await _emergencyNotificationService.NotifyMatchingMembersAsync(emergency);
+            return (true, "Notifications sent to matching donors");
+        }
+
+        // Lấy danh sách yêu cầu máu khẩn cấp của một user
+        public async Task<IEnumerable<EmergencyRequestDto>> GetEmergencyRequestsByUserAsync(string userId)
+        {
+            return await _context.EmergencyRequests
+                .Where(x => x.RequesterUserId == userId)
+                .Select(er => new EmergencyRequestDto
+                {
+                    EmergencyId = er.EmergencyId,
+                    RequesterUserId = er.RequesterUserId,
+                    BloodTypeId = er.BloodTypeId,
+                    ComponentId = er.ComponentId,
+                    QuantityNeededMl = er.QuantityNeededMl,
+                    Priority = er.Priority,
+                    DueDate = er.DueDate,
+                    CreationDate = er.CreationDate,
+                    FulfillmentDate = er.FulfillmentDate,
+                    Description = er.Description,
+                    Status = er.Status
+                }).ToListAsync();
+        }
+
+        // Hủy yêu cầu máu khẩn cấp
+        public async Task<(bool Success, string Message)> CancelEmergencyRequestAsync(string emergencyId)
+        {
+            var entity = await _context.EmergencyRequests.FindAsync(emergencyId);
+            if (entity == null) return (false, "Request not found");
+            entity.Status = "Cancelled";
+            _context.EmergencyRequests.Update(entity);
+            await _context.SaveChangesAsync();
+            return (true, "Request cancelled successfully");
+        }
+
+
     }
 }

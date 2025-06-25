@@ -855,6 +855,75 @@
   },
   {
     "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "GetById",
+    "RelativePath": "api/EmergencyRequest/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "CancelRequest",
+    "RelativePath": "api/EmergencyRequest/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "NotifyDonors",
+    "RelativePath": "api/EmergencyRequest/{id}/notify-donors",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "UpdateStatus",
+    "RelativePath": "api/EmergencyRequest/{id}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
     "Method": "Create",
     "RelativePath": "api/EmergencyRequest/create",
     "HttpMethod": "POST",
@@ -867,6 +936,32 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "GetAll",
+    "RelativePath": "api/EmergencyRequest/list",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyRequestController",
+    "Method": "GetMyRequests",
+    "RelativePath": "api/EmergencyRequest/my-requests",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
