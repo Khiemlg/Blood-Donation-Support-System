@@ -10,7 +10,7 @@ public partial class DButils : DbContext
     public DButils()
     {
     }
-
+    /// tesst 
     public DButils(DbContextOptions<DButils> options)
         : base(options)
     {
