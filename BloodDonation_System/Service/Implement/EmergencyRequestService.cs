@@ -33,7 +33,7 @@ namespace BloodDonation_System.Service.Implement
 
             var emergency = new EmergencyRequest
             {
-                EmergencyId = Guid.NewGuid().ToString(), // sinh ID dạng chuỗi nếu bạn dùng string
+                EmergencyId = "EMER_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
                 RequesterUserId = staffUserId,
                 BloodTypeId = dto.BloodTypeId,
                 ComponentId = dto.ComponentId,
@@ -45,17 +45,28 @@ namespace BloodDonation_System.Service.Implement
                 Status = "Pending"
             };
 
-            _context.EmergencyRequests.Add(emergency);
             await _context.EmergencyRequests.AddAsync(emergency);
             await _context.SaveChangesAsync();
 
-            // Gửi thông báo đến các member phù hợp
-            await _emergencyNotificationService.NotifyMatchingMembersAsync(emergency);
+            // Tạo thông báo hệ thống chung
+            var notification = new EmergencyNotification
+            {
+                NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                EmergencyId = emergency.EmergencyId,
+                RecipientUserId = "ALL", // gửi toàn bộ hoặc broadcast
+                SentDate = DateTime.Now,
+                DeliveryMethod = "System",
+                IsRead = false,
+                ResponseStatus = null,
+                Message = $"📢 Yêu cầu khẩn cấp: {dto.QuantityNeededMl}ml máu nhóm {dto.BloodTypeId}, ưu tiên {dto.Priority}. Mô tả: {dto.Description}"
+            };
 
+            _context.EmergencyNotifications.Add(notification);
+            await _context.SaveChangesAsync();
 
-
-            return (true, "Urgent blood request created successfully");
+            return (true, "✅ Yêu cầu khẩn cấp đã được tạo và thông báo hệ thống đã ghi nhận.");
         }
+
         // -------------------------------------------
 
         public async Task<IEnumerable<EmergencyRequestDto>> GetAllAsync()

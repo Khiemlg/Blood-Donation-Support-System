@@ -15,5 +15,6 @@ namespace BloodDonation_System.Service.Interface
         Task<string> RespondToEmergencyNotificationAsync(string userId, EmergencyResponseDTO dto);
         Task NotifyMatchingMembersAsync(EmergencyRequest request);
 
+        Task<IEnumerable<EmergencyNotificationDto>> GetByEmergencyIdAsync(string emergencyId);
     }
 }
