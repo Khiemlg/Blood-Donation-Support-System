@@ -17,6 +17,7 @@ namespace BloodDonation_System.Controllers
             _emergencyNotificationService = emergencyNotificationService;
         }
 
+        // ✅ 1. Member phản hồi thông báo
         [Authorize(Roles = "Member")]
         [HttpPost("respond")]
         public async Task<IActionResult> RespondToEmergency([FromBody] EmergencyResponseDTO dto)
@@ -32,6 +33,62 @@ namespace BloodDonation_System.Controllers
                 return BadRequest(new { message = result });
 
             return Ok(new { message = result });
+        }
+
+        // ✅ 2. Admin/Staff lấy toàn bộ thông báo
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var list = await _emergencyNotificationService.GetAllAsync();
+            return Ok(list);
+        }
+
+        // ✅ 3. Member lấy thông báo theo ID
+        [Authorize(Roles = "Member,Admin,Staff")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var result = await _emergencyNotificationService.GetByIdAsync(id);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        // ✅ 4. Admin tạo mới (nếu cần tạo thủ công)
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] EmergencyNotificationDto dto)
+        {
+            var created = await _emergencyNotificationService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.NotificationId }, created);
+        }
+
+        // ✅ 5. Admin cập nhật
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] EmergencyNotificationDto dto)
+        {
+            var updated = await _emergencyNotificationService.UpdateAsync(id, dto);
+            if (updated == null) return NotFound();
+            return Ok(updated);
+        }
+
+        // ✅ 6. Admin xóa
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var deleted = await _emergencyNotificationService.DeleteAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin,Staff")]
+        [HttpGet("by-emergency/{emergencyId}")]
+        public async Task<IActionResult> GetByEmergencyId(string emergencyId)
+        {
+            var result = await _emergencyNotificationService.GetByEmergencyIdAsync(emergencyId);
+            return Ok(result);
         }
 
     }

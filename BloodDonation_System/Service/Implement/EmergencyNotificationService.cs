@@ -162,6 +162,25 @@ namespace BloodDonation_System.Service.Implement
             await _context.SaveChangesAsync();
         }
 
+       
 
+        public async Task<IEnumerable<EmergencyNotificationDto>> GetByEmergencyIdAsync(string emergencyId)
+        {
+            return await _context.EmergencyNotifications
+                .Where(n => n.EmergencyId == emergencyId)
+                .Select(en => new EmergencyNotificationDto
+                {
+                    NotificationId = en.NotificationId,
+                    EmergencyId = en.EmergencyId,
+                    RecipientUserId = en.RecipientUserId,
+                    SentDate = en.SentDate,
+                    DeliveryMethod = en.DeliveryMethod,
+                    IsRead = en.IsRead,
+                    Message = en.Message,
+                    ResponseStatus = en.ResponseStatus
+                }).ToListAsync();
+        }
+
+       
     }
 }
