@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using NETCore.MailKit.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -250,104 +251,113 @@ namespace BloodDonation_System.Service.Implementation
         //}
         public async Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto)
         {
-            // Tìm yêu cầu hiện có trong cơ sở dữ liệu
+            // 1. Tìm yêu cầu trong DB
             var existingRequest = await _context.DonationRequests
                 .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
 
             if (existingRequest == null)
-            {
-                return null; // Không tìm thấy yêu cầu
-            }
+                return null;
 
-            // Lưu trạng thái cũ của yêu cầu để kiểm tra sự thay đổi.
-            var oldStatus = existingRequest.Status;
+            var oldStatus = existingRequest.Status?.ToLower();
+            var newStatus = dto.Status?.ToLower();
 
-            // Cập nhật các trường từ Input DTO.
+            // 2. Cập nhật dữ liệu
             existingRequest.BloodTypeId = dto.BloodTypeId;
             existingRequest.ComponentId = dto.ComponentId;
             existingRequest.PreferredDate = dto.PreferredDate;
             existingRequest.PreferredTimeSlot = dto.PreferredTimeSlot;
-            existingRequest.Status = dto.Status; // Cập nhật trạng thái
+            existingRequest.Status = dto.Status;
             existingRequest.StaffNotes = dto.StaffNotes;
 
-            // Lưu các thay đổi của DonationRequest vào cơ sở dữ liệu trước.
             await _context.SaveChangesAsync();
 
-            // --- Gửi email khi trạng thái là "Completed" hoặc "Accepted" ---
-            if (existingRequest.Status?.ToLower() == "accepted" && oldStatus?.ToLower() != "accepted")
+            // 3. Lấy email người hiến máu
+            var donorEmail = await _context.Users
+                .Where(u => u.UserId == existingRequest.DonorUserId)
+                .Select(u => u.Email)
+                .FirstOrDefaultAsync();
+
+            // 4. Gửi email tương ứng
+            if (!string.IsNullOrEmpty(donorEmail))
             {
                 try
                 {
-                    // Lấy email của người hiến máu từ bảng Users
-                    var donorEmail = await _context.Users
-                        .Where(u => u.UserId == existingRequest.DonorUserId) // Sử dụng UserId từ DonationRequest
-                        .Select(u => u.Email)
-                        .FirstOrDefaultAsync();
-
-                    if (!string.IsNullOrEmpty(donorEmail))
+                    if (newStatus == "accepted" && oldStatus != "accepted")
                     {
-                        var emailSubject = "Yêu cầu hiến máu của bạn đã được duyệt";
-                        var emailBody = $"Chúng tôi xin chân thành cảm ơn bạn đã tham gia hiến máu. Yêu cầu của bạn đã được duyệt và sẽ được tiến hành vào lúc {DateTime.Now}.";
-                        // Gửi email cho người dùng
-                        await _emailService.SendEmailAsync(donorEmail, emailSubject, emailBody);
+                        var subject = "Yêu cầu hiến máu đã được chấp nhận";
+                        var body = $"Cảm ơn bạn đã đăng ký hiến máu. Yêu cầu của bạn đã được duyệt và sẽ tiến hành vào {existingRequest.PreferredDate:dd/MM/yyyy} lúc {existingRequest.PreferredTimeSlot}.";
+                        await _emailService.SendEmailAsync(donorEmail, subject, body);
+                    }
+                    else if (newStatus == "rejected" && oldStatus != "rejected")
+                    {
+                        var subject = "Yêu cầu hiến máu bị từ chối";
+                        var body = $"Rất tiếc, yêu cầu hiến máu của bạn đã bị từ chối vào {DateTime.Now:dd/MM/yyyy HH:mm}. Vui lòng liên hệ để biết thêm chi tiết.";
+                        await _emailService.SendEmailAsync(donorEmail, subject, body);
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Log lỗi nếu gửi email thất bại
-                    Console.WriteLine($"Error sending email for donation request ID {existingRequest.RequestId}: {ex.Message}");
+                    Console.WriteLine($"[Email Error] RequestId {existingRequest.RequestId}: {ex.Message}");
                 }
             }
-            else if (existingRequest.Status?.ToLower() == "accepted" && oldStatus?.ToLower() != "accepted")
+
+            // 5. Tạo bản ghi DonationHistory nếu trạng thái chuyển sang "accepted"
+            if (newStatus == "accepted" && oldStatus != "accepted")
             {
                 try
                 {
-                    // Lấy email của người hiến máu từ bảng Users
-                    var donorEmail = await _context.Users
-                        .Where(u => u.UserId == existingRequest.DonorUserId) // Sử dụng UserId từ DonationRequest
-                        .Select(u => u.Email)
-                        .FirstOrDefaultAsync();
-
-                    if (!string.IsNullOrEmpty(donorEmail))
+                    var donationHistory = new DonationHistory
                     {
-                        var emailSubject = "Yêu cầu hiến máu của bạn bị từ chối";
-                        var emailBody = $"Rất tiếc, yêu cầu hiến máu của bạn đã bị từ chối vào lúc {DateTime.Now}. Vui lòng kiểm tra lại tình trạng sức khỏe của bạn.";
-                        // Gửi email cho người dùng
-                        await _emailService.SendEmailAsync(donorEmail, emailSubject, emailBody);
-                    }
+                        DonationId = "HIST_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                        DonationRequestId = existingRequest.RequestId,
+                        DonorUserId = existingRequest.DonorUserId,
+                        BloodTypeId = existingRequest.BloodTypeId,
+                        ComponentId = existingRequest.ComponentId,
+                        DonationDate = DateTime.UtcNow,
+                        QuantityMl = 0, // Cập nhật thực tế nếu có
+                        EligibilityStatus = "Eligible",
+                        ReasonIneligible = null,
+                        TestingResults = "Pending",
+                        StaffUserId = null,
+                        Status = "Pending",
+                        EmergencyId = null,
+                        Descriptions = $"Yêu cầu hiến máu ID {existingRequest.RequestId} đã được chấp nhận và ghi nhận lịch sử."
+                    };
+
+                    await _context.DonationHistories.AddAsync(donationHistory);
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
-                    // Log lỗi nếu gửi email thất bại
-                    Console.WriteLine($"Error sending email for donation request ID {existingRequest.RequestId}: {ex.Message}");
+                    Console.WriteLine($"[History Error] RequestId {existingRequest.RequestId}: {ex.Message}");
                 }
             }
 
-            // Tải lại các Navigation Properties để tạo Response DTO đầy đủ
-            var updatedAndLoadedRequest = await _context.DonationRequests
+            // 6. Lấy lại dữ liệu đã cập nhật để trả về
+            var updatedRequest = await _context.DonationRequests
                 .Include(dr => dr.BloodType)
                 .Include(dr => dr.Component)
                 .Include(dr => dr.DonorUser)
                     .ThenInclude(u => u.UserProfile)
                 .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
 
-            // Ánh xạ thực thể đã cập nhật thành Response DTO
             return new DonationRequestDto
             {
-                RequestId = updatedAndLoadedRequest.RequestId,
-                DonorUserId = updatedAndLoadedRequest.DonorUserId,
-                BloodTypeId = updatedAndLoadedRequest.BloodTypeId,
-                ComponentId = updatedAndLoadedRequest.ComponentId,
-                PreferredDate = updatedAndLoadedRequest.PreferredDate,
-                PreferredTimeSlot = updatedAndLoadedRequest.PreferredTimeSlot,
-                Status = updatedAndLoadedRequest.Status,
-                RequestDate = updatedAndLoadedRequest.RequestDate,
-                StaffNotes = updatedAndLoadedRequest.StaffNotes,
-                DonorUserName = updatedAndLoadedRequest.DonorUser?.UserProfile?.FullName,
-                BloodTypeName = updatedAndLoadedRequest.BloodType?.TypeName,
-                ComponentName = updatedAndLoadedRequest.Component?.ComponentName
+                RequestId = updatedRequest.RequestId,
+                DonorUserId = updatedRequest.DonorUserId,
+                BloodTypeId = updatedRequest.BloodTypeId,
+                ComponentId = updatedRequest.ComponentId,
+                PreferredDate = updatedRequest.PreferredDate,
+                PreferredTimeSlot = updatedRequest.PreferredTimeSlot,
+                Status = updatedRequest.Status,
+                RequestDate = updatedRequest.RequestDate,
+                StaffNotes = updatedRequest.StaffNotes,
+                DonorUserName = updatedRequest.DonorUser?.UserProfile?.FullName,
+                BloodTypeName = updatedRequest.BloodType?.TypeName,
+                ComponentName = updatedRequest.Component?.ComponentName
             };
         }
+
 
 
 
