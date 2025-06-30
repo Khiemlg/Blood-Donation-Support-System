@@ -857,7 +857,7 @@
     "Parameters": [
       {
         "Name": "dto",
-        "Type": "BloodDonation_System.Model.DTO.Emergency.EmergencyNotificationDto",
+        "Type": "BloodDonation_System.Model.DTO.Emergency.EmergencyNotificationInputDto",
         "IsRequired": true
       }
     ],
@@ -926,6 +926,22 @@
     "Parameters": [
       {
         "Name": "emergencyId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BloodDonation_System.Controllers.EmergencyNotificationController",
+    "Method": "GetByUserId",
+    "RelativePath": "api/EmergencyNotification/by-user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
         "Type": "System.String",
         "IsRequired": true
       }

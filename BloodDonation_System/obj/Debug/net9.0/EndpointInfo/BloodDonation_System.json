@@ -1508,17 +1508,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmergencyNotificationDto"
+                "$ref": "#/components/schemas/EmergencyNotificationInputDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmergencyNotificationDto"
+                "$ref": "#/components/schemas/EmergencyNotificationInputDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/EmergencyNotificationDto"
+                "$ref": "#/components/schemas/EmergencyNotificationInputDto"
               }
             }
           }
@@ -1619,6 +1619,28 @@
         "parameters": [
           {
             "name": "emergencyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmergencyNotification/by-user/{userId}": {
+      "get": {
+        "tags": [
+          "EmergencyNotification"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
             "in": "path",
             "required": true,
             "schema": {
@@ -3389,6 +3411,41 @@
             "type": "string",
             "nullable": true
           },
+          "emergencyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "recipientUserId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sentDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deliveryMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "isRead": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "responseStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmergencyNotificationInputDto": {
+        "type": "object",
+        "properties": {
           "emergencyId": {
             "type": "string",
             "nullable": true
