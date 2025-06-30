@@ -274,7 +274,7 @@ namespace BloodDonation_System.Service.Implementation
             await _context.SaveChangesAsync();
 
             // --- Gửi email khi trạng thái là "Completed" hoặc "Accepted" ---
-            if (existingRequest.Status?.ToLower() == "completed" && oldStatus?.ToLower() != "completed")
+            if (existingRequest.Status?.ToLower() == "accepted" && oldStatus?.ToLower() != "accepted")
             {
                 try
                 {
