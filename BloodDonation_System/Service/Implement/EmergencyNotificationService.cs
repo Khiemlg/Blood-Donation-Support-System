@@ -13,10 +13,12 @@ namespace BloodDonation_System.Service.Implement
     public class EmergencyNotificationService : IEmergencyNotificationService
     {
         private readonly DButils _context;
+        private readonly IEmailService _emailService;
 
-        public EmergencyNotificationService(DButils context)
+        public EmergencyNotificationService(DButils context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
         public async Task<string> RespondToEmergencyNotificationAsync(string userId, EmergencyResponseDTO dto)
         {
@@ -179,6 +181,24 @@ namespace BloodDonation_System.Service.Implement
             _context.EmergencyNotifications.Add(entity);
             await _context.SaveChangesAsync();
 
+            //if (dto.DeliveryMethod == "Email")
+            //{
+            //    // Lấy email người nhận từ DB
+            //    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == dto.RecipientUserId);
+            //    if (user != null && !string.IsNullOrEmpty(user.Email))
+            //    {
+            //        var acceptUrl = $"https://yourdomain.com/emergency-response/accept/{entity.NotificationId}";
+            //        var declineUrl = $"https://yourdomain.com/emergency-response/decline/{entity.NotificationId}";
+            //        var htmlMessage = $@"
+            //    <p>Bạn nhận được yêu cầu hiến máu khẩn cấp.</p>
+            //    <p>
+            //        <a href='{acceptUrl}'>Tôi đồng ý hiến máu</a> |
+            //        <a href='{declineUrl}'>Tôi không thể tham gia</a>
+            //    </p>
+            //";
+            //        await _emailService.SendEmailAsync(user.Email, "Yêu cầu hiến máu khẩn cấp", htmlMessage);
+            //    }
+            //}
             // Chuyển từ entity sang DTO để trả về
             var result = new EmergencyNotificationDto
             {

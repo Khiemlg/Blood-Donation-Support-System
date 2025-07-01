@@ -2,6 +2,7 @@
 using BloodDonation_System.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BloodDonation_System.Controllers
@@ -106,6 +107,39 @@ namespace BloodDonation_System.Controllers
             var result = await _emergencyNotificationService.GetByUserIdAsync(userId);
             return Ok(result);
         }
+      //  [HttpGet("respond/accept/{notificationId}")]
+        //public async Task<IActionResult> Accept(string notificationId)
+        //{
+        //    var notification = await _context.EmergencyNotifications.FindAsync(notificationId);
+        //    if (notification == null)
+        //        return NotFound("Không tìm thấy thông báo.");
 
+        //    if (notification.ResponseStatus == "Interested" || notification.ResponseStatus == "Declined")
+        //        return Content("Bạn đã phản hồi rồi.");
+
+        //    notification.ResponseStatus = "Interested";
+        //    notification.IsRead = true;
+        //    await _context.SaveChangesAsync();
+
+        //    // Có thể redirect về trang cảm ơn hoặc trả về thông báo
+        //    return Content("✅ Cảm ơn bạn đã đồng ý hiến máu!");
+        //}
+
+        //[HttpGet("respond/decline/{notificationId}")]
+        //public async Task<IActionResult> Decline(string notificationId)
+        //{
+        //    var notification = await _context.EmergencyNotifications.FindAsync(notificationId);
+        //    if (notification == null)
+        //        return NotFound("Không tìm thấy thông báo.");
+
+        //    if (notification.ResponseStatus == "Interested" || notification.ResponseStatus == "Declined")
+        //        return Content("Bạn đã phản hồi rồi.");
+
+        //    notification.ResponseStatus = "Declined";
+        //    notification.IsRead = true;
+        //    await _context.SaveChangesAsync();
+
+        //    return Content("❌ Bạn đã từ chối tham gia hiến máu.");
+        //}
     }
 }
