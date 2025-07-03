@@ -105,7 +105,7 @@ namespace BloodDonation_System.Service.Implementation
                 Username = dto.Username,
                 PasswordHash = hashedPassword,
                 Email = dto.Email,
-                RoleId = 1, // default: Member
+                RoleId = 3, // default: Member
                 RegistrationDate = DateTime.UtcNow,
                 IsActive = true
             };
