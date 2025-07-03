@@ -2,6 +2,7 @@
 using BloodDonation_System.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BloodDonation_System.Controllers
@@ -54,12 +55,20 @@ namespace BloodDonation_System.Controllers
             return Ok(result);
         }
 
-        // ✅ 4. Admin tạo mới (nếu cần tạo thủ công)
+        //// ✅ 4. Admin tạo mới (nếu cần tạo thủ công)
+        //[Authorize(Roles = "Admin,Staff")]
+        //[HttpPost]
+        //public async Task<IActionResult> Create([FromBody] EmergencyNotificationInputDto dto)
+        //{
+        //    var created = await _emergencyNotificationService.CreateAsync(dto);
+        //    return CreatedAtAction(nameof(GetById), new { id = created.NotificationId }, created);
+        //}
+
         [Authorize(Roles = "Admin,Staff")]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] EmergencyNotificationDto dto)
+        public async Task<IActionResult> Create([FromBody] EmergencyNotificationInputDto dto)
         {
-            var created = await _emergencyNotificationService.CreateAsync(dto);
+            var created = await _emergencyNotificationService.CreateAsyncbyStaff(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.NotificationId }, created);
         }
 
@@ -91,5 +100,46 @@ namespace BloodDonation_System.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin,Staff,Member")]
+        [HttpGet("by-user/{userId}")]
+        public async Task<IActionResult> GetByUserId(string userId)
+        {
+            var result = await _emergencyNotificationService.GetByUserIdAsync(userId);
+            return Ok(result);
+        }
+      //  [HttpGet("respond/accept/{notificationId}")]
+        //public async Task<IActionResult> Accept(string notificationId)
+        //{
+        //    var notification = await _context.EmergencyNotifications.FindAsync(notificationId);
+        //    if (notification == null)
+        //        return NotFound("Không tìm thấy thông báo.");
+
+        //    if (notification.ResponseStatus == "Interested" || notification.ResponseStatus == "Declined")
+        //        return Content("Bạn đã phản hồi rồi.");
+
+        //    notification.ResponseStatus = "Interested";
+        //    notification.IsRead = true;
+        //    await _context.SaveChangesAsync();
+
+        //    // Có thể redirect về trang cảm ơn hoặc trả về thông báo
+        //    return Content("✅ Cảm ơn bạn đã đồng ý hiến máu!");
+        //}
+
+        //[HttpGet("respond/decline/{notificationId}")]
+        //public async Task<IActionResult> Decline(string notificationId)
+        //{
+        //    var notification = await _context.EmergencyNotifications.FindAsync(notificationId);
+        //    if (notification == null)
+        //        return NotFound("Không tìm thấy thông báo.");
+
+        //    if (notification.ResponseStatus == "Interested" || notification.ResponseStatus == "Declined")
+        //        return Content("Bạn đã phản hồi rồi.");
+
+        //    notification.ResponseStatus = "Declined";
+        //    notification.IsRead = true;
+        //    await _context.SaveChangesAsync();
+
+        //    return Content("❌ Bạn đã từ chối tham gia hiến máu.");
+        //}
     }
 }

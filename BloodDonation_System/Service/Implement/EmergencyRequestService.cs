@@ -28,8 +28,13 @@ namespace BloodDonation_System.Service.Implement
         // code để tạo yêu cầu máu khẩn cấp từ Staff 8/6/-15h code by khiem
         public async Task<(bool Success, string Message)> CreateEmergencyRequestAsync(EmergencyRequestCreateDto dto, string staffUserId)
         {
-            if (dto.QuantityNeededMl <= 0 || string.IsNullOrWhiteSpace(dto.Priority))
-                return (false, "Invalid data");
+            var bloodTypeName = await _context.BloodTypes
+    .Where(bt => bt.BloodTypeId == dto.BloodTypeId)
+    .Select(bt => bt.TypeName)
+    .FirstOrDefaultAsync();
+
+            if (string.IsNullOrEmpty(bloodTypeName))
+                return (false, "Không tìm thấy nhóm máu phù hợp.");
 
             var emergency = new EmergencyRequest
             {
@@ -48,17 +53,16 @@ namespace BloodDonation_System.Service.Implement
             await _context.EmergencyRequests.AddAsync(emergency);
             await _context.SaveChangesAsync();
 
-            // Tạo thông báo hệ thống chung
             var notification = new EmergencyNotification
             {
                 NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
                 EmergencyId = emergency.EmergencyId,
-                RecipientUserId = "ALL", // gửi toàn bộ hoặc broadcast
+                RecipientUserId = "ALL",
                 SentDate = DateTime.Now,
                 DeliveryMethod = "System",
                 IsRead = false,
                 ResponseStatus = null,
-                Message = $"📢 Yêu cầu khẩn cấp: {dto.QuantityNeededMl}ml máu nhóm {dto.BloodTypeId}, ưu tiên {dto.Priority}. Mô tả: {dto.Description}"
+                Message = $"📢 Yêu cầu khẩn cấp: {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName}, ưu tiên {dto.Priority}. Mô tả: {dto.Description}"
             };
 
             _context.EmergencyNotifications.Add(notification);

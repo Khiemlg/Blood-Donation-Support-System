@@ -13,10 +13,12 @@ namespace BloodDonation_System.Service.Implement
     public class EmergencyNotificationService : IEmergencyNotificationService
     {
         private readonly DButils _context;
+        private readonly IEmailService _emailService;
 
-        public EmergencyNotificationService(DButils context)
+        public EmergencyNotificationService(DButils context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
         public async Task<string> RespondToEmergencyNotificationAsync(string userId, EmergencyResponseDTO dto)
         {
@@ -79,26 +81,7 @@ namespace BloodDonation_System.Service.Implement
             };
         }
 
-        public async Task<EmergencyNotificationDto> CreateAsync(EmergencyNotificationDto dto)
-        {
-            var entity = new EmergencyNotification
-            {
-                NotificationId = Guid.NewGuid().ToString(),
-                EmergencyId = dto.EmergencyId,
-                RecipientUserId = dto.RecipientUserId,
-                SentDate = dto.SentDate ?? DateTime.UtcNow,
-                DeliveryMethod = dto.DeliveryMethod,
-                IsRead = dto.IsRead,
-                Message = dto.Message,
-                ResponseStatus = dto.ResponseStatus
-            };
-
-            _context.EmergencyNotifications.Add(entity);
-            await _context.SaveChangesAsync();
-
-            dto.NotificationId = entity.NotificationId;
-            return dto;
-        }
+ 
 
         public async Task<EmergencyNotificationDto?> UpdateAsync(string notificationId, EmergencyNotificationDto dto)
         {
@@ -181,6 +164,74 @@ namespace BloodDonation_System.Service.Implement
                 }).ToListAsync();
         }
 
-       
+        public async Task<EmergencyNotificationDto> CreateAsyncbyStaff(EmergencyNotificationInputDto dto)
+        {
+            var entity = new EmergencyNotification
+            {
+                NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                EmergencyId = dto.EmergencyId,
+                RecipientUserId = dto.RecipientUserId,
+                SentDate = dto.SentDate ?? DateTime.UtcNow,
+                DeliveryMethod = dto.DeliveryMethod,
+                IsRead = dto.IsRead,
+                Message = dto.Message,
+                ResponseStatus = dto.ResponseStatus
+            };
+
+            _context.EmergencyNotifications.Add(entity);
+            await _context.SaveChangesAsync();
+
+            //if (dto.DeliveryMethod == "Email")
+            //{
+            //    // Lấy email người nhận từ DB
+            //    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == dto.RecipientUserId);
+            //    if (user != null && !string.IsNullOrEmpty(user.Email))
+            //    {
+            //        var acceptUrl = $"https://yourdomain.com/emergency-response/accept/{entity.NotificationId}";
+            //        var declineUrl = $"https://yourdomain.com/emergency-response/decline/{entity.NotificationId}";
+            //        var htmlMessage = $@"
+            //    <p>Bạn nhận được yêu cầu hiến máu khẩn cấp.</p>
+            //    <p>
+            //        <a href='{acceptUrl}'>Tôi đồng ý hiến máu</a> |
+            //        <a href='{declineUrl}'>Tôi không thể tham gia</a>
+            //    </p>
+            //";
+            //        await _emailService.SendEmailAsync(user.Email, "Yêu cầu hiến máu khẩn cấp", htmlMessage);
+            //    }
+            //}
+            // Chuyển từ entity sang DTO để trả về
+            var result = new EmergencyNotificationDto
+            {
+                NotificationId = entity.NotificationId,
+                EmergencyId = entity.EmergencyId,
+                RecipientUserId = entity.RecipientUserId,
+                SentDate = entity.SentDate,
+                DeliveryMethod = entity.DeliveryMethod,
+                IsRead = entity.IsRead,
+                Message = entity.Message,
+                ResponseStatus = entity.ResponseStatus
+            };
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<EmergencyNotificationDto>> GetByUserIdAsync(string userId)
+        {
+            return await _context.EmergencyNotifications
+                .Where(n => n.RecipientUserId == userId)
+                .OrderByDescending(n => n.SentDate) // Sắp xếp mới nhất lên trước (tuỳ chọn)
+                .Select(en => new EmergencyNotificationDto
+                {
+                    NotificationId = en.NotificationId,
+                    EmergencyId = en.EmergencyId,
+                    RecipientUserId = en.RecipientUserId,
+                    SentDate = en.SentDate,
+                    DeliveryMethod = en.DeliveryMethod,
+                    IsRead = en.IsRead,
+                    Message = en.Message,
+                    ResponseStatus = en.ResponseStatus
+                }).ToListAsync();
+        }
     }
 }

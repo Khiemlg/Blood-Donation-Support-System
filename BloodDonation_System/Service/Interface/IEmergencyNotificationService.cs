@@ -9,12 +9,14 @@ namespace BloodDonation_System.Service.Interface
     {
         Task<IEnumerable<EmergencyNotificationDto>> GetAllAsync();
         Task<EmergencyNotificationDto?> GetByIdAsync(string notificationId);
-        Task<EmergencyNotificationDto> CreateAsync(EmergencyNotificationDto dto);
+      //  Task<EmergencyNotificationDto> CreateAsync(EmergencyNotificationDto dto);
+        Task<EmergencyNotificationDto> CreateAsyncbyStaff(EmergencyNotificationInputDto dto);
         Task<EmergencyNotificationDto?> UpdateAsync(string notificationId, EmergencyNotificationDto dto);
         Task<bool> DeleteAsync(string notificationId);
         Task<string> RespondToEmergencyNotificationAsync(string userId, EmergencyResponseDTO dto);
         Task NotifyMatchingMembersAsync(EmergencyRequest request);
 
         Task<IEnumerable<EmergencyNotificationDto>> GetByEmergencyIdAsync(string emergencyId);
+        Task<IEnumerable<EmergencyNotificationDto>> GetByUserIdAsync(string userId);
     }
 }
