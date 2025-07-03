@@ -52,11 +52,12 @@ namespace DrugUsePreventionAPI.Services.Implementations
 
         public async Task<UserDto> CreateUserAsync(CreateUserDto createUserDto)
         {
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
             var newUser = new User
             {
                 UserId = "USER_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
                 Username = createUserDto.Username,
-                PasswordHash = createUserDto.Password,
+                PasswordHash = hashedPassword,
                 Email = createUserDto.Email,
                 RoleId = createUserDto.RoleId, // Default to normal user
                 RegistrationDate = DateTime.UtcNow,
