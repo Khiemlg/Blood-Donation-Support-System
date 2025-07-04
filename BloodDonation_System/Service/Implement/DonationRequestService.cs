@@ -291,7 +291,7 @@ namespace BloodDonation_System.Service.Implementation
                     else if (newStatus == "rejected" && oldStatus != "rejected")
                     {
                         var subject = "Yêu cầu hiến máu bị từ chối";
-                        var body = $"Rất tiếc, yêu cầu hiến máu của bạn đã bị từ chối vào {DateTime.Now:dd/MM/yyyy HH:mm}. Vui lòng liên hệ để biết thêm chi tiết.";
+                        var body = $"Rất tiếc, yêu cầu hiến máu của bạn đã bị từ chối vào {DateTime.Now:dd/MM/yyyy HH:mm} do : {dto.StaffNotes}. Vui lòng liên hệ để biết thêm chi tiết.";
                         await _emailService.SendEmailAsync(donorEmail, subject, body);
                     }
                 }
