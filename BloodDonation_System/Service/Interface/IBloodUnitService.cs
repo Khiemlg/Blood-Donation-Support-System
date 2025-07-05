@@ -21,5 +21,6 @@ namespace BloodDonation_System.Service.Interface
         Task<IEnumerable<BloodUnitInventoryDto>> GetByBloodTypeIdAsync(int bloodTypeId);
 
         Task<bool> DiscardBloodUnitAsync(string bloodUnitId, string discardReason);
+        Task<bool> SeparateBloodUnitAsync(string unitId);
     }
 }

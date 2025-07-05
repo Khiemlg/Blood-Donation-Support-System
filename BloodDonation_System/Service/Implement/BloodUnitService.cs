@@ -206,7 +206,7 @@ namespace BloodDonation_System.Service.Implement
                 ExpirationDate = expirationDate, // <-- Đã tính toán
                 StorageLocation = assignedStorageLocation, // <-- Đã xác định
                 TestResults = dto.TestResults ?? "Pending", // Mặc định là "Pending" nếu không được cung cấp
-                Status = dto.Status ?? "Available", // Mặc định là "Available" nếu không được cung cấp
+                Status = dto.Status ?? "Pending", // Mặc định là "Available" nếu không được cung cấp
                 DiscardReason = dto.DiscardReason // Thường là null khi tạo mới
             };
 
@@ -455,5 +455,90 @@ namespace BloodDonation_System.Service.Implement
                 })
                 .ToListAsync();
         }
+
+        public async Task<bool> SeparateBloodUnitAsync(string unitId)
+        {
+            var unit = await _context.BloodUnits
+                .Include(b => b.BloodType)
+                .Include(b => b.Component)
+                .FirstOrDefaultAsync(b => b.UnitId == unitId);
+
+            if (unit == null || unit.Status != "Separating" || unit.Component.ComponentName != "Toàn phần")
+                return false;
+
+            var donationId = unit.DonationId;
+            var bloodTypeId = unit.BloodTypeId;
+            var collectionDate = unit.CollectionDate;
+            var volume = unit.VolumeMl;
+            var redCell = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 4); // Hồng cầu
+            var plasma = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 2); // Huyết tương
+            var platelet = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 3); // Tiểu cầu
+
+            if (redCell == null || plasma == null || platelet == null)
+                throw new Exception("Không tìm thấy ComponentId cho các thành phần máu!");
+
+            var volumeRed = volume / 2;
+            var volumePlasma = volume / 4;
+            var volumePlatelet = volume - volumeRed - volumePlasma;
+
+            var components = new[]
+            {
+        new { Component = redCell, Volume = volumeRed },
+        new { Component = plasma, Volume = volumePlasma },
+        new { Component = platelet, Volume = volumePlatelet }
+    };
+
+            var newUnits = new List<BloodUnit>();
+
+            foreach (var comp in components)
+            {
+                DateOnly expiration;
+                string storage;
+
+                switch (comp.Component.ComponentName)
+                {
+                    case "Hồng cầu":
+                        expiration = collectionDate.AddDays(42);
+                        storage = "COLD_STORAGE_A";
+                        break;
+                    case "Huyết tương":
+                        expiration = collectionDate.AddYears(1);
+                        storage = "FREEZER_ZONE_P";
+                        break;
+                    case "Tiểu cầu":
+                        expiration = collectionDate.AddDays(5);
+                        storage = "AGITATOR_ROOM_T";
+                        break;
+                    default:
+                        expiration = collectionDate.AddDays(30);
+                        storage = "GENERAL_STORAGE_UNKNOWN";
+                        break;
+                }
+
+                newUnits.Add(new BloodUnit
+                {
+                    UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                    DonationId = donationId,
+                    BloodTypeId = bloodTypeId,
+                    ComponentId = comp.Component.ComponentId,
+                    VolumeMl = comp.Volume,
+                    CollectionDate = collectionDate,
+                    ExpirationDate = expiration,
+                    StorageLocation = storage,
+                    TestResults = "Pending",
+                    Status = "Available"
+                });
+            }
+
+            // Cập nhật đơn vị gốc
+            unit.Status = "Separated";
+
+            _context.BloodUnits.Update(unit);
+            _context.BloodUnits.AddRange(newUnits);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

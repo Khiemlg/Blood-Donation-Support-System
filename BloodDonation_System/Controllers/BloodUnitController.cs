@@ -221,5 +221,23 @@ namespace BloodDonation_System.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred while retrieving blood units by blood type." });
             }
         }
+
+        [HttpPost("separate/{unitId}")]
+        public async Task<IActionResult> SeparateBloodUnit(string unitId)
+        {
+            try
+            {
+                var result = await _bloodUnitService.SeparateBloodUnitAsync(unitId);
+                if (!result)
+                    return BadRequest(new { success = false, message = "Không thể tách máu. Đơn vị máu không tồn tại, không ở trạng thái 'Separating' hoặc không phải máu toàn phần." });
+
+                return Ok(new { success = true, message = "Tách máu thành công." });
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi tại đây nếu cần
+                return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi khi tách máu.", error = ex.Message });
+            }
+        }
     }
 }
