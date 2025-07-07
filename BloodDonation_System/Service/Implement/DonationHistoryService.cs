@@ -15,13 +15,16 @@ namespace BloodDonation_System.Service.Implement
     public class DonationHistoryService : IDonationHistoryService
     {
         private readonly DButils _context;
-       
+        private readonly IEmailService _emailService;
 
-        public DonationHistoryService(DButils context)
+
+        public DonationHistoryService(DButils context, IEmailService emailService)
         {
             _context = context;
-           
+            _emailService = emailService;
+
         }
+      
 
         public async Task<IEnumerable<DonationHistoryDetailDto>> GetAllAsync()
         {
@@ -502,6 +505,38 @@ namespace BloodDonation_System.Service.Implement
             try
             {
                 await _context.SaveChangesAsync();
+                if (!string.Equals(oldStatus, donationHistory.Status, StringComparison.OrdinalIgnoreCase))
+                {
+                    var email = await _context.Users
+                        .Where(u => u.UserId == donationHistory.DonorUserId)
+                        .Select(u => u.Email)
+                        .FirstOrDefaultAsync();
+
+                    if (!string.IsNullOrEmpty(email))
+                    {
+                        string subject = $"Trạng thái hiến máu đã được cập nhật: {donationHistory.Status}";
+                        string body = donationHistory.Status?.ToLower() switch
+                        {
+                            "complete" => $"🩸 Xin chúc mừng! Quá trình hiến máu của bạn ngày {donationHistory.DonationDate:dd/MM/yyyy} đã hoàn tất. Cảm ơn bạn vì nghĩa cử cao đẹp!",
+                            "pending" => $"⏳ Yêu cầu hiến máu của bạn đang ở trạng thái chờ xử lý. Vui lòng theo dõi cập nhật tiếp theo.",
+                            "rejected" => $"❌ Rất tiếc! Yêu cầu hiến máu của bạn đã bị từ chối. Ghi chú: {donationHistory.ReasonIneligible ?? "Không rõ lý do"}.",
+                            "ineligible" => $"⚠️ Bạn chưa đủ điều kiện hiến máu. Ghi chú: {donationHistory.ReasonIneligible ?? "Không rõ lý do"}.",
+                            _ => $"ℹ️ Trạng thái hiến máu của bạn đã được cập nhật thành: {donationHistory.Status}."
+                        };
+
+                        try
+                        {
+                            await _emailService.SendEmailAsync(email, subject, body);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"[EMAIL ERROR] Không gửi được email đến {email}: {ex.Message}");
+                        }
+                    }
+                }
+
+
+
             }
             catch (DbUpdateException ex)
             {
