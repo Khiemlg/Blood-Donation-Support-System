@@ -15,14 +15,17 @@ namespace BloodDonation_System.Service.Implement
         private readonly DButils _context;
         
         private readonly IEmergencyNotificationService _emergencyNotificationService;
+        private readonly IEmailService _emailService;
 
 
         public EmergencyRequestService(
      DButils context,
-     IEmergencyNotificationService emergencyNotificationService)
+     IEmergencyNotificationService emergencyNotificationService,
+     IEmailService emailService)
         {
             _context = context;
             _emergencyNotificationService = emergencyNotificationService;
+            _emailService = emailService;
         }
 
         // code để tạo yêu cầu máu khẩn cấp từ Staff 8/6/-15h code by khiem
@@ -67,8 +70,46 @@ namespace BloodDonation_System.Service.Implement
 
             _context.EmergencyNotifications.Add(notification);
             await _context.SaveChangesAsync();
+            // 4. GỬI EMAIL CHO USER CÓ NHÓM MÁU PHÙ HỢP
+            var matchingDonors = await _context.Users
+                .Where(u => u.UserProfile != null &&
+                            u.UserProfile.BloodTypeId == dto.BloodTypeId &&
+                            u.Email != null)
+                .ToListAsync();
+
+            Console.WriteLine($"🔍 Số lượng người dùng phù hợp có email: {matchingDonors.Count}");
+
+            // Soạn nội dung email
+            string subject = "🩸 Cần bạn hỗ trợ hiến máu khẩn cấp!";
+            string emailBody = $@"
+<p>Xin chào,</p>
+<p>Hệ thống vừa ghi nhận một <strong>yêu cầu máu khẩn cấp</strong> phù hợp với nhóm máu của bạn.</p>
+<ul>
+    <li><strong>Nhóm máu:</strong> {bloodTypeName}</li>
+    <li><strong>Số lượng:</strong> {dto.QuantityNeededMl} ml</li>
+    <li><strong>Hạn chót:</strong> {dto.DueDate:dd/MM/yyyy}</li>
+    <li><strong>Ưu tiên:</strong> {dto.Priority}</li>
+    <li><strong>Mô tả:</strong> {dto.Description}</li>
+</ul>
+<p>🙏 Nếu bạn đủ điều kiện và sẵn sàng hỗ trợ, hãy phản hồi hoặc liên hệ trung tâm hiến máu gần nhất.</p>
+<p>Trân trọng,<br/>Hệ thống Hiến Máu Tình Nguyện</p>";
+
+            // Gửi mail từng người
+            foreach (var donor in matchingDonors)
+            {
+                try
+                {
+                    await _emailService.SendEmailAsync(donor.Email!, subject, emailBody);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"❌ Không gửi được email cho {donor.Email}: {ex.Message}");
+                }
+            }
 
             return (true, "✅ Yêu cầu khẩn cấp đã được tạo và thông báo hệ thống đã ghi nhận.");
+
+
         }
 
         // -------------------------------------------
