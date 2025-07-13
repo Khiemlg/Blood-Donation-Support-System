@@ -52,6 +52,9 @@ namespace DrugUsePreventionAPI.Services.Implementations
 
         public async Task<UserDto> CreateUserAsync(CreateUserDto createUserDto)
         {
+            if(await _context.Users.AnyAsync(u => u.Email == createUserDto.Email))
+                throw new InvalidOperationException("Email đã được sử dụng.");
+
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(createUserDto.Password);
             var newUser = new User
             {

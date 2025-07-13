@@ -65,7 +65,11 @@ namespace BloodDonation_System.Service.Implement
                 DeliveryMethod = "System",
                 IsRead = false,
                 ResponseStatus = null,
-                Message = $"📢 Yêu cầu khẩn cấp: {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName}, ưu tiên {dto.Priority}. Mô tả: {dto.Description}"
+                var message = $"Yêu cầu hiến máu khẩn cấp:\n" +
+              $"- Nhóm máu: {bloodTypeName}\n" +
+              $"- Số lượng: {dto.QuantityNeededMl}ml\n" +
+              $"- Ưu tiên: {dto.Priority}\n" +
+              $"- Mô tả: {dto.Description}";
             };
 
             _context.EmergencyNotifications.Add(notification);

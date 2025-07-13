@@ -166,6 +166,7 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<EmergencyNotificationDto> CreateAsyncbyStaff(EmergencyNotificationInputDto dto)
         {
+            // 1. Tạo và lưu thông báo
             var entity = new EmergencyNotification
             {
                 NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
@@ -181,26 +182,40 @@ namespace BloodDonation_System.Service.Implement
             _context.EmergencyNotifications.Add(entity);
             await _context.SaveChangesAsync();
 
-            //if (dto.DeliveryMethod == "Email")
-            //{
-            //    // Lấy email người nhận từ DB
-            //    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == dto.RecipientUserId);
-            //    if (user != null && !string.IsNullOrEmpty(user.Email))
-            //    {
-            //        var acceptUrl = $"https://yourdomain.com/emergency-response/accept/{entity.NotificationId}";
-            //        var declineUrl = $"https://yourdomain.com/emergency-response/decline/{entity.NotificationId}";
-            //        var htmlMessage = $@"
-            //    <p>Bạn nhận được yêu cầu hiến máu khẩn cấp.</p>
-            //    <p>
-            //        <a href='{acceptUrl}'>Tôi đồng ý hiến máu</a> |
-            //        <a href='{declineUrl}'>Tôi không thể tham gia</a>
-            //    </p>
-            //";
-            //        await _emailService.SendEmailAsync(user.Email, "Yêu cầu hiến máu khẩn cấp", htmlMessage);
-            //    }
-            //}
-            // Chuyển từ entity sang DTO để trả về
-            var result = new EmergencyNotificationDto
+            // 2. Lấy thông tin người nhận
+            var recipient = await _context.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefaultAsync(u => u.UserId == dto.RecipientUserId && u.Email != null);
+
+            // 3. Lấy thông tin từ bảng EmergencyRequests để điền vào email
+            var emergency = await _context.EmergencyRequests
+                .Include(e => e.BloodType)
+                .FirstOrDefaultAsync(e => e.EmergencyId == dto.EmergencyId);
+
+            if (recipient != null && emergency != null)
+            {
+                string fullName = recipient.UserProfile?.FullName ?? "bạn";
+                string bloodTypeName = emergency.BloodType?.TypeName ?? "Không rõ";
+                string subject = "🩸 Yêu cầu hỗ trợ hiến máu khẩn cấp dành cho bạn";
+
+                string emailBody = $@"
+<p>Xin chào {fullName},</p>
+<p>Bạn vừa nhận được một <strong>thông báo khẩn cấp</strong> từ hệ thống.</p>
+<ul>
+    <li><strong>Nhóm máu:</strong> {bloodTypeName}</li>
+    <li><strong>Số lượng cần:</strong> {emergency.QuantityNeededMl} ml</li>
+    <li><strong>Hạn chót:</strong> {emergency.DueDate:dd/MM/yyyy}</li>
+    <li><strong>Ưu tiên:</strong> {emergency.Priority}</li>
+    <li><strong>Mô tả:</strong> {dto.Message}</li>
+</ul>
+<p>🙏 Nếu bạn sẵn sàng hỗ trợ, vui lòng phản hồi sớm hoặc đến trung tâm hiến máu gần nhất.</p>
+<p>Trân trọng,<br/>Hệ thống Hiến Máu Tình Nguyện</p>";
+
+                await _emailService.SendEmailAsync(recipient.Email, subject, emailBody);
+            }
+
+            // 4. Trả kết quả
+            return new EmergencyNotificationDto
             {
                 NotificationId = entity.NotificationId,
                 EmergencyId = entity.EmergencyId,
@@ -211,9 +226,6 @@ namespace BloodDonation_System.Service.Implement
                 Message = entity.Message,
                 ResponseStatus = entity.ResponseStatus
             };
-
-            return result;
-
         }
 
         public async Task<IEnumerable<EmergencyNotificationDto>> GetByUserIdAsync(string userId)

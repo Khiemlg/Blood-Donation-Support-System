@@ -112,7 +112,7 @@ namespace BloodDonation_System.Service.Implement
             _context.DonationHistories.Add(entity);
             await _context.SaveChangesAsync();
 
-            dto.DonationId = entity.DonationId;
+         //   dto.DonationId = entity.DonationId;
             return dto;
         }
 
