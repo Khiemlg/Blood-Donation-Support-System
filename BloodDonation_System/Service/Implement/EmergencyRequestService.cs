@@ -56,6 +56,13 @@ namespace BloodDonation_System.Service.Implement
             await _context.EmergencyRequests.AddAsync(emergency);
             await _context.SaveChangesAsync();
 
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            string message = $"[Khẩn cấp] Cần {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName} (Ưu tiên: {dto.Priority}). " +
+                             $"Chi tiết: {dto.Description}";
+
+            // Kiểm tra log
+            Console.WriteLine("🔍 Preview message: " + message);
             var notification = new EmergencyNotification
             {
                 NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
@@ -65,17 +72,13 @@ namespace BloodDonation_System.Service.Implement
                 DeliveryMethod = "System",
                 IsRead = false,
                 ResponseStatus = null,
-                var message = $"Yêu cầu hiến máu khẩn cấp:\n" +
-              $"- Nhóm máu: {bloodTypeName}\n" +
-              $"- Số lượng: {dto.QuantityNeededMl}ml\n" +
-              $"- Ưu tiên: {dto.Priority}\n" +
-              $"- Mô tả: {dto.Description}";
+                Message = message
             };
 
             _context.EmergencyNotifications.Add(notification);
             await _context.SaveChangesAsync();
             // 4. GỬI EMAIL CHO USER CÓ NHÓM MÁU PHÙ HỢP
-            var matchingDonors = await _context.Users
+           /* var matchingDonors = await _context.Users
                 .Where(u => u.UserProfile != null &&
                             u.UserProfile.BloodTypeId == dto.BloodTypeId &&
                             u.Email != null)
@@ -109,7 +112,7 @@ namespace BloodDonation_System.Service.Implement
                 {
                     Console.Error.WriteLine($"❌ Không gửi được email cho {donor.Email}: {ex.Message}");
                 }
-            }
+            }*/
 
             return (true, "✅ Yêu cầu khẩn cấp đã được tạo và thông báo hệ thống đã ghi nhận.");
 
