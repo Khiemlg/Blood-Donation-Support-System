@@ -23,8 +23,7 @@ namespace BloodDonation_System.Controllers
         [Authorize(Roles = "Staff")]
         public async Task<IActionResult> Create([FromBody] EmergencyRequestCreateDto dto)
         {
-            // Lấy claim 'sub' chứa user_id
-            //var userId = User.FindFirst("sub")?.Value;
+           
             var userId = User.FindFirst("user_id")?.Value;
 
 

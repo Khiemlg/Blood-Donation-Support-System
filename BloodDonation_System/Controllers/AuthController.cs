@@ -7,7 +7,7 @@ namespace BloodDonation_System.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
-    { /////l
+    { 
         private readonly IAuthService _authService;
 
         public AuthController(IAuthService authService)
