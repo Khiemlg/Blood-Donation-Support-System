@@ -8,6 +8,6 @@ namespace BloodDonation_System.Service.Interface
         Task<UserDto> CreateUserByAdminAsync(CreateUserByAdminDto dto);
         Task<TokenDto> LoginAsync(LoginDto loginDto);
         Task<TokenDto> RegisterAsync(RegisterDto registerDto);
-        Task SendOtpAsync(string email); // <- thêm mới
+        Task SendOtpAsync(string email);
     }
 }

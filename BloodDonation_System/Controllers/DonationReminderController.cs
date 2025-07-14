@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BloodDonation_System.Service.Interface;
-using Microsoft.AspNetCore.Mvc;
 namespace BloodDonation_System.Controllers
 {
 

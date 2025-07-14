@@ -1,5 +1,4 @@
-﻿// File: BloodDonation_System.Service.Interface.IBloodUnitService.cs
-
+﻿
 using BloodDonation_System.Model.DTO.Blood;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -62,7 +62,7 @@ namespace DrugUsePreventionAPI.Services.Implementations
                 Username = createUserDto.Username,
                 PasswordHash = hashedPassword,
                 Email = createUserDto.Email,
-                RoleId = createUserDto.RoleId, // Default to normal user
+                RoleId = createUserDto.RoleId, 
                 RegistrationDate = DateTime.UtcNow,
                 IsActive = true
             };

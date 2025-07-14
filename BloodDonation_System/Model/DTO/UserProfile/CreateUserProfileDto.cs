@@ -18,7 +18,6 @@ namespace BloodDonation_System.Model.DTO.UserProfile
         public string? PhoneNumber { get; set; }
 
 
-        // ✅ Ẩn 2 trường sau khỏi Swagger & không cho binding từ client
         [JsonIgnore]
         [BindNever]
         public decimal? Latitude { get; set; }

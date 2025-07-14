@@ -1,18 +1,18 @@
-﻿using BloodDonation_System.Data; // DbContext
+﻿using BloodDonation_System.Data;
 using BloodDonation_System.Model.DTO.Notification;
-using BloodDonation_System.Model.Enties; // Entity
+using BloodDonation_System.Model.Enties; 
 using BloodDonation_System.Service.Interface;
-using Microsoft.EntityFrameworkCore; // Cần thiết cho .AnyAsync()
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq; // Cần thiết cho .AnyAsync()
+using System.Linq; 
 using System.Threading.Tasks;
 
 namespace BloodDonation_System.Service.Implement
 {
     public class NotificationService : INotificationService
     {
-        private readonly DButils _context; // DbContext của bạn
+        private readonly DButils _context; 
 
         public NotificationService(DButils context)
         {
@@ -49,10 +49,8 @@ namespace BloodDonation_System.Service.Implement
             };
         }
 
-        // SỬA ĐỔI: Chữ ký nhận NotificationInputDto
         public async Task<NotificationDto> CreateNotificationAsync(NotificationinputDto dto)
         {
-            // === VALIDATION NGHIỆP VỤ (SERVER-SIDE) ===
             if (string.IsNullOrWhiteSpace(dto.Message))
             {
                 throw new ArgumentException("Nội dung thông báo không được để trống.", nameof(dto.Message));
@@ -64,57 +62,49 @@ namespace BloodDonation_System.Service.Implement
 
             var normalizedType = dto.Type.Trim().ToLower();
 
-            // Logic kiểm tra RecipientUserId dựa trên Type
-            if (normalizedType == "chung") // Loại "Chung" (gửi tới tất cả)
+            if (normalizedType == "chung") 
             {
-                // Đảm bảo RecipientUserId là "ALL" (không phân biệt hoa/thường)
                 if (dto.RecipientUserId == null || dto.RecipientUserId.Trim().ToLower() != "all")
                 {
                     throw new ArgumentException("Đối với thông báo 'Chung', Người nhận phải là 'ALL'.", nameof(dto.RecipientUserId));
                 }
-                dto.RecipientUserId = "ALL"; // Đảm bảo lưu đúng "ALL"
+                dto.RecipientUserId = "ALL"; 
             }
-            else if (normalizedType == "don" || normalizedType == "emergency") // Loại "Đơn" hoặc "Khẩn cấp"
+            else if (normalizedType == "don" || normalizedType == "emergency") 
             {
-                // Cần một RecipientUserId cụ thể và không phải là "ALL"
                 if (string.IsNullOrWhiteSpace(dto.RecipientUserId) || dto.RecipientUserId.Trim().ToLower() == "all")
                 {
                     throw new ArgumentException($"Đối với thông báo loại '{dto.Type}', cần chỉ định Người nhận cụ thể, không thể để trống hoặc là 'ALL'.", nameof(dto.RecipientUserId));
                 }
-                // OPTIONAL: Kiểm tra xem RecipientUserId có tồn tại trong bảng User không
                 var recipientExists = await _context.Users.AnyAsync(u => u.UserId == dto.RecipientUserId);
                 if (!recipientExists)
                 {
                     throw new ArgumentException($"Người nhận với ID '{dto.RecipientUserId}' không tồn tại trong hệ thống.", nameof(dto.RecipientUserId));
                 }
             }
-            else // Loại thông báo không hợp lệ
+            else 
             {
                 throw new ArgumentException($"Loại thông báo không hợp lệ: '{dto.Type}'. Các loại hợp lệ: 'Chung', 'Đơn', 'Emergency'.", nameof(dto.Type));
             }
 
-            // SentDate: Frontend sẽ gửi thời gian thực.
-            // Nếu SentDate từ FE là null, Backend sẽ gán thời gian hiện tại.
             DateTime finalSentDate = dto.SentDate ?? DateTime.UtcNow;
 
 
-            // === KẾT THÚC VALIDATION NGHIỆP VỤ ===
 
 
             var entity = new Notification
             {
-                NotificationId = "NOTIF_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(), // Tạo ID duy nhất với tiền tố
+                NotificationId = "NOTIF_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(), 
                 RecipientUserId = dto.RecipientUserId,
                 Message = dto.Message,
                 Type = dto.Type,
                 SentDate = finalSentDate,
-                IsRead = false // Luôn mặc định là false khi tạo mới thông báo
+                IsRead = false 
             };
 
             _context.Notifications.Add(entity);
             await _context.SaveChangesAsync();
 
-            // Ánh xạ entity đã tạo thành NotificationDto để trả về
             return new NotificationDto
             {
                 NotificationId = entity.NotificationId,
@@ -131,16 +121,15 @@ namespace BloodDonation_System.Service.Implement
             var entity = await _context.Notifications.FindAsync(notificationId);
             if (entity == null) return null;
 
-            // Ánh xạ các trường có thể cập nhật
             entity.Message = notificationDto.Message;
             entity.Type = notificationDto.Type;
-            entity.SentDate = notificationDto.SentDate; // Cập nhật SentDate nếu FE gửi
-            entity.IsRead = notificationDto.IsRead; // Cập nhật IsRead (thường là trường này)
+            entity.SentDate = notificationDto.SentDate; 
+            entity.IsRead = notificationDto.IsRead; 
 
             _context.Notifications.Update(entity);
             await _context.SaveChangesAsync();
 
-            return notificationDto; // Trả về DTO đã gửi (hoặc DTO của entity sau khi load lại)
+            return notificationDto;
         }
 
         public async Task<bool> DeleteNotificationAsync(string notificationId)
@@ -157,7 +146,7 @@ namespace BloodDonation_System.Service.Implement
         {
             return await _context.Notifications
                 .Where(n => n.RecipientUserId == userId || n.RecipientUserId == "ALL")
-                .OrderByDescending(n => n.SentDate ?? DateTime.MinValue) // Sắp xếp an toàn cho nullable DateTime
+                .OrderByDescending(n => n.SentDate ?? DateTime.MinValue) 
                 .Select(n => new NotificationDto
                 {
                     NotificationId = n.NotificationId,

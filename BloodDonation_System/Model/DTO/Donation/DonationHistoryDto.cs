@@ -2,7 +2,6 @@
 {
     public class DonationHistoryDto
     {
-       // public string? DonationId { get; set; }
         public string DonorUserId { get; set; } = null!;
         public DateTime DonationDate { get; set; }
         public int BloodTypeId { get; set; }

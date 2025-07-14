@@ -10,5 +10,3 @@
         public string? Description { get; set; }
     }
 }
-//EmergencyRequestCreateDto.cs dùng cho POST /create
-//chỉ giữ lại các field cần nhập từ Staff:

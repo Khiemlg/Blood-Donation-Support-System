@@ -6,7 +6,7 @@
         public string DonorUserId { get; set; }
         public int BloodTypeId { get; set; }
         public int ComponentId { get; set; }
-        public string? ComponentName { get; set; } // Added this property to fix CS0117  
+        public string? ComponentName { get; set; } 
         public DateOnly? PreferredDate { get; set; }
         public string? PreferredTimeSlot { get; set; }
         public string? Status { get; set; }

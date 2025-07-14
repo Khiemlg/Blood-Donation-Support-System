@@ -23,56 +23,35 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<bool> DiscardBloodUnitAsync(string bloodUnitId, string discardReason)
         {
-            // Tìm đơn vị máu trong cơ sở dữ liệu
             var bloodUnit = await _context.BloodUnits.FirstOrDefaultAsync(b => b.UnitId == bloodUnitId);
 
-            // Kiểm tra nếu không tìm thấy đơn vị máu hoặc trạng thái không phải "Available" hoặc "Reserved"
             if (bloodUnit == null || (bloodUnit.Status != "Available" && bloodUnit.Status != "Reserved"))
             {
-                return false; // Trạng thái không hợp lệ để loại bỏ
+                return false; 
             }
 
-            // Cập nhật trạng thái và lý do loại bỏ
             bloodUnit.Status = "Discarded";
             bloodUnit.DiscardReason = discardReason;
 
-            // Cập nhật vào cơ sở dữ liệu
             _context.BloodUnits.Update(bloodUnit);
             await _context.SaveChangesAsync();
 
-            return true; // Thành công
+            return true; 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /// <summary>
         /// Lấy tất cả các đơn vị máu với thông tin kho chi tiết (bao gồm tên BloodType và Component).
-        /// </summary>
-        /// <returns>Tập hợp các BloodUnitInventoryDto.</returns>
         public async Task<IEnumerable<BloodUnitInventoryDto>> GetAllAsync()
         {
             return await _context.BloodUnits
-                .Include(bu => bu.BloodType)      // Tải BloodType để lấy tên
-                .Include(bu => bu.Component)      // Tải BloodComponent để lấy tên
-                .Select(bu => new BloodUnitInventoryDto // Ánh xạ sang BloodUnitInventoryDto
+                .Include(bu => bu.BloodType)      
+                .Include(bu => bu.Component)      
+                .Select(bu => new BloodUnitInventoryDto 
                 {
                     UnitId = bu.UnitId,
                     DonationId = bu.DonationId,
                     BloodTypeId = bu.BloodTypeId,
-                    BloodTypeName = bu.BloodType.TypeName, // Lấy tên từ BloodType
+                    BloodTypeName = bu.BloodType.TypeName, 
                     ComponentId = bu.ComponentId,
-                    ComponentName = bu.Component.ComponentName, // Lấy tên từ BloodComponent
+                    ComponentName = bu.Component.ComponentName, 
                     VolumeMl = bu.VolumeMl,
                     CollectionDate = bu.CollectionDate,
                     ExpirationDate = bu.ExpirationDate,
@@ -84,16 +63,12 @@ namespace BloodDonation_System.Service.Implement
                 .ToListAsync();
         }
 
-        /// <summary>
         /// Lấy một đơn vị máu theo ID với thông tin kho chi tiết.
-        /// </summary>
-        /// <param name="unitId">ID của đơn vị máu.</param>
-        /// <returns>Một BloodUnitInventoryDto nếu tìm thấy, ngược lại là null.</returns>
         public async Task<BloodUnitInventoryDto?> GetByIdAsync(string unitId)
         {
             var bu = await _context.BloodUnits
-                .Include(b => b.BloodType)      // Tải BloodType
-                .Include(b => b.Component)      // Tải BloodComponent
+                .Include(b => b.BloodType)     
+                .Include(b => b.Component)      
                 .FirstOrDefaultAsync(b => b.UnitId == unitId);
 
             if (bu == null) return null;
@@ -119,7 +94,6 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<BloodUnitInventoryDto> CreateAsync(BloodUnitDto dto)
         {
-            // Kiểm tra các trường bắt buộc và khóa ngoại
             if (string.IsNullOrEmpty(dto.DonationId))
             {
                 throw new ArgumentException("DonationId là bắt buộc để tạo một đơn vị máu mới.");
@@ -136,12 +110,11 @@ namespace BloodDonation_System.Service.Implement
             {
                 throw new ArgumentException("VolumeMl phải lớn hơn 0.");
             }
-            if (dto.CollectionDate == default) // Check if date is default (not set)
+            if (dto.CollectionDate == default) 
             {
                 throw new ArgumentException("CollectionDate là bắt buộc và phải là một ngày hợp lệ.");
             }
 
-            // Xác thực sự tồn tại của các khóa ngoại trong DB
             var donationExists = await _context.DonationHistories.AnyAsync(d => d.DonationId == dto.DonationId);
             if (!donationExists)
             {
@@ -158,7 +131,6 @@ namespace BloodDonation_System.Service.Implement
                 throw new ArgumentException($"ComponentId '{dto.ComponentId}' không tồn tại. Vui lòng đảm bảo nó là một ID thành phần máu hợp lệ.");
             }
 
-            // 1. Tính toán ExpirationDate dựa trên ComponentId
             DateOnly expirationDate;
             switch (dto.ComponentId)
             {
@@ -175,12 +147,11 @@ namespace BloodDonation_System.Service.Implement
                     expirationDate = dto.CollectionDate.AddDays(35);
                     break;
                 default:
-                    expirationDate = dto.CollectionDate.AddDays(30); // Giá trị mặc định
+                    expirationDate = dto.CollectionDate.AddDays(30); 
                     Console.WriteLine($"[CẢNH BÁO] ComponentId không xác định '{dto.ComponentId}'. Đang sử dụng ngày hết hạn mặc định (30 ngày).");
                     break;
             }
 
-            // 2. Gán StorageLocation dựa trên ComponentId
             string assignedStorageLocation;
             switch (dto.ComponentId)
             {
@@ -194,20 +165,19 @@ namespace BloodDonation_System.Service.Implement
                     break;
             }
 
-            // 3. Tạo thực thể BloodUnit
             var entity = new BloodUnit
             {
-                UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(), // Tạo UnitId duy nhất
+                UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(), 
                 DonationId = dto.DonationId,
                 BloodTypeId = dto.BloodTypeId,
                 ComponentId = dto.ComponentId,
                 VolumeMl = dto.VolumeMl,
                 CollectionDate = dto.CollectionDate,
-                ExpirationDate = expirationDate, // <-- Đã tính toán
-                StorageLocation = assignedStorageLocation, // <-- Đã xác định
-                TestResults = dto.TestResults ?? "Pending", // Mặc định là "Pending" nếu không được cung cấp
-                Status = dto.Status ?? "Pending", // Mặc định là "Available" nếu không được cung cấp
-                DiscardReason = dto.DiscardReason // Thường là null khi tạo mới
+                ExpirationDate = expirationDate, 
+                StorageLocation = assignedStorageLocation, 
+                TestResults = dto.TestResults ?? "Pending", 
+                Status = dto.Status ?? "Pending", 
+                DiscardReason = dto.DiscardReason 
             };
 
             try
@@ -218,16 +188,16 @@ namespace BloodDonation_System.Service.Implement
             catch (DbUpdateException ex)
             {
                 var sqlException = ex.InnerException as Microsoft.Data.SqlClient.SqlException;
-                if (sqlException != null && sqlException.Number == 2627) // Primary key violation (if UnitId somehow duplicates)
+                if (sqlException != null && sqlException.Number == 2627) 
                 {
                     throw new InvalidOperationException("Đã xảy ra lỗi khi tạo đơn vị máu: ID đã tồn tại.", ex);
                 }
-                if (sqlException != null && sqlException.Number == 547) // Foreign Key Constraint Violation or NOT NULL constraint
+                if (sqlException != null && sqlException.Number == 547) 
                 {
                     throw new ArgumentException("Lỗi dữ liệu đầu vào: Một hoặc nhiều ID liên quan (Donation, BloodType, Component) không hợp lệ hoặc dữ liệu bắt buộc bị thiếu.", ex);
                 }
                 Console.Error.WriteLine($"[LỖI CSDL] Đã xảy ra lỗi khi tạo đơn vị máu: {ex.Message}");
-                throw; // Ném lại ngoại lệ DbUpdateException chung
+                throw; 
             }
             catch (Exception ex)
             {
@@ -270,12 +240,12 @@ namespace BloodDonation_System.Service.Implement
             var entity = await _context.BloodUnits.FirstOrDefaultAsync(bu => bu.UnitId.Equals(unitId));
             if (entity == null)
             {
-                return null; // Không tìm thấy đơn vị máu
+                return null; 
             }
 
             // Kiểm tra tính hợp lệ của các ID khóa ngoại nếu chúng có thể thay đổi
             // Chú ý: Các trường trong DTO được truyền vào có thể là null, cần xử lý tùy theo logic
-            if (dto.DonationId != null) // Chỉ kiểm tra nếu DonationId được cung cấp để cập nhật
+            if (dto.DonationId != null) 
             {
                 if (!await _context.DonationHistories.AnyAsync(d => d.DonationId == dto.DonationId))
                 {
@@ -313,7 +283,7 @@ namespace BloodDonation_System.Service.Implement
             DateOnly newExpirationDate;
             string newAssignedStorageLocation;
 
-            switch (entity.ComponentId) // Sử dụng entity.ComponentId đã được cập nhật
+            switch (entity.ComponentId) 
             {
                 case 1: newExpirationDate = entity.CollectionDate.AddDays(42); newAssignedStorageLocation = "COLD_STORAGE_A"; break;
                 case 2: newExpirationDate = entity.CollectionDate.AddYears(1); newAssignedStorageLocation = "FREEZER_ZONE_P"; break;
@@ -326,7 +296,7 @@ namespace BloodDonation_System.Service.Implement
                     break;
             }
             entity.ExpirationDate = newExpirationDate;
-            entity.StorageLocation = newAssignedStorageLocation; // Luôn gán lại theo ComponentId
+            entity.StorageLocation = newAssignedStorageLocation; 
 
 
             entity.TestResults = dto.TestResults ?? entity.TestResults;
@@ -340,7 +310,7 @@ namespace BloodDonation_System.Service.Implement
             catch (DbUpdateException ex)
             {
                 var sqlException = ex.InnerException as Microsoft.Data.SqlClient.SqlException;
-                if (sqlException != null && sqlException.Number == 547) // Foreign Key Constraint Violation or NOT NULL constraint
+                if (sqlException != null && sqlException.Number == 547) 
                 {
                     throw new ArgumentException("Lỗi dữ liệu đầu vào: Một hoặc nhiều ID liên quan (Donation, BloodType, Component) không hợp lệ hoặc dữ liệu bắt buộc bị thiếu.", ex);
                 }
@@ -388,11 +358,7 @@ namespace BloodDonation_System.Service.Implement
             };
         }
 
-        /// <summary>
         /// Xóa một đơn vị máu theo ID.
-        /// </summary>
-        /// <param name="unitId">ID của đơn vị máu cần xóa.</param>
-        /// <returns>True nếu xóa thành công, ngược lại là false.</returns>
         /// <exception cref="InvalidOperationException">Ném ra nếu có lỗi cơ sở dữ liệu trong quá trình xóa.</exception>
         public async Task<bool> DeleteAsync(string unitId)
         {
@@ -408,7 +374,7 @@ namespace BloodDonation_System.Service.Implement
             catch (DbUpdateException ex)
             {
                 var sqlException = ex.InnerException as Microsoft.Data.SqlClient.SqlException;
-                if (sqlException != null && sqlException.Number == 547) // Foreign Key Constraint Violation (if other entities reference this unit)
+                if (sqlException != null && sqlException.Number == 547) 
                 {
                     throw new InvalidOperationException("Không thể xóa đơn vị máu này vì có các bản ghi khác đang tham chiếu đến nó (ví dụ: trong lịch sử sử dụng).", ex);
                 }
@@ -429,9 +395,7 @@ namespace BloodDonation_System.Service.Implement
             {
                 throw new ArgumentException("BloodTypeId phải là một giá trị hợp lệ lớn hơn 0.");
             }
-            // Không cần kiểm tra sự tồn tại của BloodTypeId ở đây nếu bạn muốn trả về danh sách rỗng
-            // nếu không có đơn vị nào thuộc nhóm máu đó hoặc nếu BloodTypeId không tồn tại.
-            // Nếu bạn muốn ném lỗi nếu BloodTypeId không tồn tại, hãy thêm kiểm tra AnyAsync ở đây.
+          
 
             return await _context.BloodUnits
                 .Include(bu => bu.BloodType)
@@ -470,9 +434,9 @@ namespace BloodDonation_System.Service.Implement
             var bloodTypeId = unit.BloodTypeId;
             var collectionDate = unit.CollectionDate;
             var volume = unit.VolumeMl;
-            var redCell = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 4); // Hồng cầu
-            var plasma = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 2); // Huyết tương
-            var platelet = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 3); // Tiểu cầu
+            var redCell = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 4); 
+            var plasma = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 2); 
+            var platelet = await _context.BloodComponents.FirstOrDefaultAsync(c => c.ComponentId == 3); 
 
             if (redCell == null || plasma == null || platelet == null)
                 throw new Exception("Không tìm thấy ComponentId cho các thành phần máu!");
@@ -530,7 +494,6 @@ namespace BloodDonation_System.Service.Implement
                 });
             }
 
-            // Cập nhật đơn vị gốc
             unit.Status = "Separated";
 
             _context.BloodUnits.Update(unit);

@@ -24,7 +24,7 @@ namespace BloodDonation_System.Model.DTO.Donation
         public string? PreferredTimeSlot { get; set; }
 
         [StringLength(20, ErrorMessage = "Status cannot exceed 20 characters.")]
-        public string? Status { get; set; } // Trạng thái có thể được đặt khi tạo hoặc cập nhật
+        public string? Status { get; set; } 
 
         public string? StaffNotes { get; set; }
     }

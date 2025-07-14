@@ -18,7 +18,6 @@ namespace BloodDonation_System.Service.Implement
         {
             var result = new DashboardSummaryDto();
 
-            // Tổng số đơn vị máu theo nhóm máu
             result.BloodUnitsByType = await _context.BloodUnits
                 .GroupBy(b => b.BloodType.TypeName)
                 .Select(g => new BloodTypeSummary
@@ -27,7 +26,6 @@ namespace BloodDonation_System.Service.Implement
                     TotalUnits = g.Count()
                 }).ToListAsync();
 
-            // Lượt hiến máu theo tháng (6 tháng gần nhất)
             var now = DateTime.Now;
             var sixMonthsAgo = now.AddMonths(-5);
 
@@ -42,10 +40,8 @@ namespace BloodDonation_System.Service.Implement
                 .OrderBy(s => s.Month)
                 .ToListAsync();
 
-            // Tổng số yêu cầu khẩn cấp
             result.EmergencyRequestCount = await _context.EmergencyRequests.CountAsync();
 
-            // Phân bố tài khoản (Active vs Inactive)
             result.UserStatusDistribution = await _context.Users
                 .GroupBy(u => u.IsActive == true ? "Active" : "Inactive")
                 .Select(g => new UserStatusSummary

@@ -7,7 +7,7 @@ namespace BloodDonation_System.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Staff,Member")]  // Có thể điều chỉnh thêm cho Member nếu cần
+    [Authorize(Roles = "Admin,Staff,Member")]  
     public class NotificationController : ControllerBase
     {
         private readonly INotificationService _notificationService;
@@ -77,7 +77,6 @@ namespace BloodDonation_System.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi
                 Console.WriteLine($"Error fetching notifications for user {userId}: {ex.Message}");
                 return StatusCode(500, "An error occurred while fetching notifications.");
             }

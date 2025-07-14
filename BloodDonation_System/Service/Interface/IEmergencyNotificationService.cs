@@ -9,7 +9,6 @@ namespace BloodDonation_System.Service.Interface
     {
         Task<IEnumerable<EmergencyNotificationDto>> GetAllAsync();
         Task<EmergencyNotificationDto?> GetByIdAsync(string notificationId);
-      //  Task<EmergencyNotificationDto> CreateAsync(EmergencyNotificationDto dto);
         Task<EmergencyNotificationDto> CreateAsyncbyStaff(EmergencyNotificationInputDto dto);
         Task<EmergencyNotificationDto?> UpdateAsync(string notificationId, EmergencyNotificationDto dto);
         Task<bool> DeleteAsync(string notificationId);

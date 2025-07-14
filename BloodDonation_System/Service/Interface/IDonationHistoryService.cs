@@ -1,5 +1,4 @@
-﻿// File: BloodDonation_System.Service.Interface.IDonationHistoryService.cs
-using BloodDonation_System.Model.DTO.Donation;
+﻿using BloodDonation_System.Model.DTO.Donation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +6,6 @@ namespace BloodDonation_System.Service.Interface
 {
     public interface IDonationHistoryService
     {
-        // Các phương thức trả về DTO chi tiết hơn
         Task<IEnumerable<DonationHistoryDetailDto>> GetAllAsync();
         Task<DonationHistoryDetailDto?> GetByIdAsync(string donationId);
         Task<DonationHistoryDetailDto?> GetDonationHistoryByRequestIdAsync(string requestId);

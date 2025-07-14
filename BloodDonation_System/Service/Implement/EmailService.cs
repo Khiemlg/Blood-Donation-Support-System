@@ -31,7 +31,7 @@ namespace BloodDonation_System.Service.Implementation
             await smtp.ConnectAsync(
                 _config["EmailSettings:SmtpServer"],
                 int.Parse(_config["EmailSettings:Port"]),
-                SecureSocketOptions.StartTls // ✅ Sử dụng STARTTLS cho port 587
+                SecureSocketOptions.StartTls 
             );
 
             await smtp.AuthenticateAsync(

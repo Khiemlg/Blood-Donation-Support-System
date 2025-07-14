@@ -6,12 +6,10 @@ using Microsoft.EntityFrameworkCore;
 namespace BloodDonation_System.Data;
 
 public partial class DButils : DbContext
-{ //kmn
+{ 
     public DButils()
     {
     }
-    /// tesst 
-    /// /push testing
     public DButils(DbContextOptions<DButils> options)
         : base(options)
     {

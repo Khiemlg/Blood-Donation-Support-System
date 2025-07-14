@@ -33,12 +33,11 @@ namespace BloodDonation_System.Service.Implement
 
             foreach (var profile in profiles)
             {
-                var lastDate = profile.LastBloodDonationDate.Value.ToDateTime(TimeOnly.MinValue); // Convert DateOnly to DateTime
+                var lastDate = profile.LastBloodDonationDate.Value.ToDateTime(TimeOnly.MinValue); 
 
                 if ((DateTime.UtcNow.Date - lastDate.Date).TotalDays >= 90)
 
                 {
-                    // 🔍 Tránh gửi trùng bằng ReminderLogs
                     bool alreadySent = await _context.ReminderLogs.AnyAsync(log =>
                         log.UserId == profile.UserId &&
                         log.ReminderType == "BloodDonation" &&
@@ -49,7 +48,6 @@ namespace BloodDonation_System.Service.Implement
                     {
                         string message = "Hệ thống nhắc nhở bạn kiểm tra sức khỏe và sẵn sàng cho lần hiến máu tiếp theo.";
 
-                        // 1. Gửi Notification
                         _context.Notifications.Add(new Notification
                         {
                             NotificationId = Guid.NewGuid().ToString(),
@@ -60,7 +58,6 @@ namespace BloodDonation_System.Service.Implement
                             IsRead = false
                         });
 
-                        // 2. Gửi Email
                         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == profile.UserId);
                         if (user != null && !string.IsNullOrEmpty(user.Email))
                         {
@@ -71,7 +68,6 @@ namespace BloodDonation_System.Service.Implement
                             );
                         }
 
-                        // 3. Ghi log vào ReminderLogs
                         _context.ReminderLogs.Add(new ReminderLog
                         {
                             UserId = profile.UserId,

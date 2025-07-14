@@ -42,7 +42,6 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<RoleDto?> CreateAsync(CreateRoleDto dto)
         {
-            // Kiểm tra trùng tên
             if (await _context.Roles.AnyAsync(r => r.RoleName == dto.RoleName))
                 return null;
 
@@ -69,7 +68,7 @@ namespace BloodDonation_System.Service.Implement
             if (role == null) return null;
 
             if (role.RoleName != dto.RoleName && await _context.Roles.AnyAsync(r => r.RoleName == dto.RoleName))
-                return null; // trùng tên với role khác
+                return null; 
 
             role.RoleName = dto.RoleName;
             role.Description = dto.Description;

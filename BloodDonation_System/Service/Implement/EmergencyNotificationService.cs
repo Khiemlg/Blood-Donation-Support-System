@@ -28,7 +28,6 @@ namespace BloodDonation_System.Service.Implement
             if (notification == null)
                 return "❌ Không tìm thấy thông báo hoặc không thuộc về bạn.";
 
-            // Chỉ chặn nếu đã phản hồi thật sự
             if (notification.ResponseStatus == "Interested" || notification.ResponseStatus == "Declined")
                 return "⚠️ Bạn đã phản hồi rồi. Không thể sửa phản hồi.";
 
@@ -36,7 +35,7 @@ namespace BloodDonation_System.Service.Implement
                 return "❌ Trạng thái phản hồi không hợp lệ.";
 
             notification.ResponseStatus = dto.ResponseStatus;
-            notification.IsRead = true; // Optional: đánh dấu đã đọc luôn nếu muốn
+            notification.IsRead = true; 
             await _context.SaveChangesAsync();
 
             return "✅ Phản hồi đã được ghi nhận.";
@@ -131,10 +130,10 @@ namespace BloodDonation_System.Service.Implement
                 var notification = new EmergencyNotification
                 {
                     NotificationId = "EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
-                    EmergencyId = request.EmergencyId, // dùng đúng tên khóa chính của bảng EmergencyRequests
+                    EmergencyId = request.EmergencyId,
                     RecipientUserId = member.UserId,
                     SentDate = DateTime.Now,
-                    DeliveryMethod = "App Notification", // hoặc "Email" nếu có xử lý
+                    DeliveryMethod = "App Notification", 
                     IsRead = false,
                     ResponseStatus = "No Response"
                 };
@@ -166,7 +165,6 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<EmergencyNotificationDto> CreateAsyncbyStaff(EmergencyNotificationInputDto dto)
         {
-            // 1. Tạo và lưu thông báo
             var entity = new EmergencyNotification
             {
                 NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
@@ -182,12 +180,10 @@ namespace BloodDonation_System.Service.Implement
             _context.EmergencyNotifications.Add(entity);
             await _context.SaveChangesAsync();
 
-            // 2. Lấy thông tin người nhận
             var recipient = await _context.Users
                 .Include(u => u.UserProfile)
                 .FirstOrDefaultAsync(u => u.UserId == dto.RecipientUserId && u.Email != null);
 
-            // 3. Lấy thông tin từ bảng EmergencyRequests để điền vào email
             var emergency = await _context.EmergencyRequests
                 .Include(e => e.BloodType)
                 .FirstOrDefaultAsync(e => e.EmergencyId == dto.EmergencyId);
@@ -214,7 +210,6 @@ namespace BloodDonation_System.Service.Implement
                 await _emailService.SendEmailAsync(recipient.Email, subject, emailBody);
             }
 
-            // 4. Trả kết quả
             return new EmergencyNotificationDto
             {
                 NotificationId = entity.NotificationId,
@@ -232,7 +227,7 @@ namespace BloodDonation_System.Service.Implement
         {
             return await _context.EmergencyNotifications
                 .Where(n => n.RecipientUserId == userId)
-                .OrderByDescending(n => n.SentDate) // Sắp xếp mới nhất lên trước (tuỳ chọn)
+                .OrderByDescending(n => n.SentDate) 
                 .Select(en => new EmergencyNotificationDto
                 {
                     NotificationId = en.NotificationId,

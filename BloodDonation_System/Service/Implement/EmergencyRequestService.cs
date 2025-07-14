@@ -28,7 +28,6 @@ namespace BloodDonation_System.Service.Implement
             _emailService = emailService;
         }
 
-        // code để tạo yêu cầu máu khẩn cấp từ Staff 8/6/-15h code by khiem
         public async Task<(bool Success, string Message)> CreateEmergencyRequestAsync(EmergencyRequestCreateDto dto, string staffUserId)
         {
             var bloodTypeName = await _context.BloodTypes
@@ -58,10 +57,9 @@ namespace BloodDonation_System.Service.Implement
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            string message = $"[Khẩn cấp] Cần {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName} (Ưu tiên: {dto.Priority}) thời gian cần {dto.DueDate} . " +
+            string message = $"[Khẩn cấp] Cần {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName} thời gian cần {dto.DueDate} . " +
                              $"Chi tiết: {dto.Description} ";
 
-            // Kiểm tra log
             Console.WriteLine("🔍 Preview message: " + message);
             var notification = new EmergencyNotification
             {
@@ -84,7 +82,6 @@ namespace BloodDonation_System.Service.Implement
 
         }
 
-        // -------------------------------------------
 
         public async Task<IEnumerable<EmergencyRequestDto>> GetAllAsync()
         {
@@ -182,8 +179,6 @@ namespace BloodDonation_System.Service.Implement
             return true;
         }
 
-        // các hàm thêm bơi khiêm -------------------------------------- 25/06/2024
-        // Lấy tất cả yêu cầu máu khẩn cấp, có thể lọc theo trạng thái
         public async Task<IEnumerable<EmergencyRequestDto>> GetAllEmergencyRequestsAsync(string? status)
         {
             var query = _context.EmergencyRequests.AsQueryable();
@@ -208,7 +203,6 @@ namespace BloodDonation_System.Service.Implement
                 }).ToListAsync();
         }
 
-        // Lấy chi tiết một yêu cầu máu khẩn cấp theo ID
         public async Task<EmergencyRequestDto?> GetEmergencyRequestByIdAsync(string emergencyId)
         {
             var er = await _context.EmergencyRequests.FindAsync(emergencyId);
@@ -229,7 +223,6 @@ namespace BloodDonation_System.Service.Implement
             };
         }
 
-        // Cập nhật trạng thái yêu cầu máu khẩn cấp
         public async Task<(bool Success, string Message)> UpdateEmergencyRequestStatusAsync(string emergencyId, string status)
         {
             var entity = await _context.EmergencyRequests.FindAsync(emergencyId);
@@ -240,7 +233,6 @@ namespace BloodDonation_System.Service.Implement
             return (true, "Status updated successfully");
         }
 
-        // Gửi thông báo khẩn cấp tới các donor phù hợp
         public async Task<(bool Success, string Message)> NotifyDonorsForEmergencyAsync(string emergencyId)
         {
             var emergency = await _context.EmergencyRequests.FindAsync(emergencyId);
@@ -249,7 +241,6 @@ namespace BloodDonation_System.Service.Implement
             return (true, "Notifications sent to matching donors");
         }
 
-        // Lấy danh sách yêu cầu máu khẩn cấp của một user
         public async Task<IEnumerable<EmergencyRequestDto>> GetEmergencyRequestsByUserAsync(string userId)
         {
             return await _context.EmergencyRequests
@@ -270,7 +261,6 @@ namespace BloodDonation_System.Service.Implement
                 }).ToListAsync();
         }
 
-        // Hủy yêu cầu máu khẩn cấp
         public async Task<(bool Success, string Message)> CancelEmergencyRequestAsync(string emergencyId)
         {
             var entity = await _context.EmergencyRequests.FindAsync(emergencyId);

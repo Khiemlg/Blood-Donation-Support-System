@@ -4,8 +4,7 @@
     {
         public int BloodTypeId { get; set; }
         public int ComponentId { get; set; }
-        public double RadiusInKm { get; set; } // ✅ Đổi tên thành giống service
-
+        public double RadiusInKm { get; set; } 
     }
 
 }

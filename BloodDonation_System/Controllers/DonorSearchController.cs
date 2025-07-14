@@ -18,9 +18,7 @@ namespace BloodDonation_System.Controllers
             _donorSearchService = donorSearchService;
         }
 
-        /// <summary>
         /// Tìm người hiến máu phù hợp theo nhóm máu, thành phần và bán kính từ bệnh viện (quận 1).
-        /// </summary>
         [HttpPost("search")]
         public async Task<ActionResult<List<UserProfileDto>>> SearchDonors([FromBody] SearchDonorDto request)
         {

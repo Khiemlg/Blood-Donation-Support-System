@@ -13,10 +13,8 @@ using System.Threading.Tasks;
 
 namespace BloodDonation_System.Service.Implementation
 {
-    // Triển khai IDonationRequestService
     public class DonationRequestService : IDonationRequestService
     {
-        // DbContext để tương tác với cơ sở dữ liệu (đã đổi tên thành DButils)
         private readonly DButils _context;
 
        
@@ -25,44 +23,34 @@ namespace BloodDonation_System.Service.Implementation
         public DonationRequestService(DButils context, Interface.IEmailService emailService)
         {
             _context = context;
-            _emailService = emailService; // Tiêm dịch vụ email vào
+            _emailService = emailService; 
         }
 
 
-        /// <summary>
-        /// Tạo một yêu cầu hiến máu mới từ Input DTO.
-        /// </summary>
-        /// <param name="dto">Đối tượng DonationRequestInputDto chứa thông tin yêu cầu hiến máu cần tạo.</param>
-        /// <returns>DonationRequestResponseDto của yêu cầu đã tạo.</returns>
+       
         public async Task<DonationRequestDto> CreateAsync(DonationRequestInputDto dto)
         {
-            // Kiểm tra DonorUserId khi tạo mới là bắt buộc.
-            // ArgumentException được ném ra nếu thiếu, để Controller có thể bắt và trả về BadRequest.
             if (string.IsNullOrEmpty(dto.DonorUserId))
             {
                 throw new ArgumentException("DonorUserId is required for creating a new donation request.");
             }
 
-            // Ánh xạ Input DTO sang thực thể DonationRequest
             var donationRequest = new DonationRequest
             {
-                // Tạo RequestId duy nhất với tiền tố "DONR_"
                 RequestId = "DONR_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
-                DonorUserId = dto.DonorUserId, // Lấy từ DTO đầu vào
+                DonorUserId = dto.DonorUserId, 
                 BloodTypeId = dto.BloodTypeId,
                 ComponentId = dto.ComponentId,
                 PreferredDate = dto.PreferredDate,
                 PreferredTimeSlot = dto.PreferredTimeSlot,
-                Status = dto.Status ?? "Pending", // Mặc định trạng thái là "Pending"
-                RequestDate = DateTime.UtcNow, // Ghi lại ngày yêu cầu
+                Status = dto.Status ?? "Pending", 
+                RequestDate = DateTime.UtcNow, 
                 StaffNotes = dto.StaffNotes
             };
 
             await _context.DonationRequests.AddAsync(donationRequest);
             await _context.SaveChangesAsync();
 
-            // Tải các Navigation Properties cần thiết để tạo Response DTO đầy đủ
-            // Bao gồm BloodType, Component và User.UserProfile
             await _context.Entry(donationRequest)
                 .Reference(dr => dr.BloodType).LoadAsync();
             await _context.Entry(donationRequest)
@@ -72,7 +60,6 @@ namespace BloodDonation_System.Service.Implementation
                 .Include(u => u.UserProfile)
                 .LoadAsync();
 
-            // Ánh xạ thực thể đã tạo thành Response DTO để trả về
             return new DonationRequestDto
             {
                 RequestId = donationRequest.RequestId,
@@ -84,25 +71,21 @@ namespace BloodDonation_System.Service.Implementation
                 Status = donationRequest.Status,
                 RequestDate = donationRequest.RequestDate,
                 StaffNotes = donationRequest.StaffNotes,
-                DonorUserName = donationRequest.DonorUser?.UserProfile?.FullName, // Truy cập FullName an toàn
+                DonorUserName = donationRequest.DonorUser?.UserProfile?.FullName, 
                 BloodTypeName = donationRequest.BloodType?.TypeName,
                 ComponentName = donationRequest.Component?.ComponentName
             };
         }
 
-        /// <summary>
-        /// Lấy tất cả các yêu cầu hiến máu và ánh xạ chúng thành DonationRequestResponseDto.
-        /// Bao gồm thông tin chi tiết về người hiến, nhóm máu và thành phần máu.
-        /// </summary>
-        /// <returns>Danh sách DonationRequestResponseDto.</returns>
+        
         public async Task<IEnumerable<DonationRequestDto>> GetAllAsync()
         {
             return await _context.DonationRequests
-                .Include(dr => dr.BloodType) // Bao gồm thông tin nhóm máu
-                .Include(dr => dr.Component) // Bao gồm thông tin thành phần máu
-                .Include(dr => dr.DonorUser) // Bao gồm thông tin người dùng
-                    .ThenInclude(u => u.UserProfile) // Và thông tin hồ sơ người dùng để lấy FullName
-                .Select(dr => new DonationRequestDto // Ánh xạ sang DonationRequestResponseDto
+                .Include(dr => dr.BloodType) 
+                .Include(dr => dr.Component) 
+                .Include(dr => dr.DonorUser) 
+                    .ThenInclude(u => u.UserProfile) 
+                .Select(dr => new DonationRequestDto 
                 {
                     RequestId = dr.RequestId,
                     DonorUserId = dr.DonorUserId,
@@ -113,26 +96,21 @@ namespace BloodDonation_System.Service.Implementation
                     Status = dr.Status,
                     RequestDate = dr.RequestDate,
                     StaffNotes = dr.StaffNotes,
-                    DonorUserName = dr.DonorUser.UserProfile.FullName, // Truy cập FullName qua UserProfile
+                    DonorUserName = dr.DonorUser.UserProfile.FullName,
                     BloodTypeName = dr.BloodType.TypeName,
                     ComponentName = dr.Component.ComponentName
                 })
                 .ToListAsync();
         }
 
-        /// <summary>
-        /// Lấy một yêu cầu hiến máu theo ID và ánh xạ nó thành DonationRequestResponseDto.
-        /// Bao gồm thông tin chi tiết về người hiến, nhóm máu và thành phần máu.
-        /// </summary>
-        /// <param name="requestId">ID của yêu cầu hiến máu.</param>
-        /// <returns>DonationRequestResponseDto nếu tìm thấy, ngược lại là null.</returns>
+        
         public async Task<DonationRequestDto?> GetByIdAsync(string requestId)
         {
             var donationRequest = await _context.DonationRequests
                 .Include(dr => dr.BloodType)
                 .Include(dr => dr.Component)
                 .Include(dr => dr.DonorUser)
-                    .ThenInclude(u => u.UserProfile) // Bao gồm UserProfile để lấy FullName
+                    .ThenInclude(u => u.UserProfile) 
                 .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
 
             if (donationRequest == null)
@@ -140,10 +118,10 @@ namespace BloodDonation_System.Service.Implementation
                 return null;
             }
 
-            // Ánh xạ thực thể tìm được thành Response DTO
+           
             return new DonationRequestDto
             {
-                RequestId = donationRequest.RequestId, // Đảm bảo RequestId được ánh xạ
+                RequestId = donationRequest.RequestId, 
                 DonorUserId = donationRequest.DonorUserId,
                 BloodTypeId = donationRequest.BloodTypeId,
                 ComponentId = donationRequest.ComponentId,
@@ -152,7 +130,7 @@ namespace BloodDonation_System.Service.Implementation
                 Status = donationRequest.Status,
                 RequestDate = donationRequest.RequestDate,
                 StaffNotes = donationRequest.StaffNotes,
-                DonorUserName = donationRequest.DonorUser.UserProfile?.FullName, // Truy cập FullName an toàn
+                DonorUserName = donationRequest.DonorUser.UserProfile?.FullName, 
                 BloodTypeName = donationRequest.BloodType.TypeName,
                 ComponentName = donationRequest.Component.ComponentName
             };
@@ -162,7 +140,6 @@ namespace BloodDonation_System.Service.Implementation
         
         public async Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto)
         {
-            // 1. Tìm yêu cầu trong DB
             var existingRequest = await _context.DonationRequests
                 .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
 
@@ -172,7 +149,6 @@ namespace BloodDonation_System.Service.Implementation
             var oldStatus = existingRequest.Status?.ToLower();
             var newStatus = dto.Status?.ToLower();
 
-            // 2. Cập nhật dữ liệu
             existingRequest.BloodTypeId = dto.BloodTypeId;
             existingRequest.ComponentId = dto.ComponentId;
             existingRequest.PreferredDate = dto.PreferredDate;
@@ -182,13 +158,11 @@ namespace BloodDonation_System.Service.Implementation
 
             await _context.SaveChangesAsync();
 
-            // 3. Lấy email người hiến máu
             var donorEmail = await _context.Users
                 .Where(u => u.UserId == existingRequest.DonorUserId)
                 .Select(u => u.Email)
                 .FirstOrDefaultAsync();
 
-            // 4. Gửi email tương ứng
             if (!string.IsNullOrEmpty(donorEmail))
             {
                 try
@@ -212,7 +186,6 @@ namespace BloodDonation_System.Service.Implementation
                 }
             }
 
-            // 5. Tạo bản ghi DonationHistory nếu trạng thái chuyển sang "accepted"
             if (newStatus == "accepted" && oldStatus != "accepted")
             {
                 try
@@ -225,7 +198,7 @@ namespace BloodDonation_System.Service.Implementation
                         BloodTypeId = existingRequest.BloodTypeId,
                         ComponentId = existingRequest.ComponentId,
                         DonationDate = DateTime.UtcNow,
-                        QuantityMl = 0, // Cập nhật thực tế nếu có
+                        QuantityMl = 0, 
                         EligibilityStatus = "Eligible",
                         ReasonIneligible = null,
                         TestingResults = "Pending",
@@ -244,7 +217,6 @@ namespace BloodDonation_System.Service.Implementation
                 }
             }
 
-            // 6. Lấy lại dữ liệu đã cập nhật để trả về
             var updatedRequest = await _context.DonationRequests
                 .Include(dr => dr.BloodType)
                 .Include(dr => dr.Component)
@@ -272,17 +244,13 @@ namespace BloodDonation_System.Service.Implementation
 
 
 
-        /// <summary>
-        /// Xóa một yêu cầu hiến máu theo ID.
-        /// </summary>
-        /// <param name="requestId">ID của yêu cầu hiến máu cần xóa.</param>
-        /// <returns>True nếu xóa thành công, ngược lại là false.</returns>
+       
         public async Task<bool> DeleteAsync(string requestId)
         {
             var donationRequest = await _context.DonationRequests.FirstOrDefaultAsync(dr => dr.RequestId == requestId);
             if (donationRequest == null)
             {
-                return false; // Không tìm thấy yêu cầu
+                return false; 
             }
 
             _context.DonationRequests.Remove(donationRequest);
@@ -292,8 +260,6 @@ namespace BloodDonation_System.Service.Implementation
 
         public async Task<Dictionary<string, int>> GetSlotCountsByDateAsync(DateOnly date)
         {
-            // Định nghĩa các khung giờ bạn có (phải khớp với Frontend)
-            // Đây là các giá trị cứng. Nếu các khung giờ có thể thay đổi, bạn nên lưu chúng trong DB.
             var timeSlots = new List<string>
             {
                 "08:00 - 09:30",
@@ -302,22 +268,18 @@ namespace BloodDonation_System.Service.Implementation
                 "15:00 - 16:30"
             };
 
-            // Lấy tất cả các yêu cầu hiến máu cho ngày đã chọn và ở trạng thái "Pending" hoặc "Approved" (tùy theo logic của bạn)
-            // mà bạn muốn tính vào số lượng slot.
-            // So sánh DateOnly trực tiếp.
+         
             var requestsForDate = await _context.DonationRequests
                 .Where(dr => dr.PreferredDate == date &&
-                             (dr.Status == "Pending" || dr.Status == "Accepted")) // CHỈNH SỬA TÙY VÀO TRẠNG THÁI NÀO BẠN COI LÀ ĐÃ CHIẾM SLOT
+                             (dr.Status == "Pending" || dr.Status == "Accepted")) 
                 .ToListAsync();
 
-            // Khởi tạo dictionary để lưu số lượng, đảm bảo tất cả slot đều có giá trị ban đầu là 0
             var slotCounts = new Dictionary<string, int>();
             foreach (var slot in timeSlots)
             {
                 slotCounts[slot] = 0;
             }
 
-            // Đếm số lượng request cho từng khung giờ
             foreach (var request in requestsForDate)
             {
                 if (!string.IsNullOrEmpty(request.PreferredTimeSlot) && slotCounts.ContainsKey(request.PreferredTimeSlot))

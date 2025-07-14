@@ -15,9 +15,7 @@ namespace BloodDonation_System.Controllers
             _authService = authService;
         }
 
-        /// <summary>
-        /// Gửi mã OTP về email by Long
-        /// </summary>
+       
         [HttpPost("send-otp")]
         public async Task<IActionResult> SendOtp([FromBody] SendOtpDto dto)
         {

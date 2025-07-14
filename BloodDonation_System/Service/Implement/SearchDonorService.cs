@@ -17,11 +17,9 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
         {
-            // Vị trí bệnh viện cố định (ví dụ: Quận 1, TP.HCM)
             decimal hospitalLat = 10.7769m;
             decimal hospitalLon = 106.7009m;
 
-            // Lấy danh sách ứng viên ban đầu
             var candidates = await _context.UserProfiles
                 .Include(p => p.User)
                 .Where(p =>
@@ -34,7 +32,6 @@ namespace BloodDonation_System.Service.Implement
                 )
                 .ToListAsync();
 
-            // Lọc theo bán kính
             var filtered = candidates.Where(p =>
             {
                 var distance = CalculateDistance(
@@ -44,7 +41,6 @@ namespace BloodDonation_System.Service.Implement
                 return distance <= request.RadiusInKm;
             });
 
-            // Trả về kết quả dạng DTO
             var result = filtered.Select(p => new UserProfileDto
             {
                 ProfileId = p.ProfileId,
@@ -68,7 +64,7 @@ namespace BloodDonation_System.Service.Implement
 
         private double CalculateDistance(decimal lat1, decimal lon1, decimal lat2, decimal lon2)
         {
-            var R = 6371; // Bán kính Trái Đất (km)
+            var R = 6371;
             var dLat = ToRadians((double)(lat2 - lat1));
             var dLon = ToRadians((double)(lon2 - lon1));
 

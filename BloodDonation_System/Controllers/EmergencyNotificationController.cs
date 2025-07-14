@@ -18,7 +18,7 @@ namespace BloodDonation_System.Controllers
             _emergencyNotificationService = emergencyNotificationService;
         }
 
-        // ✅ 1. Member phản hồi thông báo
+        //  1. Member phản hồi thông báo
         [Authorize(Roles = "Member")]
         [HttpPost("respond")]
         public async Task<IActionResult> RespondToEmergency([FromBody] EmergencyResponseDTO dto)
@@ -36,7 +36,7 @@ namespace BloodDonation_System.Controllers
             return Ok(new { message = result });
         }
 
-        // ✅ 2. Admin/Staff lấy toàn bộ thông báo
+        //  2. Admin/Staff lấy toàn bộ thông báo
         [Authorize(Roles = "Admin,Staff")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -45,7 +45,7 @@ namespace BloodDonation_System.Controllers
             return Ok(list);
         }
 
-        // ✅ 3. Member lấy thông báo theo ID
+        //  3. Member lấy thông báo theo ID
         [Authorize(Roles = "Member,Admin,Staff")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -55,7 +55,7 @@ namespace BloodDonation_System.Controllers
             return Ok(result);
         }
 
-        //// ✅ 4. Admin tạo mới (nếu cần tạo thủ công)
+        ////  4. Admin tạo mới (nếu cần tạo thủ công)
         
 
         [Authorize(Roles = "Admin,Staff")]
@@ -66,7 +66,7 @@ namespace BloodDonation_System.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.NotificationId }, created);
         }
 
-        // ✅ 5. Admin cập nhật
+        //  5. Admin cập nhật
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] EmergencyNotificationDto dto)
@@ -76,7 +76,7 @@ namespace BloodDonation_System.Controllers
             return Ok(updated);
         }
 
-        // ✅ 6. Admin xóa
+        //  6. Admin xóa
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
@@ -101,6 +101,5 @@ namespace BloodDonation_System.Controllers
             var result = await _emergencyNotificationService.GetByUserIdAsync(userId);
             return Ok(result);
         }
-      /////////
     }
 }

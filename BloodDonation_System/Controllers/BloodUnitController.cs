@@ -22,9 +22,7 @@ namespace BloodDonation_System.Controllers
 
 
 
-        /// <summary>
-        /// Cập nhật trạng thái đơn vị máu thành "Discarded" và lý do loại bỏ
-        /// </summary>
+       
         [HttpPost("discard/{bloodUnitId}")]
         public async Task<IActionResult> DiscardBloodUnit(string bloodUnitId, [FromBody] DiscardBloodUnitDto dto)
         {
@@ -235,7 +233,6 @@ namespace BloodDonation_System.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi tại đây nếu cần
                 return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi khi tách máu.", error = ex.Message });
             }
         }

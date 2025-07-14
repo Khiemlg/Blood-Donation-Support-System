@@ -51,8 +51,7 @@ namespace BloodDonation_System.Service.Implementation
 
             return new UserDto
             {
-             //  UserID = user.UserId,
-               // UserName = user.Username,
+            
                 Email = user.Email,
                 RoleName = (await _context.Roles.FindAsync(user.RoleId))?.RoleName ?? "Unknown",
                 CreatedAt = user.RegistrationDate ?? DateTime.UtcNow,
@@ -64,7 +63,6 @@ namespace BloodDonation_System.Service.Implementation
         {
             var user = await _context.Users.Include(u => u.Role)
                                            .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-            //by Long
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
                 throw new Exception("Email hoặc mật khẩu không đúng.");
             if(user.IsActive == false)
@@ -105,7 +103,7 @@ namespace BloodDonation_System.Service.Implementation
                 Username = dto.Username,
                 PasswordHash = hashedPassword,
                 Email = dto.Email,
-                RoleId = 3, // default: Member
+                RoleId = 3,
                 RegistrationDate = DateTime.UtcNow,
                 IsActive = true
             };
@@ -147,7 +145,6 @@ namespace BloodDonation_System.Service.Implementation
             await _emailService.SendEmailAsync(email, subject, body);
         }
 
-        // -------------------- Utility Methods --------------------
 
         private bool VerifyPassword(string password, string passwordHash)
         {
@@ -166,7 +163,7 @@ namespace BloodDonation_System.Service.Implementation
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserId),
-                new Claim("user_id", user.UserId), // ✅ thêm dòng này
+                new Claim("user_id", user.UserId), 
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
                 new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
                 new Claim("isActive", (bool)user.IsActive ? "true" : "false"),
@@ -176,7 +173,6 @@ namespace BloodDonation_System.Service.Implementation
 
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
-            //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 

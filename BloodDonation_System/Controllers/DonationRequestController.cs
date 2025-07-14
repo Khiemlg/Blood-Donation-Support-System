@@ -27,11 +27,11 @@ namespace BloodDonation_System.Controllers
         // --- Tạo Yêu Cầu Hiến Máu (POST) ---
         [HttpPost]
         [Route("RegisterDonationRequest")]
-        [AllowAnonymous] // Hoặc [Authorize(Roles = "Donor")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))] // Trả về DTO input (hoặc DTO sau khi tạo nếu bạn muốn)
+        [AllowAnonymous] 
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))] 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> RegisterDonationRequest([FromBody] DonationRequestInputDto Dto) // NHẬN DonationRequestDto (CHỈ CÓ ID)
+        public async Task<IActionResult> RegisterDonationRequest([FromBody] DonationRequestInputDto Dto) 
         {
             if (!ModelState.IsValid)
             {
@@ -176,7 +176,6 @@ namespace BloodDonation_System.Controllers
             }
             catch (Exception ex)
             {
-                // Log lỗi và trả về Internal Server Error
                 Console.WriteLine($"Error fetching slot counts: {ex.Message}");
                 return StatusCode(500, "An error occurred while fetching slot counts.");
             }
