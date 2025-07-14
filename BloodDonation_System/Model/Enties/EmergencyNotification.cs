@@ -45,7 +45,7 @@ public partial class EmergencyNotification
     [InverseProperty("EmergencyNotifications")]
     public virtual User RecipientUser { get; set; } = null!;
     [Column("message")]
-    [Unicode(false)]
+    [Unicode(true)]
     public string? Message { get; set; }
 
 }
