@@ -1,5 +1,5 @@
-﻿// File: BloodDonation_System.Service.Implementation.DonationRequestService.cs
-using BloodDonation_System.Data; // Giả định DbContext của bạn nằm ở đây (DButils)
+﻿
+using BloodDonation_System.Data; 
 using BloodDonation_System.Model.DTO.Donation;
 using BloodDonation_System.Model.Enties;
 using BloodDonation_System.Service.Interface;
@@ -159,96 +159,7 @@ namespace BloodDonation_System.Service.Implementation
         }
 
 
-        //public async Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto)
-        //{
-        //    // Tìm yêu cầu hiện có trong cơ sở dữ liệu
-        //    var existingRequest = await _context.DonationRequests
-        //        .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
-
-        //    if (existingRequest == null)
-        //    {
-        //        return null; // Không tìm thấy yêu cầu
-        //    }
-
-        //    // Lưu trạng thái cũ của yêu cầu để kiểm tra sự thay đổi.
-        //    var oldStatus = existingRequest.Status;
-
-        //    // Cập nhật các trường từ Input DTO.
-        //    // Lưu ý: DonorUserId không nên được cập nhật trong thao tác UPDATE này nếu nó là khóa hoặc không đổi.
-        //    existingRequest.BloodTypeId = dto.BloodTypeId;
-        //    existingRequest.ComponentId = dto.ComponentId;
-        //    existingRequest.PreferredDate = dto.PreferredDate;
-        //    existingRequest.PreferredTimeSlot = dto.PreferredTimeSlot;
-        //    existingRequest.Status = dto.Status; // Cập nhật trạng thái
-        //    existingRequest.StaffNotes = dto.StaffNotes;
-
-        //    // Lưu các thay đổi của DonationRequest vào cơ sở dữ liệu trước.
-        //    await _context.SaveChangesAsync();
-
-        //    // --- Logic Tự động tạo DonationHistory khi trạng thái là "Completed" ---
-        //    // Chỉ tạo lịch sử nếu trạng thái MỚI là "completed" và trạng thái CŨ KHÔNG phải là "completed"
-        //    if (existingRequest.Status?.ToLower() == "accepted" && oldStatus?.ToLower() != "accepted")
-        //    {
-        //        try
-        //        {
-        //            // Tạo một bản ghi DonationHistory mới từ thông tin của DonationRequest
-        //            var donationHistory = new DonationHistory
-        //            {
-        //                // Tạo DonationId duy nhất với tiền tố "HIST_"
-        //                DonationId = "HIST_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
-        //                DonationRequestId = existingRequest.RequestId, // Liên kết với yêu cầu hiến máu
-        //                DonorUserId = existingRequest.DonorUserId, // Lấy DonorUserId từ existingRequest
-        //                BloodTypeId = existingRequest.BloodTypeId,
-        //                ComponentId = existingRequest.ComponentId,
-        //                DonationDate = DateTime.UtcNow, // Thời điểm hiến máu hoàn thành
-        //                QuantityMl = 0, // Giá trị mặc định, cần cân nhắc nguồn dữ liệu thực tế
-        //                EligibilityStatus = "Eligible", // Trạng thái mặc định
-        //                ReasonIneligible = null,
-        //                TestingResults = "Pending", // Kết quả xét nghiệm thường có sau
-        //                StaffUserId = null, // Cần cập nhật sau nếu có thông tin staff
-        //                Status = "Pending", // Trạng thái của bản ghi lịch sử hiến máu
-        //                EmergencyId = null,
-        //                Descriptions = $"Yêu cầu hiến máu ID {existingRequest.RequestId} đã hoàn thành."
-        //            };
-
-        //            await _context.DonationHistories.AddAsync(donationHistory);
-        //            await _context.SaveChangesAsync(); // Lưu DonationHistory mới
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            // Xử lý và log lỗi nếu việc tạo lịch sử thất bại.
-        //            Console.WriteLine($"Error creating donation history for request ID {existingRequest.RequestId}: {ex.Message}");
-        //            // Có thể xem xét rollback cập nhật DonationRequest nếu tạo lịch sử là bắt buộc.
-        //        }
-        //    }
-        //    // --- Kết thúc Logic Tự động tạo DonationHistory ---
-
-        //    // Tải lại các Navigation Properties để tạo Response DTO đầy đủ
-        //    // Fetch lại để có data mới nhất và đầy đủ:
-        //    var updatedAndLoadedRequest = await _context.DonationRequests
-        //        .Include(dr => dr.BloodType)
-        //        .Include(dr => dr.Component)
-        //        .Include(dr => dr.DonorUser)
-        //            .ThenInclude(u => u.UserProfile)
-        //        .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
-
-        //    // Ánh xạ thực thể đã cập nhật thành Response DTO
-        //    return new DonationRequestDto
-        //    {
-        //        RequestId = updatedAndLoadedRequest.RequestId,
-        //        DonorUserId = updatedAndLoadedRequest.DonorUserId,
-        //        BloodTypeId = updatedAndLoadedRequest.BloodTypeId,
-        //        ComponentId = updatedAndLoadedRequest.ComponentId,
-        //        PreferredDate = updatedAndLoadedRequest.PreferredDate,
-        //        PreferredTimeSlot = updatedAndLoadedRequest.PreferredTimeSlot,
-        //        Status = updatedAndLoadedRequest.Status,
-        //        RequestDate = updatedAndLoadedRequest.RequestDate,
-        //        StaffNotes = updatedAndLoadedRequest.StaffNotes,
-        //        DonorUserName = updatedAndLoadedRequest.DonorUser?.UserProfile?.FullName,
-        //        BloodTypeName = updatedAndLoadedRequest.BloodType?.TypeName,
-        //        ComponentName = updatedAndLoadedRequest.Component?.ComponentName
-        //    };
-        //}
+        
         public async Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto)
         {
             // 1. Tìm yêu cầu trong DB

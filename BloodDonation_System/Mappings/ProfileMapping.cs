@@ -18,8 +18,7 @@ namespace BloodDonation_System.Mappings
                 LastLoginDate = user.LastLoginDate,
                 IsActive = user.IsActive ?? false,
 
-                // Nếu DTO có PasswordHash (không nên lộ ra ngoài API):
-                // PasswordHash = user.PasswordHash
+            
             };
         }
 

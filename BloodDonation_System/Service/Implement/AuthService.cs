@@ -161,14 +161,7 @@ namespace BloodDonation_System.Service.Implementation
             var audience = _configuration["Jwt:Audience"];
             var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "1440");
 
-            //var claims = new[]
-            //{
-            //    new Claim(JwtRegisteredClaimNames.Sub, user.UserId),
-            //    new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-            //    new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User"),
-            //    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-            //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            //};
+           
 
             var claims = new[]
             {

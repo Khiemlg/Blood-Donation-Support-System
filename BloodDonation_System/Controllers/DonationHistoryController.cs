@@ -79,8 +79,7 @@ namespace BloodDonation_System.API.Controllers
                 return BadRequest(ModelState);
             }
 
-           /* var createdHistory = await _donationHistoryService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetDonationHistoryById), new { donationId = createdHistory.DonationId }, createdHistory);*/
+          
            return await _donationHistoryService.CreateAsync(dto);
         }
 
