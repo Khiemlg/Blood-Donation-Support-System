@@ -101,6 +101,6 @@ namespace BloodDonation_System.Controllers
             var result = await _emergencyNotificationService.GetByUserIdAsync(userId);
             return Ok(result);
         }
-      
+      /////////
     }
 }
