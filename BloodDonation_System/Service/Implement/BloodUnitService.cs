@@ -441,8 +441,8 @@ namespace BloodDonation_System.Service.Implement
             if (redCell == null || plasma == null || platelet == null)
                 throw new Exception("Không tìm thấy ComponentId cho các thành phần máu!");
 
-            var volumeRed = volume / 2;
-            var volumePlasma = volume / 4;
+            var volumeRed = (int)Math.Round(volume * 0.55);
+            var volumePlasma = (int)Math.Round(volume * 0.40);
             var volumePlatelet = volume - volumeRed - volumePlasma;
 
             var components = new[]
