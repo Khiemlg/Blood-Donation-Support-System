@@ -29,15 +29,6 @@ namespace BloodDonation_System.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-        
-
-
-
-        
-        
-        /// <summary>
-        /// Đăng ký tài khoản (có xác minh OTP)
-        /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -52,9 +43,7 @@ namespace BloodDonation_System.Controllers
             }
         }
 
-        /// <summary>
-        /// Đăng nhập (trả về token)
-        /// </summary>
+       
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {

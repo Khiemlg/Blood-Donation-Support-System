@@ -17,7 +17,6 @@ namespace BloodDonation_System.Controllers
             _notificationService = notificationService;
         }
 
-        // GET: api/notification
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -25,7 +24,6 @@ namespace BloodDonation_System.Controllers
             return Ok(result);
         }
 
-        // GET: api/notification/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
@@ -34,7 +32,6 @@ namespace BloodDonation_System.Controllers
             return Ok(result);
         }
 
-        // POST: api/notification
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] NotificationinputDto dto)
         {
@@ -42,7 +39,6 @@ namespace BloodDonation_System.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.NotificationId }, created);
         }
 
-        // PUT: api/notification/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] NotificationDto dto)
         {
@@ -51,7 +47,6 @@ namespace BloodDonation_System.Controllers
             return Ok(updated);
         }
 
-        // DELETE: api/notification/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {

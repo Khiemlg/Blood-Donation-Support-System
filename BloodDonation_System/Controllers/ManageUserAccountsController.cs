@@ -10,7 +10,6 @@ namespace BloodDonation_System.Controllers
     [ApiController]
 
     [Authorize(Roles = "Admin, Staff")]
-    // Chỉ Admin được phép quản lý tài khoản
 
     public class ManageUserAccountsController : ControllerBase
     {
@@ -21,7 +20,6 @@ namespace BloodDonation_System.Controllers
             _userService = userService;
         }
 
-        // GET: api/ManageUserAccounts
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -29,7 +27,6 @@ namespace BloodDonation_System.Controllers
             return Ok(users);
         }
 
-        // GET: api/ManageUserAccounts/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -40,7 +37,6 @@ namespace BloodDonation_System.Controllers
             return Ok(user);
         }
 
-        // POST: api/ManageUserAccounts
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDto createUserDto)
         {
@@ -51,7 +47,6 @@ namespace BloodDonation_System.Controllers
             return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, createdUser);
         }
 
-        // PUT: api/ManageUserAccounts/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUserDto)
         {
@@ -62,7 +57,6 @@ namespace BloodDonation_System.Controllers
             return Ok(updatedUser);
         }
 
-        // PUT: api/ManageUserAccounts/{id}/role
         [HttpPut("{id}/role")]
         public async Task<IActionResult> UpdateUserRole(string id, [FromBody] UpdateUserRoleDto roleDto)
         {
@@ -78,7 +72,6 @@ namespace BloodDonation_System.Controllers
             return Ok(updatedUser);
         }
 
-        // DELETE: api/ManageUserAccounts/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {

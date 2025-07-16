@@ -17,7 +17,6 @@ namespace BloodDonation_System.Controllers
             _service = service;
         }
 
-        //tạm thời khoá chức năng này do chưa có user_id thật từ JWT token sau khi đăng nhập
 
         [HttpPost("create")]
         [Authorize(Roles = "Staff")]
@@ -39,7 +38,6 @@ namespace BloodDonation_System.Controllers
 
         }
 
-        // Lấy danh sách tất cả yêu cầu máu khẩn cấp (có thể lọc theo trạng thái)
         [HttpGet("list")]
         [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> GetAll([FromQuery] string? status = null)
@@ -48,7 +46,6 @@ namespace BloodDonation_System.Controllers
             return Ok(requests);
         }
 
-        // Lấy chi tiết một yêu cầu máu khẩn cấp theo ID
         [HttpGet("{id}")]
         [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> GetById(string id)
@@ -59,7 +56,6 @@ namespace BloodDonation_System.Controllers
             return Ok(request);
         }
 
-        // Cập nhật trạng thái yêu cầu máu khẩn cấp
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> UpdateStatus(string id, [FromBody] string status)
@@ -70,7 +66,6 @@ namespace BloodDonation_System.Controllers
             return Ok(new { message = result.Message });
         }
 
-        // Gửi thông báo khẩn cấp tới các donor phù hợp
         [HttpPost("{id}/notify-donors")]
         [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> NotifyDonors(string id)
@@ -81,7 +76,6 @@ namespace BloodDonation_System.Controllers
             return Ok(new { message = result.Message });
         }
 
-        // Xem lịch sử yêu cầu máu khẩn cấp của người dùng hiện tại
         [HttpGet("my-requests")]
         [Authorize]
         public async Task<IActionResult> GetMyRequests()
@@ -94,7 +88,6 @@ namespace BloodDonation_System.Controllers
             return Ok(requests);
         }
 
-        // Hủy yêu cầu máu khẩn cấp
         [HttpDelete("{id}")]
         [Authorize(Roles = "Staff,Admin")]
         public async Task<IActionResult> CancelRequest(string id)

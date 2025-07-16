@@ -112,7 +112,6 @@ namespace BloodDonation_System.Controllers
             return deleted ? NoContent() : NotFound("Profile not found.");
         }
 
-        // ✅ Validation cho các trường không bắt buộc (nếu có nhập thì phải hợp lệ)
         private string? ValidateOptionalFields(dynamic dto)
         {
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) &&

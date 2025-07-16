@@ -24,7 +24,6 @@ namespace BloodDonation_System.Controllers
             _emailService = emailService; 
         }
 
-        // --- Tạo Yêu Cầu Hiến Máu (POST) ---
         [HttpPost]
         [Route("RegisterDonationRequest")]
         [AllowAnonymous] 
@@ -47,12 +46,6 @@ namespace BloodDonation_System.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Đã xảy ra lỗi khi đăng ký yêu cầu hiến máu.", details = ex.Message });
             }
         }
-
-
-      
-
-
-        // --- Lấy Tất Cả Yêu Cầu (GET) ---
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationRequestDto>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -69,7 +62,6 @@ namespace BloodDonation_System.Controllers
             }
         }
 
-        // --- Lấy Yêu Cầu Theo ID (GET) ---
         [HttpGet("{requestId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequestDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,7 +83,6 @@ namespace BloodDonation_System.Controllers
             }
         }
 
-        // --- Cập Nhật Yêu Cầu (PUT) ---
         [HttpPut("{requestId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequest))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -130,7 +121,6 @@ namespace BloodDonation_System.Controllers
             }
         }
 
-        // --- Xóa Yêu Cầu (DELETE) ---
         [HttpDelete("{requestId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -155,7 +145,7 @@ namespace BloodDonation_System.Controllers
 
         [HttpGet("SlotCounts")]
         [ProducesResponseType(typeof(Dictionary<string, int>), 200)]
-        [ProducesResponseType(400)] // Bad Request nếu ngày không hợp lệ
+        [ProducesResponseType(400)] 
         public async Task<ActionResult<Dictionary<string, int>>> GetSlotCounts([FromQuery] string date)
         {
             if (string.IsNullOrEmpty(date))
@@ -163,7 +153,6 @@ namespace BloodDonation_System.Controllers
                 return BadRequest("Date parameter is required.");
             }
 
-            // Chuyển đổi chuỗi ngày sang DateOnly
             if (!DateOnly.TryParse(date, out DateOnly parsedDate))
             {
                 return BadRequest("Invalid date format. Please use yyyy-MM-dd.");
