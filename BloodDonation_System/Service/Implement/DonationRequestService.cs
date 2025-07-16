@@ -167,7 +167,7 @@ namespace BloodDonation_System.Service.Implementation
             {
                 try
                 {
-                    if (newStatus == "accepted" && oldStatus != "accepted")
+                    if (newStatus.ToLower() == "accepted" && oldStatus.ToLower() != "accepted")
                     {
                         var subject = "Yêu cầu hiến máu đã được chấp nhận";
                         var body = $"Cảm ơn bạn đã đăng ký hiến máu. Yêu cầu của bạn đã được duyệt và sẽ tiến hành vào {existingRequest.PreferredDate:dd/MM/yyyy} lúc {existingRequest.PreferredTimeSlot}.";
@@ -186,7 +186,7 @@ namespace BloodDonation_System.Service.Implementation
                 }
             }
 
-            if (newStatus == "accepted" && oldStatus != "accepted")
+            if (newStatus.ToLower() == "accepted" && oldStatus.ToLower() != "accepted")
             {
                 try
                 {
@@ -218,11 +218,17 @@ namespace BloodDonation_System.Service.Implementation
             }
 
             var updatedRequest = await _context.DonationRequests
-                .Include(dr => dr.BloodType)
-                .Include(dr => dr.Component)
-                .Include(dr => dr.DonorUser)
-                    .ThenInclude(u => u.UserProfile)
-                .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
+    .Include(dr => dr.BloodType)
+    .Include(dr => dr.Component)
+    .Include(dr => dr.DonorUser)
+        .ThenInclude(u => u.UserProfile)
+    .FirstOrDefaultAsync(dr => dr.RequestId == requestId);
+
+            if (updatedRequest == null)
+            {
+                // Optionally log the error or throw a custom exception
+                return null;
+            }
 
             return new DonationRequestDto
             {
@@ -239,12 +245,13 @@ namespace BloodDonation_System.Service.Implementation
                 BloodTypeName = updatedRequest.BloodType?.TypeName,
                 ComponentName = updatedRequest.Component?.ComponentName
             };
+
         }
 
 
 
 
-       
+
         public async Task<bool> DeleteAsync(string requestId)
         {
             var donationRequest = await _context.DonationRequests.FirstOrDefaultAsync(dr => dr.RequestId == requestId);

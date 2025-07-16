@@ -280,7 +280,7 @@ namespace BloodDonation_System.Service.Implement
                         ExpirationDate = expirationDate,
                         StorageLocation = assignedStorageLocation,
                         TestResults = donationHistory.TestingResults,
-                        Status = "Available", 
+                        Status = "Pending", 
                         DiscardReason = "no" 
                     };
 
