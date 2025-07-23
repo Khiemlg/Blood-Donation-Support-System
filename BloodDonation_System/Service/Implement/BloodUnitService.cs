@@ -427,7 +427,9 @@ namespace BloodDonation_System.Service.Implement
                 .Include(b => b.Component)
                 .FirstOrDefaultAsync(b => b.UnitId == unitId);
 
-            if (unit == null || unit.Status != "Separating" || unit.Component.ComponentName != "Toàn phần")
+          /*  if (unit == null || unit.Status != "Separating" || unit.Component.ComponentName != "Toàn phần")
+                return false;*/
+            if (unit == null || unit.Status != "Separated" || unit.Component.ComponentName != "Toàn phần")
                 return false;
 
             var donationId = unit.DonationId;
@@ -494,7 +496,7 @@ namespace BloodDonation_System.Service.Implement
                 });
             }
 
-            unit.Status = "Separated";
+         //   unit.Status = "Separated";
 
             _context.BloodUnits.Update(unit);
             _context.BloodUnits.AddRange(newUnits);
