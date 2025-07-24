@@ -210,7 +210,7 @@ namespace BloodDonation_System.Service.Implement
                 await _emailService.SendEmailAsync(recipient.Email, subject, emailBody);
             }
             // Nếu priority là MEDIUM hoặc HIGH => tạo thông báo cho những người phù hợp
-            /*  if (dto.Message.Contains("Medium", StringComparison.OrdinalIgnoreCase) ||
+         /*   if (dto.Message.Contains("Medium", StringComparison.OrdinalIgnoreCase) ||
          dto.Message.Contains("High", StringComparison.OrdinalIgnoreCase))
               {
                   var now = DateTime.UtcNow;
@@ -218,9 +218,9 @@ namespace BloodDonation_System.Service.Implement
                   var eligibleUsers = await _context.Users
                       .Include(u => u.UserProfile)
                       .Where(u =>
-                          u.BloodTypeId == emergency.BloodTypeId &&
+                          u.UserProfile.BloodTypeId == emergency.BloodTypeId &&
                           u.UserId != dto.RecipientUserId &&
-                          u.Status == "Available" &&
+                        
                           u.UserProfile != null
                       )
                       .ToListAsync();
@@ -235,15 +235,15 @@ namespace BloodDonation_System.Service.Implement
                           SentDate = DateTime.UtcNow,
                           DeliveryMethod = "InApp",
                           IsRead = false,
-                          Message = $"[Khẩn cấp] Cần {emergency.QuantityNeededMl}ml máu nhóm {bloodType}. Chi tiết: {dto.Message}",
+                          Message = dto.Message,
                           ResponseStatus = "Pending"
                       };
                       _context.EmergencyNotifications.Add(noti);
                   }
 
                   await _context.SaveChangesAsync();
-              }*/
-
+              }
+*/
             // Nếu priority là MEDIUM hoặc HIGH => tạo thông báo cho những người phù hợp
             if (dto.Message.Contains("Medium", StringComparison.OrdinalIgnoreCase) ||
                 dto.Message.Contains("High", StringComparison.OrdinalIgnoreCase))
@@ -255,7 +255,7 @@ namespace BloodDonation_System.Service.Implement
                     .Include(u => u.UserProfile)
                     .Where(u =>
                         u.UserProfile.BloodTypeId == emergency.BloodTypeId &&
-                        u.UserId != dto.RecipientUserId &&
+                        u.UserId != dto.RecipientUserId && u.RoleId == 2 && 
                         u.UserProfile != null &&
                         (
                             !_context.DonationHistory.Any(bd => bd.DonorUserId == u.UserId) || // chưa từng hiến
@@ -279,7 +279,7 @@ namespace BloodDonation_System.Service.Implement
                         DeliveryMethod = "InApp",
                         IsRead = false,
                         Message = dto.Message,
-                        ResponseStatus = "Pending"
+                        ResponseStatus = "No Response"
                     };
 
                     _context.EmergencyNotifications.Add(noti);

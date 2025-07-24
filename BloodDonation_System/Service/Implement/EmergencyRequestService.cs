@@ -62,10 +62,10 @@ namespace BloodDonation_System.Service.Implement
 
             Console.WriteLine("🔍 Preview message: " + message);
             // Sau khi lưu emergency
-            if (dto.Priority == "High" && dto.Priority == "Medium") // So sánh đúng giá trị bạn lưu trong DB/UI
+            if (dto.Priority.Equals("High") || dto.Priority.Equals("Medium")) // So sánh đúng giá trị bạn lưu trong DB/UI
             {
                 var matchingDonors = await _context.Users
-                    .Where(u => u.UserProfile != null &&
+                    .Where(u => u.UserProfile != null && u.RoleId == 2 &&
                                 u.UserProfile.BloodTypeId == dto.BloodTypeId &&
                                 u.Email != null)
                     .ToListAsync();
