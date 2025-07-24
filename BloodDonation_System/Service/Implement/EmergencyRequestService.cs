@@ -64,9 +64,13 @@ namespace BloodDonation_System.Service.Implement
             // Sau khi lưu emergency
             if (dto.Priority.Equals("High") || dto.Priority.Equals("Medium")) // So sánh đúng giá trị bạn lưu trong DB/UI
             {
+                var today = DateOnly.FromDateTime(DateTime.UtcNow);
+                var ninetyDaysAgo = today.AddDays(-90);
+
                 var matchingDonors = await _context.Users
-                    .Where(u => u.UserProfile != null && u.RoleId == 2 &&
+                    .Where(u => u.UserProfile != null &&  // u.UserId == 3
                                 u.UserProfile.BloodTypeId == dto.BloodTypeId &&
+                                  u.UserProfile.LastBloodDonationDate <= ninetyDaysAgo &&
                                 u.Email != null)
                     .ToListAsync();
 
@@ -80,10 +84,10 @@ namespace BloodDonation_System.Service.Implement
     <li><strong>Nhóm máu:</strong> {bloodTypeName}</li>
     <li><strong>Số lượng:</strong> {dto.QuantityNeededMl} ml</li>
     <li><strong>Hạn chót:</strong> {dto.DueDate:dd/MM/yyyy}</li>
-    <li><strong>Ưu tiên:</strong> {dto.Priority}</li>
+    <li><strong>Ưu tiên:</strong> khẩn cấp</li>
     <li><strong>Mô tả:</strong> {dto.Description}</li>
 </ul>
-<p>🙏 Nếu bạn đủ điều kiện và sẵn sàng hỗ trợ, hãy phản hồi hoặc liên hệ trung tâm hiến máu gần nhất.</p>
+<p>🙏 Nếu bạn đủ điều kiện và sẵn sàng hỗ trợ, hãy phản hồi hoặc đến cơ sở y tế sớm nhất.</p>
 <p>Trân trọng,<br/>Hệ thống Hiến Máu Tình Nguyện</p>";
 
                 foreach (var donor in matchingDonors)
