@@ -61,6 +61,36 @@ namespace BloodDonation_System.Service.Implement
                              $"Chi tiết: {dto.Description} ";
 
             Console.WriteLine("🔍 Preview message: " + message);
+            // Sau khi lưu emergency
+            if (dto.Priority == "High" && dto.Priority == "Medium") // So sánh đúng giá trị bạn lưu trong DB/UI
+            {
+                var matchingDonors = await _context.Users
+                    .Where(u => u.UserProfile != null &&
+                                u.UserProfile.BloodTypeId == dto.BloodTypeId &&
+                                u.Email != null)
+                    .ToListAsync();
+
+                Console.WriteLine($"🔍 Số lượng người dùng phù hợp có email: {matchingDonors.Count}");
+
+                string subject = "🩸 Cần bạn hỗ trợ hiến máu khẩn cấp!";
+                string emailBody = $@"
+<p>Xin chào,</p>
+<p>Hệ thống vừa ghi nhận một <strong>yêu cầu máu khẩn cấp</strong> phù hợp với nhóm máu của bạn.</p>
+<ul>
+    <li><strong>Nhóm máu:</strong> {bloodTypeName}</li>
+    <li><strong>Số lượng:</strong> {dto.QuantityNeededMl} ml</li>
+    <li><strong>Hạn chót:</strong> {dto.DueDate:dd/MM/yyyy}</li>
+    <li><strong>Ưu tiên:</strong> {dto.Priority}</li>
+    <li><strong>Mô tả:</strong> {dto.Description}</li>
+</ul>
+<p>🙏 Nếu bạn đủ điều kiện và sẵn sàng hỗ trợ, hãy phản hồi hoặc liên hệ trung tâm hiến máu gần nhất.</p>
+<p>Trân trọng,<br/>Hệ thống Hiến Máu Tình Nguyện</p>";
+
+                foreach (var donor in matchingDonors)
+                {
+                    await _emailService.SendEmailAsync(donor.Email, subject, emailBody);
+                }
+            }
             var notification = new EmergencyNotification
             {
                 NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),

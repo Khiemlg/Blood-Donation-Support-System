@@ -209,7 +209,7 @@ namespace BloodDonation_System.Service.Implement
 
                 await _emailService.SendEmailAsync(recipient.Email, subject, emailBody);
             }
-
+         
             return new EmergencyNotificationDto
             {
                 NotificationId = entity.NotificationId,
