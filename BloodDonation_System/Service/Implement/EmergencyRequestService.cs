@@ -57,7 +57,7 @@ namespace BloodDonation_System.Service.Implement
 
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            string message = $"[Khẩn cấp] Cần {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName} thời gian cần {dto.DueDate} . " +
+            string message = $"[Khẩn cấp] Cần {dto.QuantityNeededMl}ml máu nhóm {bloodTypeName} thời gian cần {dto.DueDate} . mức độ {dto.Priority} " +
                              $"Chi tiết: {dto.Description} ";
 
             Console.WriteLine("🔍 Preview message: " + message);

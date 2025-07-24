@@ -209,7 +209,85 @@ namespace BloodDonation_System.Service.Implement
 
                 await _emailService.SendEmailAsync(recipient.Email, subject, emailBody);
             }
-         
+            // Nếu priority là MEDIUM hoặc HIGH => tạo thông báo cho những người phù hợp
+            /*  if (dto.Message.Contains("Medium", StringComparison.OrdinalIgnoreCase) ||
+         dto.Message.Contains("High", StringComparison.OrdinalIgnoreCase))
+              {
+                  var now = DateTime.UtcNow;
+
+                  var eligibleUsers = await _context.Users
+                      .Include(u => u.UserProfile)
+                      .Where(u =>
+                          u.BloodTypeId == emergency.BloodTypeId &&
+                          u.UserId != dto.RecipientUserId &&
+                          u.Status == "Available" &&
+                          u.UserProfile != null
+                      )
+                      .ToListAsync();
+
+                  foreach (var user in eligibleUsers)
+                  {
+                      var noti = new EmergencyNotification
+                      {
+                          NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                          EmergencyId = dto.EmergencyId,
+                          RecipientUserId = user.UserId,
+                          SentDate = DateTime.UtcNow,
+                          DeliveryMethod = "InApp",
+                          IsRead = false,
+                          Message = $"[Khẩn cấp] Cần {emergency.QuantityNeededMl}ml máu nhóm {bloodType}. Chi tiết: {dto.Message}",
+                          ResponseStatus = "Pending"
+                      };
+                      _context.EmergencyNotifications.Add(noti);
+                  }
+
+                  await _context.SaveChangesAsync();
+              }*/
+
+            // Nếu priority là MEDIUM hoặc HIGH => tạo thông báo cho những người phù hợp
+            if (dto.Message.Contains("Medium", StringComparison.OrdinalIgnoreCase) ||
+                dto.Message.Contains("High", StringComparison.OrdinalIgnoreCase))
+            {
+                var now = DateTime.UtcNow;
+                var thresholdDate = now.AddDays(-90);
+
+                var eligibleUsers = await _context.Users
+                    .Include(u => u.UserProfile)
+                    .Where(u =>
+                        u.UserProfile.BloodTypeId == emergency.BloodTypeId &&
+                        u.UserId != dto.RecipientUserId &&
+                        u.UserProfile != null &&
+                        (
+                            !_context.DonationHistory.Any(bd => bd.DonorUserId == u.UserId) || // chưa từng hiến
+                            _context.DonationHistory
+                                .Where(bd => bd.DonorUserId == u.UserId)
+                                .OrderByDescending(bd => bd.DonationDate)
+                                .Select(bd => bd.DonationDate)
+                                .FirstOrDefault() <= thresholdDate // lần hiến máu gần nhất >= 90 ngày
+                        )
+                    )
+                    .ToListAsync();
+
+                foreach (var user in eligibleUsers)
+                {
+                    var noti = new EmergencyNotification
+                    {
+                        NotificationId = "NO_EN_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                        EmergencyId = dto.EmergencyId,
+                        RecipientUserId = user.UserId,
+                        SentDate = DateTime.UtcNow,
+                        DeliveryMethod = "InApp",
+                        IsRead = false,
+                        Message = dto.Message,
+                        ResponseStatus = "Pending"
+                    };
+
+                    _context.EmergencyNotifications.Add(noti);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
             return new EmergencyNotificationDto
             {
                 NotificationId = entity.NotificationId,
