@@ -44,7 +44,14 @@ namespace BloodDonation_System.Controllers
                 return BadRequest(ModelState);
 
             var createdUser = await _userService.CreateUserAsync(createUserDto);
-            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, createdUser);
+            if (createdUser == null)
+            {
+                return BadRequest("Email đã tồn tại hoặc User name đã tồn tại");
+            }
+            else 
+            
+                return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, createdUser);
+            
         }
 
         [HttpPut("{id}")]
