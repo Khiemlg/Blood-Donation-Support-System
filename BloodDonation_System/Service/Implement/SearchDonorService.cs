@@ -16,7 +16,7 @@ namespace BloodDonation_System.Service.Implement
             _context = context;
         }
 
-        /* public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
+         public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
          {
              decimal hospitalLat = 10.7769m;
              decimal hospitalLon = 106.7009m;
@@ -62,8 +62,8 @@ namespace BloodDonation_System.Service.Implement
 
              return result;
          }
- */
-        public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
+ 
+       /* public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
         {
             decimal hospitalLat = 10.7769m;
             decimal hospitalLon = 106.7009m;
@@ -127,7 +127,7 @@ namespace BloodDonation_System.Service.Implement
                 8 => new List<int> { 2, 4, 6, 8 }, // AB-
                 _ => new List<int>()
             };
-        }
+        }*/
         private double CalculateDistance(decimal lat1, decimal lon1, decimal lat2, decimal lon2)
         {
             var R = 6371;
