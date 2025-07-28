@@ -136,8 +136,35 @@ namespace BloodDonation_System.Service.Implementation
             };
         }
 
+        public async Task<List<DonationRequestDto>> GetListByUserIdAsync(string userId)
+        {
+            var donationRequests = await _context.DonationRequests
+                .Include(dr => dr.BloodType)
+                .Include(dr => dr.Component)
+                .Include(dr => dr.DonorUser)
+                    .ThenInclude(u => u.UserProfile)
+                .Where(dr => dr.DonorUserId == userId) // Filter by DonorUserId
+                .ToListAsync(); // Get all matching results as a list
 
-        
+           
+            return donationRequests.Select(dr => new DonationRequestDto
+            {
+                RequestId = dr.RequestId,
+                DonorUserId = dr.DonorUserId,
+                BloodTypeId = dr.BloodTypeId,
+                ComponentId = dr.ComponentId,
+                PreferredDate = dr.PreferredDate,
+                PreferredTimeSlot = dr.PreferredTimeSlot,
+                Status = dr.Status,
+                RequestDate = dr.RequestDate,
+                StaffNotes = dr.StaffNotes,
+                DonorUserName = dr.DonorUser.UserProfile?.FullName,
+                BloodTypeName = dr.BloodType.TypeName,
+                ComponentName = dr.Component.ComponentName
+            }).ToList();
+        }
+
+
         public async Task<DonationRequestDto?> UpdateAsync(string requestId, DonationRequestInputDto dto)
         {
             var existingRequest = await _context.DonationRequests

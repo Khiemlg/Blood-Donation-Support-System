@@ -82,6 +82,20 @@ namespace BloodDonation_System.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"Đã xảy ra lỗi khi lấy yêu cầu hiến máu ID {requestId}.", details = ex.Message });
             }
         }
+ [HttpGet("byUser/{userId}")]
+        [ProducesResponseType(typeof(List<DonationRequestDto>), 200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<List<DonationRequestDto>>> GetListByUserId(string userId)
+        {
+            var donationRequestDtos = await _donationRequestService.GetListByUserIdAsync(userId);
+
+            if (donationRequestDtos == null || !donationRequestDtos.Any())
+            {
+                return Ok(new List<DonationRequestDto>());
+            }
+
+            return Ok(donationRequestDtos);
+        }
 
         [HttpPut("{requestId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationRequest))]

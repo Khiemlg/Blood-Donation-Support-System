@@ -17,6 +17,8 @@ namespace BloodDonation_System.Service.Interface
 
         Task<Dictionary<string, int>> GetSlotCountsByDateAsync(DateOnly date);
         Task<bool> DeleteAsync(string requestId);
-        
+       Task<List<DonationRequestDto>> GetListByUserIdAsync(string userId);
+
+
     }
 }
