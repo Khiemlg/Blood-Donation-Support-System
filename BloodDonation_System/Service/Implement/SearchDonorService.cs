@@ -16,54 +16,9 @@ namespace BloodDonation_System.Service.Implement
             _context = context;
         }
 
-         public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
-         {
-             decimal hospitalLat = 10.7769m;
-             decimal hospitalLon = 106.7009m;
-
-             var candidates = await _context.UserProfiles
-                 .Include(p => p.User)
-                 .Where(p =>
-                     p.BloodTypeId == request.BloodTypeId &&
-                     p.User.IsActive == true &&
-                     p.Latitude != null &&
-                     p.Longitude != null &&
-                     (p.LastBloodDonationDate == null ||
-                      p.LastBloodDonationDate.Value.AddDays(90) <= DateOnly.FromDateTime(DateTime.Today))
-                 )
-                 .ToListAsync();
-
-             var filtered = candidates.Where(p =>
-             {
-                 var distance = CalculateDistance(
-                     hospitalLat, hospitalLon,
-                     p.Latitude!.Value, p.Longitude!.Value
-                 );
-                 return distance <= request.RadiusInKm;
-             });
-
-             var result = filtered.Select(p => new UserProfileDto
-             {
-                 ProfileId = p.ProfileId,
-                 UserId = p.UserId,
-                 FullName = p.FullName,
-                 DateOfBirth = p.DateOfBirth,
-                 Gender = p.Gender,
-                 Address = p.Address,
-                 Latitude = p.Latitude,
-                 Longitude = p.Longitude,
-                 BloodTypeId = p.BloodTypeId,
-                 RhFactor = p.RhFactor,
-                 MedicalHistory = p.MedicalHistory,
-                 LastBloodDonationDate = p.LastBloodDonationDate,
-                 Cccd = p.Cccd,
-                 PhoneNumber = p.PhoneNumber
-             });
-
-             return result;
-         }
+        
  
-       /* public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
+        public async Task<IEnumerable<UserProfileDto>> SearchSuitableDonorsAsync(SearchDonorDto request)
         {
             decimal hospitalLat = 10.7769m;
             decimal hospitalLon = 106.7009m;
@@ -127,7 +82,8 @@ namespace BloodDonation_System.Service.Implement
                 8 => new List<int> { 2, 4, 6, 8 }, // AB-
                 _ => new List<int>()
             };
-        }*/
+        }
+
         private double CalculateDistance(decimal lat1, decimal lon1, decimal lat2, decimal lon2)
         {
             var R = 6371;
