@@ -2,6 +2,6 @@
 {
     public interface IDonationReminderService
     {
-        Task RunDonationReminderJobAsync(); // Gọi khi muốn chạy gửi nhắc
+        Task RunDonationReminderJobAsync(); 
     }
 }

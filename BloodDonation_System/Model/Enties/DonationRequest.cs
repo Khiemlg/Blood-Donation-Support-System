@@ -52,6 +52,6 @@ public partial class DonationRequest
     [ForeignKey("DonorUserId")]
     [InverseProperty("DonationRequests")]
     public virtual User DonorUser { get; set; } = null!;
-    [InverseProperty("DonationRequest")] // Đây là Navigation Property trong DonationHistory trỏ về DonationRequest (tên là "DonationRequest")
+    [InverseProperty("DonationRequest")] 
     public virtual ICollection<DonationHistory> DonationHistories { get; set; } = new List<DonationHistory>();
 }

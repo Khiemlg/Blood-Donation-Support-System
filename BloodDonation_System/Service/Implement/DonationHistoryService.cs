@@ -1,5 +1,4 @@
-﻿// File: BloodDonation_System.Service.Implementation.DonationHistoryService.cs
-using BloodDonation_System.Data;
+﻿using BloodDonation_System.Data;
 using BloodDonation_System.Model.DTO.Blood;
 using BloodDonation_System.Model.DTO.Donation;
 using BloodDonation_System.Model.Enties;
@@ -159,9 +158,7 @@ namespace BloodDonation_System.Service.Implement
             }
             else
             {
-                // Nếu DTO không cung cấp cả hai (cả hai đều null/rỗng),
-                // thì KHÔNG LÀM GÌ CẢ. Các giá trị hiện có trong 'donationHistory' (từ DB) sẽ được giữ nguyên.
-                // Điều này có nghĩa là nếu một ID đã tồn tại và không được ghi đè, nó sẽ được giữ lại.
+               
             }
 
 
@@ -240,20 +237,20 @@ namespace BloodDonation_System.Service.Implement
 
                     switch (componentId)
                     {
-                        case 1: // Máu toàn phần (Whole Blood) - HSD 42 ngày
+                        case 1: 
                             expirationDate = DateOnly.FromDateTime(donationHistory.DonationDate.AddDays(42));
                             break;
-                        case 2: // Huyết tương (Plasma) - HSD 1 năm
+                        case 2: 
                             expirationDate = DateOnly.FromDateTime(donationHistory.DonationDate.AddYears(1));
                             break;
-                        case 3: // Tiểu cầu (Platelets) - HSD 5 ngày
+                        case 3: 
                             expirationDate = DateOnly.FromDateTime(donationHistory.DonationDate.AddDays(5));
                             break;
-                        case 4: // Hồng cầu lắng (Packed Red Blood Cells) - HSD 35 ngày
+                        case 4:
                             expirationDate = DateOnly.FromDateTime(donationHistory.DonationDate.AddDays(35));
                             break;
                         default:
-                            // Giá trị mặc định nếu ComponentId không xác định
+                            
                             expirationDate = DateOnly.FromDateTime(donationHistory.DonationDate.AddDays(30));
                             Console.WriteLine($"[WARNING] Unknown ComponentId {componentId} for DonationId {donationHistory.DonationId}. Using default expiration date (30 days).");
                             break;

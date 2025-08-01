@@ -61,14 +61,13 @@ namespace BloodDonation_System.Service.Implement
                              $"Chi tiết: {dto.Description} ";
 
             Console.WriteLine("🔍 Preview message: " + message);
-            // Sau khi lưu emergency
-            if (dto.Priority.Equals("High") || dto.Priority.Equals("Medium")) // So sánh đúng giá trị bạn lưu trong DB/UI
+            if (dto.Priority.Equals("High") || dto.Priority.Equals("Medium")) 
             {
                 var today = DateOnly.FromDateTime(DateTime.UtcNow);
                 var ninetyDaysAgo = today.AddDays(-90);
 
                 var matchingDonors = await _context.Users
-                    .Where(u => u.UserProfile != null &&  // u.UserId == 3
+                    .Where(u => u.UserProfile != null &&  
                                 u.UserProfile.BloodTypeId == dto.BloodTypeId &&
                                   u.UserProfile.LastBloodDonationDate <= ninetyDaysAgo &&
                                 u.Email != null)

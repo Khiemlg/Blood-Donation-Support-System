@@ -143,8 +143,8 @@ namespace BloodDonation_System.Service.Implementation
                 .Include(dr => dr.Component)
                 .Include(dr => dr.DonorUser)
                     .ThenInclude(u => u.UserProfile)
-                .Where(dr => dr.DonorUserId == userId) // Filter by DonorUserId
-                .ToListAsync(); // Get all matching results as a list
+                .Where(dr => dr.DonorUserId == userId) 
+                .ToListAsync(); 
 
            
             return donationRequests.Select(dr => new DonationRequestDto
@@ -253,7 +253,6 @@ namespace BloodDonation_System.Service.Implementation
 
             if (updatedRequest == null)
             {
-                // Optionally log the error or throw a custom exception
                 return null;
             }
 

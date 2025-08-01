@@ -1,5 +1,4 @@
-﻿// File: BloodDonation_System.Service.Implement.BloodUnitService.cs
-using BloodDonation_System.Data;
+﻿using BloodDonation_System.Data;
 using BloodDonation_System.Model.DTO.Blood;
 using BloodDonation_System.Model.Enties;
 using BloodDonation_System.Service.Interface;
@@ -38,7 +37,6 @@ namespace BloodDonation_System.Service.Implement
 
             return true; 
         }
-        /// Lấy tất cả các đơn vị máu với thông tin kho chi tiết (bao gồm tên BloodType và Component).
         public async Task<IEnumerable<BloodUnitInventoryDto>> GetAllAsync()
         {
             return await _context.BloodUnits
@@ -63,7 +61,6 @@ namespace BloodDonation_System.Service.Implement
                 .ToListAsync();
         }
 
-        /// Lấy một đơn vị máu theo ID với thông tin kho chi tiết.
         public async Task<BloodUnitInventoryDto?> GetByIdAsync(string unitId)
         {
             var bu = await _context.BloodUnits
@@ -134,16 +131,16 @@ namespace BloodDonation_System.Service.Implement
             DateOnly expirationDate;
             switch (dto.ComponentId)
             {
-                case 1: // Hồng cầu (Red Blood Cells) - HSD 42 ngày
+                case 1: 
                     expirationDate = dto.CollectionDate.AddDays(42);
                     break;
-                case 2: // Huyết tương (Plasma) - HSD 1 năm (đông lạnh)
+                case 2: 
                     expirationDate = dto.CollectionDate.AddYears(1);
                     break;
-                case 3: // Tiểu cầu (Platelets) - HSD 5 ngày
+                case 3:
                     expirationDate = dto.CollectionDate.AddDays(5);
                     break;
-                case 4: // Máu toàn phần (Whole Blood) - HSD 35 ngày
+                case 4: 
                     expirationDate = dto.CollectionDate.AddDays(35);
                     break;
                 default:
@@ -155,10 +152,10 @@ namespace BloodDonation_System.Service.Implement
             string assignedStorageLocation;
             switch (dto.ComponentId)
             {
-                case 1: assignedStorageLocation = "COLD_STORAGE_A"; break; // Hồng cầu: Thường 1-6 độ C
-                case 2: assignedStorageLocation = "FREEZER_ZONE_P"; break; // Huyết tương: -18 độ C hoặc lạnh hơn
-                case 3: assignedStorageLocation = "AGITATOR_ROOM_T"; break; // Tiểu cầu: 20-24 độ C với khuấy liên tục
-                case 4: assignedStorageLocation = "REFRIGERATED_CABINET_W"; break; // Máu toàn phần: 1-6 độ C
+                case 1: assignedStorageLocation = "COLD_STORAGE_A"; break; 
+                case 2: assignedStorageLocation = "FREEZER_ZONE_P"; break; 
+                case 3: assignedStorageLocation = "AGITATOR_ROOM_T"; break; 
+                case 4: assignedStorageLocation = "REFRIGERATED_CABINET_W"; break; 
                 default:
                     assignedStorageLocation = "GENERAL_STORAGE_UNKNOWN";
                     Console.WriteLine($"[CẢNH BÁO] ComponentId không xác định '{dto.ComponentId}'. Đang gán vị trí lưu trữ mặc định: {assignedStorageLocation}.");
@@ -205,7 +202,6 @@ namespace BloodDonation_System.Service.Implement
                 throw;
             }
 
-            // Tải lại thực thể với các navigation properties để trả về BloodUnitInventoryDto đầy đủ
             var createdAndLoadedEntity = await _context.BloodUnits
                 .Include(bu => bu.BloodType)
                 .Include(bu => bu.Component)
@@ -243,8 +239,6 @@ namespace BloodDonation_System.Service.Implement
                 return null; 
             }
 
-            // Kiểm tra tính hợp lệ của các ID khóa ngoại nếu chúng có thể thay đổi
-            // Chú ý: Các trường trong DTO được truyền vào có thể là null, cần xử lý tùy theo logic
             if (dto.DonationId != null) 
             {
                 if (!await _context.DonationHistories.AnyAsync(d => d.DonationId == dto.DonationId))
@@ -270,16 +264,12 @@ namespace BloodDonation_System.Service.Implement
             }
 
 
-            // Cập nhật các trường từ DTO.
-            // UnitId không được thay đổi.
-            // Sử dụng null-coalescing cho các trường có thể là null trong DTO để cho phép cập nhật một phần.
             entity.DonationId = dto.DonationId ?? entity.DonationId;
             entity.BloodTypeId = dto.BloodTypeId;
             entity.ComponentId = dto.ComponentId;
             entity.VolumeMl = dto.VolumeMl;
             entity.CollectionDate = dto.CollectionDate;
 
-            // ExpirationDate và StorageLocation được tính toán lại nếu ComponentId hoặc CollectionDate thay đổi
             DateOnly newExpirationDate;
             string newAssignedStorageLocation;
 
@@ -328,7 +318,6 @@ namespace BloodDonation_System.Service.Implement
                 throw;
             }
 
-            // Tải lại bản ghi sau khi cập nhật với các mối quan hệ cần thiết để tạo DTO đầy đủ
             var updatedAndLoadedEntity = await _context.BloodUnits
                 .Include(bu => bu.BloodType)
                 .Include(bu => bu.Component)
@@ -336,7 +325,6 @@ namespace BloodDonation_System.Service.Implement
 
             if (updatedAndLoadedEntity == null)
             {
-                // Trường hợp này hiếm khi xảy ra nếu FindAsync ban đầu thành công và SaveChangesAsync không gặp lỗi nghiêm trọng
                 throw new InvalidOperationException("Không thể truy xuất đơn vị máu đã cập nhật.");
             }
 
@@ -358,8 +346,6 @@ namespace BloodDonation_System.Service.Implement
             };
         }
 
-        /// Xóa một đơn vị máu theo ID.
-        /// <exception cref="InvalidOperationException">Ném ra nếu có lỗi cơ sở dữ liệu trong quá trình xóa.</exception>
         public async Task<bool> DeleteAsync(string unitId)
         {
             var entity = await _context.BloodUnits.FindAsync(unitId);
@@ -427,8 +413,7 @@ namespace BloodDonation_System.Service.Implement
                 .Include(b => b.Component)
                 .FirstOrDefaultAsync(b => b.UnitId == unitId);
 
-          /*  if (unit == null || unit.Status != "Separating" || unit.Component.ComponentName != "Toàn phần")
-                return false;*/
+        
             if (unit == null || unit.Status != "Separating" || unit.Component.ComponentName != "Toàn phần")
                 return false;
 

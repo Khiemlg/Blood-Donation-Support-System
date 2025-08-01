@@ -15,7 +15,6 @@ namespace BloodDonation_System.Utilities
         {
             _httpClient = httpClient;
 
-            // ✅ Cập nhật User-Agent đúng chuẩn để tránh bị Nominatim từ chối
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("BloodDonationApp/1.0 (contact@yourdomain.com)");
         }
 
@@ -24,7 +23,6 @@ namespace BloodDonation_System.Utilities
             if (string.IsNullOrWhiteSpace(address))
                 return (0, 0);
 
-            // ✅ Nếu chưa có từ "Vietnam" thì thêm để tăng độ chính xác
             if (!address.Contains("Vietnam", StringComparison.OrdinalIgnoreCase))
             {
                 address += ", Vietnam";

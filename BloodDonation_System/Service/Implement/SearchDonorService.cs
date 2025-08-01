@@ -23,7 +23,6 @@ namespace BloodDonation_System.Service.Implement
             decimal hospitalLat = 10.7769m;
             decimal hospitalLon = 106.7009m;
 
-            // Danh sách các nhóm máu có thể truyền máu cho người nhận
             var compatibleBloodTypes = GetCompatibleBloodTypeIds(request.BloodTypeId);
 
             var candidates = await _context.UserProfiles
@@ -72,14 +71,14 @@ namespace BloodDonation_System.Service.Implement
         {
             return recipientBloodTypeId switch
             {
-                1 => new List<int> { 1, 2, 5, 6 }, // A+
-                2 => new List<int> { 2, 6 },       // A-
-                3 => new List<int> { 3, 4, 5, 6 }, // B+
-                4 => new List<int> { 4, 6 },       // B-
-                5 => new List<int> { 5, 6 },       // O+
-                6 => new List<int> { 6 },          // O-
-                7 => new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }, // AB+
-                8 => new List<int> { 2, 4, 6, 8 }, // AB-
+                1 => new List<int> { 1, 2, 5, 6 }, 
+                2 => new List<int> { 2, 6 },       
+                3 => new List<int> { 3, 4, 5, 6 }, 
+                4 => new List<int> { 4, 6 },       
+                5 => new List<int> { 5, 6 },       
+                6 => new List<int> { 6 },          
+                7 => new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }, 
+                8 => new List<int> { 2, 4, 6, 8 }, 
                 _ => new List<int>()
             };
         }

@@ -26,19 +26,19 @@ namespace BloodDonation_System.Service.Implement
                 .FirstOrDefaultAsync(n => n.NotificationId == dto.NotificationId && n.RecipientUserId == userId);
 
             if (notification == null)
-                return "❌ Không tìm thấy thông báo hoặc không thuộc về bạn.";
+                return "Không tìm thấy thông báo hoặc không thuộc về bạn.";
 
             if (notification.ResponseStatus == "Interested" || notification.ResponseStatus == "Declined")
-                return "⚠️ Bạn đã phản hồi rồi. Không thể sửa phản hồi.";
+                return "Bạn đã phản hồi rồi. Không thể sửa phản hồi.";
 
             if (dto.ResponseStatus != "Interested" && dto.ResponseStatus != "Declined")
-                return "❌ Trạng thái phản hồi không hợp lệ.";
+                return "Trạng thái phản hồi không hợp lệ.";
 
             notification.ResponseStatus = dto.ResponseStatus;
             notification.IsRead = true; 
             await _context.SaveChangesAsync();
 
-            return "✅ Phản hồi đã được ghi nhận.";
+            return "Phản hồi đã được ghi nhận.";
         }
 
 
@@ -220,15 +220,15 @@ namespace BloodDonation_System.Service.Implement
                     .Include(u => u.UserProfile)
                     .Where(u =>
                         u.UserProfile.BloodTypeId == emergency.BloodTypeId &&
-                        u.UserId != dto.RecipientUserId  && // u.RoleId == 3 đây là đảm bảo đẻ ngươif gửi là member
+                        u.UserId != dto.RecipientUserId  && 
                         u.UserProfile != null &&
                         (
-                            !_context.DonationHistory.Any(bd => bd.DonorUserId == u.UserId) || // chưa từng hiến
+                            !_context.DonationHistory.Any(bd => bd.DonorUserId == u.UserId) || 
                             _context.DonationHistory
                                 .Where(bd => bd.DonorUserId == u.UserId)
                                 .OrderByDescending(bd => bd.DonationDate)
                                 .Select(bd => bd.DonationDate)
-                                .FirstOrDefault() <= thresholdDate // lần hiến máu gần nhất >= 90 ngày
+                                .FirstOrDefault() <= thresholdDate 
                         )
                     )
                     .ToListAsync();

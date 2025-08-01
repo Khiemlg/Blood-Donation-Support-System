@@ -17,24 +17,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpClient<GeocodingService>();
 
 
-// ✅ Cấu hình DbContext
 string cnn = builder.Configuration.GetConnectionString("cnn")
     ?? throw new InvalidOperationException("Connection string 'cnn' not found.");
 builder.Services.AddDbContext<DButils>(options => options.UseSqlServer(cnn));
 
-// ✅ Cấu hình HttpClient (cho Geocoding hoặc gọi API ngoài)
 builder.Services.AddHttpClient<GeocodingService>();
 
-// ✅ Redis Cache (nếu bạn dùng để lưu OTP hoặc session)
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
     options.InstanceName = "OTP_";
 });
-//---------------------------------------------
 builder.Services.AddTransient<IEmailService, EmailService>(); 
 builder.Services.AddTransient<IDonationRequestService, DonationRequestService>();
-//---------------------------------------------
 builder.Services.AddScoped<IEmergencyNotificationService, EmergencyNotificationService>();
 
 builder.Services.AddScoped<IResetPasswordService, ResetPasswordService>();
@@ -49,10 +44,9 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
-// ✅ CORS cho frontend (React chạy port 3000)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",  // khiem
+    options.AddPolicy("AllowAll",  
         policy => policy.WithOrigins("http://localhost:3000")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
@@ -64,18 +58,14 @@ builder.Services.AddScoped<ISearchDonorService, DonorSearchService>();
 
 
 
-// ✅ Đăng ký các service
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailService, EmailService>(); // ✅ Email gửi OTP
+builder.Services.AddScoped<IEmailService, EmailService>(); 
 builder.Services.AddScoped<IDonationRequestService, DonationRequestService>();
 builder.Services.AddScoped<IDonationHistoryService, DonationHistoryService>();
 builder.Services.AddScoped<IBloodUnitService, BloodUnitService>();
-// ✅ Swagger cấu hình chuẩn
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-// khiem them ham nay  thay cho hàm ở trên để lấy author role trên web API swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "BloodDonationSystem", Version = "v1" });
@@ -107,9 +97,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-///-----------------------
 
-// ✅ Cấu hình JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
     .AddJwtBearer(options =>
@@ -129,7 +117,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     ?? throw new InvalidOperationException("JWT Key not found.")
             )),
 
-            // ✅ Bổ sung dòng này để map "user_id" vào ClaimTypes.NameIdentifier
             NameClaimType = "user_id"
         };
     });
@@ -138,7 +125,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// ✅ Swagger hiển thị root nếu là môi trường DEV
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
