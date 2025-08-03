@@ -278,7 +278,7 @@ namespace BloodDonation_System.Service.Implement
                         StorageLocation = assignedStorageLocation,
                         TestResults = donationHistory.TestingResults,
                         Status = "Pending", 
-                        DiscardReason = "no" 
+                        DiscardReason = "" 
                     };
 
                     _context.BloodUnits.Add(newBloodUnit); 
