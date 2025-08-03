@@ -228,7 +228,7 @@ namespace BloodDonation_System.Service.Implementation
                         QuantityMl = 0, 
                         EligibilityStatus = "Eligible",
                         ReasonIneligible = null,
-                        TestingResults = "Pending",
+                        TestingResults = "",
                         StaffUserId = null,
                         Status = "Pending",
                         EmergencyId = null,
