@@ -90,9 +90,35 @@ namespace BloodDonation_System.Service.Implement
 
         public async Task<DonationHistoryDto> CreateAsync(DonationHistoryDto dto)
         {
+            
+            bool dtoProvidesDonationRequestId = !string.IsNullOrEmpty(dto.DonationRequestId);
+            bool dtoProvidesEmergencyId = !string.IsNullOrEmpty(dto.EmergencyId);
+
+            if (dtoProvidesDonationRequestId && dtoProvidesEmergencyId)
+            {
+                throw new ArgumentException("Không thể cung cấp cả DonationRequestId và EmergencyId. Chỉ một trong hai có thể được thiết lập.");
+            }
+            else if (dtoProvidesDonationRequestId)
+            {
+                var donationRequestExists = await _context.DonationRequests.AnyAsync(dr => dr.RequestId == dto.DonationRequestId);
+                if (!donationRequestExists)
+                {
+                    throw new ArgumentException($"DonationRequestId '{dto.DonationRequestId}' không tồn tại.");
+                }
+            }
+            else if (dtoProvidesEmergencyId)
+            {
+                var emergencyExists = await _context.EmergencyRequests.AnyAsync(e => e.EmergencyId == dto.EmergencyId);
+                if (!emergencyExists)
+                {
+                    throw new ArgumentException($"EmergencyId '{dto.EmergencyId}' không tồn tại.");
+                }
+            }
+
+            
             var entity = new DonationHistory
             {
-                DonationId = "BUnits_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                DonationId = "HIST_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
                 DonorUserId = dto.DonorUserId,
                 DonationDate = dto.DonationDate,
                 BloodTypeId = dto.BloodTypeId,
@@ -109,7 +135,136 @@ namespace BloodDonation_System.Service.Implement
             };
 
             _context.DonationHistories.Add(entity);
-            await _context.SaveChangesAsync();
+
+           
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                var sqlException = ex.InnerException as Microsoft.Data.SqlClient.SqlException;
+                if (sqlException != null && sqlException.Number == 547)
+                {
+                    Console.Error.WriteLine($"[DB_ERROR] Foreign Key/NULL Constraint Violation (547) during CreateAsync. " +
+                                            $"EmergencyId: '{entity.EmergencyId ?? "NULL"}' " +
+                                            $"DonationRequestId: '{entity.DonationRequestId ?? "NULL"}'. " +
+                                            $"SQL Error: {sqlException.Message}");
+                    throw new InvalidOperationException("A foreign key or NOT NULL constraint was violated during creation. " +
+                                                        "This usually means an associated ID (Emergency, Donation Request, Donor, Staff) does not exist, " +
+                                                        "OR you are trying to save NULL to a column that does not allow NULL in the database. " +
+                                                        "Please ensure your database schema is up-to-date with your entity model (e.g., columns are nullable if intended) and all related IDs are valid.", ex);
+                }
+                Console.Error.WriteLine($"[DB_ERROR] An error occurred during database update in CreateAsync: {ex.Message}");
+                throw;
+            }
+            catch (ArgumentException ex)
+            {
+                Console.Error.WriteLine($"[VALIDATION_ERROR] {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[GENERAL_ERROR] An unexpected error occurred in CreateAsync: {ex.Message}");
+                throw;
+            }
+
+            
+            if (entity.Status?.ToLower() == "complete")
+            {
+                try
+                {
+                    DateOnly expirationDate;
+                    int componentId = entity.ComponentId;
+
+                    switch (componentId)
+                    {
+                        case 1: 
+                            expirationDate = DateOnly.FromDateTime(entity.DonationDate.AddDays(42));
+                            break;
+                        case 2: 
+                            expirationDate = DateOnly.FromDateTime(entity.DonationDate.AddYears(1));
+                            break;
+                        case 3: 
+                            expirationDate = DateOnly.FromDateTime(entity.DonationDate.AddDays(5));
+                            break;
+                        case 4: 
+                            expirationDate = DateOnly.FromDateTime(entity.DonationDate.AddDays(35));
+                            break;
+                        default:
+                            
+                            expirationDate = DateOnly.FromDateTime(entity.DonationDate.AddDays(30));
+                            Console.WriteLine($"[WARNING] Unknown ComponentId {componentId} for DonationId {entity.DonationId}. Using default expiration date (30 days).");
+                            break;
+                    }
+
+                    string assignedStorageLocation;
+                    switch (componentId)
+                    {
+                        case 1: assignedStorageLocation = "COLD_STORAGE_A"; break; 
+                        case 2: assignedStorageLocation = "FREEZER_ZONE_P"; break; 
+                        case 3: assignedStorageLocation = "AGITATOR_ROOM_T"; break; 
+                        case 4: assignedStorageLocation = "REFRIGERATED_CABINET_W"; break; 
+                        default: assignedStorageLocation = "GENERAL_STORAGE_UNKNOWN"; break; 
+                    }
+
+                    var newBloodUnit = new BloodUnit
+                    {
+                        UnitId = "BUITS_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
+                        DonationId = entity.DonationId, 
+                        BloodTypeId = entity.BloodTypeId,
+                        ComponentId = entity.ComponentId,
+                        VolumeMl = entity.QuantityMl ?? 0, 
+                        CollectionDate = DateOnly.FromDateTime(entity.DonationDate),
+                        ExpirationDate = expirationDate,
+                        StorageLocation = assignedStorageLocation,
+                        TestResults = entity.TestingResults,
+                        Status = "Pending", 
+                        DiscardReason = "" 
+                    };
+
+                    _context.BloodUnits.Add(newBloodUnit);
+                    await _context.SaveChangesAsync(); 
+                    Console.WriteLine($"[INFO] BloodUnit created for DonationId: {entity.DonationId} with UnitId: {newBloodUnit.UnitId}.");
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[ERROR] Failed to create BloodUnit for DonationId {entity.DonationId}: {ex.Message}");
+                    
+                    throw new InvalidOperationException($"Error creating BloodUnit after donation completion: {ex.Message}", ex);
+                }
+            }
+
+          
+            if (!string.IsNullOrEmpty(dto.DonorUserId))
+            {
+                var donorUser = await _context.Users
+                    .Where(u => u.UserId == dto.DonorUserId)
+                    .Select(u => new { u.Email, u.UserProfile.FullName })
+                    .FirstOrDefaultAsync();
+
+                if (donorUser != null && !string.IsNullOrEmpty(donorUser.Email))
+                {
+                    string subject = $"Trạng thái hiến máu của bạn: {entity.Status}";
+                    string body = entity.Status?.ToLower() switch
+                    {
+                        "complete" => $"🩸 Xin chúc mừng! Quá trình hiến máu của bạn ngày {entity.DonationDate:dd/MM/yyyy} đã hoàn tất. Cảm ơn bạn vì nghĩa cử cao đẹp!",
+                        "pending" => $"⏳ Yêu cầu hiến máu của bạn đang ở trạng thái chờ xử lý. Vui lòng theo dõi cập nhật tiếp theo.",
+                        "rejected" => $"❌ Rất tiếc! Yêu cầu hiến máu của bạn đã bị từ chối. Ghi chú: {entity.ReasonIneligible ?? "Không rõ lý do"}.",
+                        "ineligible" => $"⚠️ Bạn chưa đủ điều kiện hiến máu. Ghi chú: {entity.ReasonIneligible ?? "Không rõ lý do"}.",
+                        _ => $"ℹ️ Trạng thái hiến máu của bạn đã được cập nhật thành: {entity.Status}."
+                    };
+
+                    try
+                    {
+                        await _emailService.SendEmailAsync(donorUser.Email, subject, body);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"[EMAIL ERROR] Không gửi được email đến {donorUser.Email}: {ex.Message}");
+                    }
+                }
+            }
 
             return dto;
         }
@@ -410,6 +565,42 @@ namespace BloodDonation_System.Service.Implement
                                    .Include(h => h.BloodType)
                                    .Include(h => h.Component)
                                    .FirstOrDefaultAsync(h => h.DonationRequestId.Equals(requestId));
+
+            if (dh == null)
+            {
+                return null;
+            }
+
+            return new DonationHistoryDetailDto
+            {
+                DonationId = dh.DonationId,
+                DonorUserId = dh.DonorUserId,
+                DonorUserName = dh.DonorUser?.UserProfile?.FullName,
+                DonationDate = dh.DonationDate,
+                BloodTypeId = dh.BloodTypeId,
+                BloodTypeName = dh.BloodType?.TypeName,
+                ComponentId = dh.ComponentId,
+                ComponentName = dh.Component?.ComponentName,
+                QuantityMl = (int)dh.QuantityMl,
+                EligibilityStatus = dh.EligibilityStatus,
+                ReasonIneligible = dh.ReasonIneligible,
+                TestingResults = dh.TestingResults,
+                StaffUserId = dh.StaffUserId,
+                Status = dh.Status,
+                EmergencyId = dh.EmergencyId,
+                Descriptions = dh.Descriptions,
+                DonationRequestId = dh.DonationRequestId
+            };
+        }
+
+        public async Task<DonationHistoryDetailDto?> GetDonationHistoryByEmergencyIdAsync(string emergencyid)
+        {
+            var dh = await _context.DonationHistories
+                                   .Include(h => h.DonorUser)
+                                       .ThenInclude(u => u.UserProfile)
+                                   .Include(h => h.BloodType)
+                                   .Include(h => h.Component)
+                                   .FirstOrDefaultAsync(h => h.EmergencyId.Equals(emergencyid));
 
             if (dh == null)
             {

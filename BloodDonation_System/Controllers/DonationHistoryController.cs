@@ -55,6 +55,22 @@ namespace BloodDonation_System.API.Controllers
             return Ok(donationHistoryDto);
         }
 
+        [HttpGet("by-emergency/{emergencyid}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DonationHistoryDetailDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<DonationHistoryDetailDto>> GetHistoryByEmergencyId(string emergencyid)
+        {
+            var donationHistoryDto = await _donationHistoryService.GetDonationHistoryByEmergencyIdAsync(emergencyid);
+
+            if (donationHistoryDto == null)
+            {
+                return NotFound(new { message = "Donation history not found for this request." });
+            }
+
+            return Ok(donationHistoryDto);
+        }
+
+
         [HttpGet("by-donor/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<DonationHistoryDetailDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

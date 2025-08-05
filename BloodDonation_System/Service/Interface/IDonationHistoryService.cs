@@ -14,5 +14,6 @@ namespace BloodDonation_System.Service.Interface
         Task<DonationHistoryDto> CreateAsync(DonationHistoryDto dto);
         Task<DonationHistoryDetailDto?> UpdateAsync(string donationId, DonationHistoryUpdateDto dto);
         Task<bool> DeleteAsync(string donationId);
+        Task<DonationHistoryDetailDto?> GetDonationHistoryByEmergencyIdAsync(string emergencyid);
     }
 }
