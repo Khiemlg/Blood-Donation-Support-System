@@ -27,7 +27,7 @@ namespace BloodDonation_System.Service.Implementation
         }
 
 
-       
+
         public async Task<DonationRequestDto> CreateAsync(DonationRequestInputDto dto)
         {
             if (string.IsNullOrEmpty(dto.DonorUserId))
@@ -38,46 +38,49 @@ namespace BloodDonation_System.Service.Implementation
             var donationRequest = new DonationRequest
             {
                 RequestId = "DONR_" + Guid.NewGuid().ToString("N").Substring(0, 6).ToUpper(),
-                DonorUserId = dto.DonorUserId, 
+                DonorUserId = dto.DonorUserId,
                 BloodTypeId = dto.BloodTypeId,
                 ComponentId = dto.ComponentId,
                 PreferredDate = dto.PreferredDate,
                 PreferredTimeSlot = dto.PreferredTimeSlot,
-                Status = dto.Status ?? "Pending", 
-                RequestDate = DateTime.UtcNow, 
+                Status = dto.Status ?? "Pending",
+                RequestDate = DateTime.UtcNow,
                 StaffNotes = dto.StaffNotes
             };
 
             await _context.DonationRequests.AddAsync(donationRequest);
             await _context.SaveChangesAsync();
 
-            await _context.Entry(donationRequest)
-                .Reference(dr => dr.BloodType).LoadAsync();
-            await _context.Entry(donationRequest)
-                .Reference(dr => dr.Component).LoadAsync();
-            await _context.Entry(donationRequest)
-                .Reference(dr => dr.DonorUser).Query()
-                .Include(u => u.UserProfile)
-                .LoadAsync();
+            var createdDonationRequest = await _context.DonationRequests
+                .Include(dr => dr.BloodType)
+                .Include(dr => dr.Component)
+                .Include(dr => dr.DonorUser)
+                    .ThenInclude(u => u.UserProfile)
+                .FirstOrDefaultAsync(dr => dr.RequestId == donationRequest.RequestId);
+
+            if (createdDonationRequest == null)
+            {
+                throw new InvalidOperationException("Không thể truy xuất yêu cầu hiến máu vừa được tạo cùng với dữ liệu liên quan.");
+            }
 
             return new DonationRequestDto
             {
-                RequestId = donationRequest.RequestId,
-                DonorUserId = donationRequest.DonorUserId,
-                BloodTypeId = donationRequest.BloodTypeId,
-                ComponentId = donationRequest.ComponentId,
-                PreferredDate = donationRequest.PreferredDate,
-                PreferredTimeSlot = donationRequest.PreferredTimeSlot,
-                Status = donationRequest.Status,
-                RequestDate = donationRequest.RequestDate,
-                StaffNotes = donationRequest.StaffNotes,
-                DonorUserName = donationRequest.DonorUser?.UserProfile?.FullName, 
-                BloodTypeName = donationRequest.BloodType?.TypeName,
-                ComponentName = donationRequest.Component?.ComponentName
+                RequestId = createdDonationRequest.RequestId,
+                DonorUserId = createdDonationRequest.DonorUserId,
+                BloodTypeId = createdDonationRequest.BloodTypeId,
+                ComponentId = createdDonationRequest.ComponentId,
+                PreferredDate = createdDonationRequest.PreferredDate,
+                PreferredTimeSlot = createdDonationRequest.PreferredTimeSlot,
+                Status = createdDonationRequest.Status,
+                RequestDate = createdDonationRequest.RequestDate,
+                StaffNotes = createdDonationRequest.StaffNotes,
+                DonorUserName = createdDonationRequest.DonorUser?.UserProfile?.FullName,
+                BloodTypeName = createdDonationRequest.BloodType?.TypeName,
+                ComponentName = createdDonationRequest.Component?.ComponentName
             };
         }
 
-        
+
         public async Task<IEnumerable<DonationRequestDto>> GetAllAsync()
         {
             return await _context.DonationRequests
