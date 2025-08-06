@@ -449,7 +449,7 @@ namespace BloodDonation_System.Service.Implement
                 switch (comp.Component.ComponentName)
                 {
                     case "Hồng cầu":
-                        expiration = collectionDate.AddDays(42);
+                        expiration = collectionDate.AddDays(35);
                         storage = "COLD_STORAGE_A";
                         break;
                     case "Huyết tương":
